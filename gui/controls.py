@@ -1,13 +1,14 @@
+import os
 import wx
 import wx.grid
-import wx.html
+import wx.html2
 import wx.lib.agw.aui as aui
 
 # If MainFrame subclasses wx.Frame, uncomment the following lines
 # from typing import TYPE_CHECKING
 # if TYPE_CHECKING:
 #     from gui.main_frame import MainFrame
-
+from common import read_file
 from gui.resources import overview
 
 
@@ -58,7 +59,7 @@ class GridCtrl(metaclass=Singleton):
         caption = "Grid"
         self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).Float().
                          FloatingPosition(self.start_position()).FloatingSize(wx.Size(300, 200)).
-                         CloseButton(True).MaximizeButton(True).MinimizeButton(True))
+                         CloseButton(False).MaximizeButton(True).MinimizeButton(True))
         self.mgr.Update()
         ctrl.Refresh()
 
@@ -122,33 +123,41 @@ class TreeCtrl(metaclass=Singleton):
     # def __init__(self, frame: "MainFrame", mgr: aui.AuiManager,
     #              create_menu_id: wx.WindowIDRef) -> None:
     def __init__(self, frame: wx.Frame, mgr: aui.AuiManager,
-                 create_menu_id: wx.WindowIDRef) -> None:
+                 create_menu_id: wx.WindowIDRef, notebook_ctrl=None, html_ctrl=None, grid_ctrl=None) -> None:
         self.frame = frame
         self.mgr = mgr
         self.create_menu_id = create_menu_id
+        self.notebook_ctrl = notebook_ctrl
+        self.html_ctrl = html_ctrl
+        self.grid_ctrl = grid_ctrl
         frame.Bind(wx.EVT_MENU, self.OnCreate, id=self.create_menu_id)
 
     def start_position(self) -> wx.Point:
         return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
 
-    def create_ctrl(self) -> wx.TreeCtrl:
+    def create_ctrl(self, path="./") -> wx.TreeCtrl:
         self.__class__.counter += 1
-        tree: wx.TreeCtrl = wx.TreeCtrl(self.frame, wx.ID_ANY, wx.Point(0, 0), wx.Size(160, 250),
-                                        wx.TR_DEFAULT_STYLE | wx.NO_BORDER)
+        self.tree: wx.TreeCtrl = wx.TreeCtrl(self.frame, wx.ID_ANY, wx.Point(0, 0), wx.Size(160, 250),
+                                             wx.TR_DEFAULT_STYLE | wx.NO_BORDER)
         imglist: wx.ImageList = wx.ImageList(16, 16, True, 2)
         icons = [wx.ART_FOLDER, wx.ART_FILE_OPEN, wx.ART_NORMAL_FILE]
         for icon in icons:
             imglist.Add(wx.ArtProvider.GetBitmap(icon, wx.ART_OTHER, wx.Size(16, 16)))
-        tree.AssignImageList(imglist)
-        root: wx.TreeItemId = tree.AddRoot("AUI Project", 0)
-        tree.SetItemImage(root, 1, wx.TreeItemIcon_Expanded)
-        node_id: wx.TreeItemId
-        for i in range(1, 6):
-            node_id = tree.AppendItem(root, "Item " + str(i), 0)
-            tree.SetItemImage(node_id, 1, wx.TreeItemIcon_Expanded)
-            [tree.AppendItem(node_id, "Item " + str(j), 2) for j in range(1, 6)]
-        tree.Expand(root)
-        return tree
+        self.tree.AssignImageList(imglist)
+        root_name = path.split(os.sep)[-1]
+        root: wx.TreeItemId = self.tree.AddRoot(root_name, 0)
+        self.tree.SetItemImage(root, 0, wx.TreeItemIcon_Expanded)
+
+        self.build_tree(path, root)
+        self.tree.Expand(root)
+
+        self.tree.Bind(wx.EVT_TREE_ITEM_RIGHT_CLICK, self.on_right_click)
+        self.tree.Bind(wx.EVT_TREE_ITEM_EXPANDED, self.on_item_expanded)
+        self.tree.Bind(wx.EVT_TREE_ITEM_COLLAPSED, self.on_item_collapsed)
+        self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.on_sel_changed)
+        self.tree.Bind(wx.EVT_TREE_SEL_CHANGING, self.on_sel_changing)
+
+        return self.tree
 
     def OnCreate(self, _event: wx.CommandEvent) -> None:
         ctrl: wx.TreeCtrl = self.create_ctrl()
@@ -158,6 +167,125 @@ class TreeCtrl(metaclass=Singleton):
                          MaximizeButton(True).MinimizeButton(True))
         self.mgr.Update()
         ctrl.Refresh()
+
+    def build_tree(self, dir_path, parent_item):
+        for item in os.listdir(dir_path):
+            item_path = os.path.join(dir_path, item)
+            if os.path.isdir(item_path):
+                new_item = self.tree.AppendItem(parent_item, item)
+                self.tree.SetItemImage(new_item, 0)
+                self.tree.SetItemData(new_item, item_path)
+                self.build_tree(item_path, new_item)
+            else:
+                new_item = self.tree.AppendItem(parent_item, item)
+                self.tree.SetItemImage(new_item, 2)
+                self.tree.SetItemData(new_item, item_path)
+
+    def on_right_click(self, event):
+        item = event.GetItem()
+        path = self.tree.GetItemData(item)
+        print(f"right clicked, path: {path}")
+
+        menu = wx.Menu()
+        sub_model_menu = wx.Menu()
+        open_item = menu.Append(wx.ID_ANY, '打开')
+        delete_item = menu.Append(wx.ID_ANY, '删除')
+        rename_item = menu.Append(wx.ID_ANY, '重命名')
+
+        # models
+        menu.AppendSeparator()
+        model_1 = sub_model_menu.Append(wx.ID_ANY, '能效等级总览')
+        model_2 = sub_model_menu.Append(wx.ID_ANY, '能效评估结果总览')
+        model_3 = sub_model_menu.Append(wx.ID_ANY, '能效排行')
+        model_4 = sub_model_menu.Append(wx.ID_ANY, '理论与实际功率对比分析')
+        model_5 = sub_model_menu.Append(wx.ID_ANY, '风资源对比')
+        menu.AppendSubMenu(sub_model_menu, '模型图')
+
+        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_open(event, path), open_item)
+        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_delete(event, path), delete_item)
+        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_rename(event, path), rename_item)
+
+        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_1(event, path), model_1)
+        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_2(event, path), model_2)
+        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_3(event, path), model_3)
+        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_4(event, path), model_4)
+        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_5(event, path), model_5)
+
+        self.tree.PopupMenu(menu)
+
+    def on_delete(self, event, path):
+        print(path)
+        item = self.tree.GetSelection()
+        path = self.tree.GetItemData(item)
+        print(f"Delete clicked, path: {path}")
+
+    def on_open(self, event, path):
+        print(f"Open clicked, path: {path}")
+        if not os.path.isfile(path):
+            return
+
+        page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE, wx.ART_OTHER, wx.Size(16, 16))
+        ctrl = self.notebook_ctrl.notebook_object
+        file_name = path.split(os.sep)[-1]
+        text = read_file(path)
+
+        if path.endswith(".html"):
+            ctrl.AddPage(self.html_ctrl.create_ctrl(path=path), file_name, True, page_bmp)
+
+        elif path.endswith(".csv"):
+            ctrl.AddPage(self.grid_ctrl.create_ctrl(), file_name, True, page_bmp)
+
+        else:
+            ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, text, wx.DefaultPosition,
+                         wx.DefaultSize, wx.TE_MULTILINE | wx.NO_BORDER), file_name)
+
+    def on_rename(self, event, path):
+        item = self.tree.GetSelection()
+        path = self.tree.GetItemData(item)
+        print(f"Rename clicked, path: {path}")
+
+    def on_model_1(self, event, path):
+
+        print(f"model clicked, path: {path}")
+        file_path = r"D:\project\mini_tool_v2\test.html"
+        ID_HTMLCtrl: wx.WindowIDRef = wx.NewIdRef()
+        HTMLCtrl(self.frame, self.mgr, ID_HTMLCtrl).OnCreate(wx.wxEVT_NULL, file_path, file_path)
+
+    def on_model_2(self, event, path):
+        print(f"model clicked, path: {path}")
+        file_path = r"D:\project\mini_tool_v2\test.html"
+        ID_HTMLCtrl: wx.WindowIDRef = wx.NewIdRef()
+        HTMLCtrl(self.frame, self.mgr, ID_HTMLCtrl).OnCreate(wx.wxEVT_NULL, file_path, file_path)
+
+    def on_model_3(self, event, path):
+        print(f"model clicked, path: {path}")
+        file_path = r"D:\project\mini_tool_v2\test.html"
+        ID_HTMLCtrl: wx.WindowIDRef = wx.NewIdRef()
+        HTMLCtrl(self.frame, self.mgr, ID_HTMLCtrl).OnCreate(wx.wxEVT_NULL, file_path, file_path)
+
+    def on_model_4(self, event, path):
+        print(f"model clicked, path: {path}")
+        file_path = r"D:\project\mini_tool_v2\test.html"
+        ID_HTMLCtrl: wx.WindowIDRef = wx.NewIdRef()
+        HTMLCtrl(self.frame, self.mgr, ID_HTMLCtrl).OnCreate(wx.wxEVT_NULL, file_path, file_path)
+
+    def on_model_5(self, event, path):
+        print(f"model clicked, path: {path}")
+        file_path = r"D:\project\mini_tool_v2\test.html"
+        ID_HTMLCtrl: wx.WindowIDRef = wx.NewIdRef()
+        HTMLCtrl(self.frame, self.mgr, ID_HTMLCtrl).OnCreate(wx.wxEVT_NULL, file_path, file_path)
+
+    def on_item_expanded(self, event):
+        print("Item expanded!")
+
+    def on_item_collapsed(self, event):
+        print("Item collapsed!")
+
+    def on_sel_changed(self, event):
+        print("Selection changed")
+
+    def on_sel_changing(self, event):
+        print("Selection changing")
 
 
 class HTMLCtrl(metaclass=Singleton):
@@ -184,20 +312,20 @@ class HTMLCtrl(metaclass=Singleton):
     def start_position(self) -> wx.Point:
         return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
 
-    def create_ctrl(self, parent: wx.Frame = None, width: int = 400, height: int = 300) -> wx.html.HtmlWindow:
+    def create_ctrl(self, parent: wx.Frame = None, path: str = "") -> wx.html2.WebView:
         self.__class__.counter += 1
         if not parent:
             parent = self.frame
-        ctrl = wx.html.HtmlWindow(parent, wx.ID_ANY, wx.DefaultPosition, wx.Size(width, height))
-        ctrl.SetPage(overview)
+        ctrl = wx.html2.WebView.New(parent)
+        ctrl.LoadURL(f"file:///{path}")
         return ctrl
 
-    def OnCreate(self, _event: wx.CommandEvent) -> None:
-        ctrl: wx.html.HtmlWindow = self.create_ctrl()
-        caption = "HTML Control"
+    def OnCreate(self, _event: wx.CommandEvent, caption="HTML Control", path=overview, width=700, height=400) -> None:
+        ctrl: wx.html2.WebView = self.create_ctrl(path=path)
         self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).Float().
-                         FloatingPosition(self.start_position()).FloatingSize(wx.Size(300, 200)).
+                         FloatingPosition(self.start_position()).BestSize(wx.Size(width, height)).
                          CloseButton(True).MaximizeButton(True).MinimizeButton(True))
+
         self.mgr.Update()
         ctrl.Refresh()
 

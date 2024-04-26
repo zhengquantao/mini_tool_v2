@@ -36,7 +36,7 @@ class MainFrame:
         statusbar: wx.StatusBar = self.frame.CreateStatusBar(2, wx.STB_SIZEGRIP)
         statusbar.SetStatusWidths([-2, -3])
         statusbar.SetStatusText("Ready", 0)
-        statusbar.SetStatusText("Welcome To wxPython!", 1)
+        statusbar.SetStatusText("Welcome To MINI-TOOL!", 1)
 
     # If subclassing wx.Frame, uncomment the following lines and
     # remove .frame, if self.frame is not set to self

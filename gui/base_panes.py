@@ -126,9 +126,9 @@ class PaneManager:
                          Name("test7").Caption("Client Size Reporter").Left().Layer(1).
                          CloseButton(True).MaximizeButton(True).MinimizeButton(True))
 
-        self.mgr.AddPane(tree_ctrl.create_ctrl(), aui.AuiPaneInfo().Name("test8").Caption("Tree Pane").
-                         Left().Layer(1).Position(1).CloseButton(True).MaximizeButton(True).
-                         MinimizeButton(True))
+        # self.mgr.AddPane(tree_ctrl.create_ctrl(), aui.AuiPaneInfo().Name("test8").Caption("Project").
+        #                  Left().Layer(1).Position(1).CloseButton(False).MaximizeButton(True).
+        #                  MinimizeButton(True))
 
         self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
                          Name("test9").Caption("Min Size 200x100").
@@ -146,7 +146,8 @@ class PaneManager:
 
         self.mgr.AddPane(tree_ctrl.create_ctrl(), aui.AuiPaneInfo().
                          Name("thirdauto").Caption("A Third Auto-NB Pane").
-                         Bottom().MinimizeButton(True), target=self.mgr.GetPane("autonotebook"))
+                         Bottom().CloseButton(False).MaximizeButton(True).MinimizeButton(True),
+                         target=self.mgr.GetPane("autonotebook"))
 
         self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
                          Name("test11").Caption("Fixed Pane").

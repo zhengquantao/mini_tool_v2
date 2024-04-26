@@ -15,7 +15,12 @@ else:
 main_menu_items = {
     "File": {
         "label": "&File",
-        "children": {}
+        "children": {
+            "NewProject": {"label": "New &Project"},
+            "OpenProject": {"label": "Open &Project"},
+            "OpenFile": {"label": "Open &File"},
+            "SaveProject": {"label": "Save &Project"},
+        }
     },
     "View": {
         "label": "&View",
@@ -169,5 +174,9 @@ main_menu_items = {
     "Help": {
         "label": "&Help",
         "children": {}
-    }
+    },
+    "About": {
+        "label": "&About",
+        "children": {}
+    },
 }

@@ -30,7 +30,7 @@ class Notebook:
     mgr: aui.AuiManager
     create_menu_id: wx.WindowIDRef
     html_ctrl: "HTMLCtrl"
-    notebook_style: int = aui.AUI_NB_DEFAULT_STYLE | aui.AUI_NB_TAB_EXTERNAL_MOVE | wx.NO_BORDER
+    notebook_style: int = aui.AUI_NB_DEFAULT_STYLE | aui.AUI_NB_TAB_EXTERNAL_MOVE | wx.NO_BORDER | aui.AUI_NB_TAB_FLOAT
     notebook_theme: int = 0
     custom_tab_buttons: bool
     main_notebook: aui.AuiNotebook
@@ -47,6 +47,7 @@ class Notebook:
         self.mgr = mgr
         self.html_ctrl = html_ctrl
         self.create_menu_id = create_menu_id
+        self.notebook_object = None
         frame.Bind(wx.EVT_MENU, self.OnCreate, id=self.create_menu_id)
 
     def start_position(self) -> wx.Point:
@@ -79,27 +80,28 @@ class Notebook:
 
         page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE,
                                                        wx.ART_OTHER, wx.Size(16, 16))
-        ctrl.AddPage(self.html_ctrl.create_ctrl(ctrl), "Welcome to AUI", False, page_bmp)
+        file_path = r"D:\project\mini_tool_v2\test.html"
+        ctrl.AddPage(self.html_ctrl.create_ctrl(path=file_path), "Welcome to AUI", True, page_bmp)
 
-        panel: wx.Panel = wx.Panel(ctrl, wx.ID_ANY)
-        flex: wx.FlexGridSizer = wx.FlexGridSizer(rows=0, cols=2, vgap=2, hgap=2)
-        flex.Add((5, 5))
-        flex.Add((5, 5))
-        flex.Add(wx.StaticText(panel, wx.ID_ANY, "wxTextCtrl:"), 0, wx.ALL | wx.ALIGN_CENTRE, 5)
-        flex.Add(wx.TextCtrl(panel, wx.ID_ANY, "", wx.DefaultPosition, wx.Size(100, -1)),
-                 1, wx.ALL | wx.ALIGN_CENTRE, 5)
-        flex.Add(wx.StaticText(panel, wx.ID_ANY, "wxSpinCtrl:"), 0, wx.ALL | wx.ALIGN_CENTRE, 5)
-        flex.Add(wx.SpinCtrl(panel, wx.ID_ANY, "5", wx.DefaultPosition, wx.DefaultSize,
-                             wx.SP_ARROW_KEYS, 5, 50, 5), 0, wx.ALL | wx.ALIGN_CENTRE, 5)
-        flex.Add((5, 5))
-        flex.Add((5, 5))
-        flex.AddGrowableRow(0)
-        flex.AddGrowableRow(3)
-        flex.AddGrowableCol(1)
-        panel.SetSizer(flex)
-        ctrl.AddPage(panel, "Disabled", False, page_bmp)
+        # panel: wx.Panel = wx.Panel(ctrl, wx.ID_ANY)
+        # flex: wx.FlexGridSizer = wx.FlexGridSizer(rows=0, cols=2, vgap=2, hgap=2)
+        # flex.Add((5, 5))
+        # flex.Add((5, 5))
+        # flex.Add(wx.StaticText(panel, wx.ID_ANY, "wxTextCtrl:"), 0, wx.ALL | wx.ALIGN_CENTRE, 5)
+        # flex.Add(wx.TextCtrl(panel, wx.ID_ANY, "", wx.DefaultPosition, wx.Size(100, -1)),
+        #          1, wx.ALL | wx.ALIGN_CENTRE, 5)
+        # flex.Add(wx.StaticText(panel, wx.ID_ANY, "wxSpinCtrl:"), 0, wx.ALL | wx.ALIGN_CENTRE, 5)
+        # flex.Add(wx.SpinCtrl(panel, wx.ID_ANY, "5", wx.DefaultPosition, wx.DefaultSize,
+        #                      wx.SP_ARROW_KEYS, 5, 50, 5), 0, wx.ALL | wx.ALIGN_CENTRE, 5)
+        # flex.Add((5, 5))
+        # flex.Add((5, 5))
+        # flex.AddGrowableRow(0)
+        # flex.AddGrowableRow(3)
+        # flex.AddGrowableCol(1)
+        # panel.SetSizer(flex)
+        # ctrl.AddPage(panel, "Disabled", False, page_bmp)
         ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some text", wx.DefaultPosition, wx.DefaultSize,
-                                 wx.TE_MULTILINE | wx.NO_BORDER), "DClick Edit!", False, page_bmp)
+                                 wx.TE_MULTILINE | wx.NO_BORDER), "Welcome to MINI-TOOL", False, page_bmp)
         ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition,
                                  wx.DefaultSize, wx.TE_MULTILINE | wx.NO_BORDER), "Blue Tab")
         ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition,
@@ -117,11 +119,12 @@ class Notebook:
 
         # Demonstrate how to disable a tab
         if self.__class__.counter == 1:
-            ctrl.EnableTab(1, False)
+            ctrl.EnableTab(1, True)
 
         ctrl.SetPageTextColour(2, wx.RED)
         ctrl.SetPageTextColour(3, wx.BLUE)
         ctrl.SetRenamable(2, True)
+        self.notebook_object = ctrl
         return ctrl
 
     def OnCreate(self, _event: wx.CommandEvent) -> None:
@@ -129,6 +132,8 @@ class Notebook:
         caption = "Notebook"
         self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).
                          Float().FloatingPosition(self.start_position()).
-                         CloseButton(True).MaximizeButton(True).MinimizeButton(True))
+                         CloseButton(True).MaximizeButton(True).MinimizeButton(True).Movable(True).Floatable(True).
+                         FloatingSize(wx.Size(800, 600)))
+
         self.mgr.Update()
         ctrl.Refresh()

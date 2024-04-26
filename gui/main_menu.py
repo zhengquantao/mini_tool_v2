@@ -7,6 +7,7 @@ dictionary for both top-level menu labels and menu items.
 import wx
 import wx.lib.agw.aui as aui
 
+import constants as cs
 from gui.main_menu_res import main_menu_items
 
 # If MainFrame subclasses wx.Frame, uncomment the following lines
@@ -100,10 +101,27 @@ class MainMenu:
         self.items[item_key] = {"id": item_id, "type": item_type, "item": menu_item}
 
     def build_standard(self):
+        self.file_history()
         self.items["File"].Append(wx.ID_EXIT, "E&xit\tAlt-F4")
         self.frame.Bind(wx.EVT_MENU, self.OnExit, id=wx.ID_EXIT)
         self.items["Help"].Append(wx.ID_ABOUT)
         self.frame.Bind(wx.EVT_MENU, self.OnAbout, id=wx.ID_ABOUT)
+
+    def file_history(self):
+        # 创建 FileHistory 对象
+        self.filehistory = wx.FileHistory(8)
+        self.config = wx.Config(cs.main_title, style=wx.CONFIG_USE_LOCAL_FILE)
+        self.filehistory.Load(self.config)
+        recent = wx.Menu()
+        self.filehistory.UseMenu(recent)
+        self.filehistory.AddFilesToMenu()
+        self.items["File"].Append(wx.ID_ANY, '&Recent Project', recent)
+
+    def add_history(self, path: str):
+        # 将项目路径添加到 FileHistory 中
+        self.filehistory.AddFileToHistory(path)
+        self.filehistory.Save(self.config)
+        self.config.Flush()
 
     def OnAbout(self, _event: wx.CommandEvent) -> None:
         msg = "wx.aui Demo\nAn advanced library for wxWidgets"
