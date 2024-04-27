@@ -10,7 +10,7 @@ from wx.lib.agw.aui import aui_switcherdialog as asd
 # if TYPE_CHECKING:
 #     from gui.main_frame import MainFrame
 
-from gui import resources as res
+from settings import resources as res
 from gui.controls import SizeReportCtrl, TextCtrl, TreeCtrl, HTMLCtrl, GridCtrl
 from gui.aui_notebook import Notebook
 from gui.progress import ProgressGauge

@@ -42,6 +42,13 @@ main_menu_items = {
             "SwitchPane":           {"label": f"S&witch Window...\t{switcher_accel}"}
         }
     },
+    "Graph": {
+        "label": "&Graph",
+        "children": {
+            "Line Plot":           {"label": "&Line Plot"},
+            "Bar Plot":           {"label": "&Bar Plot"},
+        }
+    },
     "Options": {
         "label": "&Options",
         "children": {
@@ -173,10 +180,6 @@ main_menu_items = {
     },
     "Help": {
         "label": "&Help",
-        "children": {}
-    },
-    "About": {
-        "label": "&About",
         "children": {}
     },
 }

@@ -7,7 +7,7 @@ dictionary for both top-level menu labels and menu items.
 import wx
 import wx.lib.agw.aui as aui
 
-import constants as cs
+from settings import settings as cs
 from gui.main_menu_res import main_menu_items
 
 # If MainFrame subclasses wx.Frame, uncomment the following lines
@@ -104,6 +104,8 @@ class MainMenu:
         self.file_history()
         self.items["File"].Append(wx.ID_EXIT, "E&xit\tAlt-F4")
         self.frame.Bind(wx.EVT_MENU, self.OnExit, id=wx.ID_EXIT)
+        self.items["Help"].Append(wx.ID_HELP)
+        self.frame.Bind(wx.EVT_MENU, self.OnHelp, id=wx.ID_HELP)
         self.items["Help"].Append(wx.ID_ABOUT)
         self.frame.Bind(wx.EVT_MENU, self.OnAbout, id=wx.ID_ABOUT)
 
@@ -129,5 +131,11 @@ class MainMenu:
         dlg.ShowModal()
         dlg.Destroy()
 
+    def OnHelp(self, _event: wx.CommandEvent) -> None:
+        msg = "wx.aui Demo\nAn advanced library for wxWidgets"
+        dlg = wx.MessageDialog(self.frame, msg, "Help You", wx.OK)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def OnExit(self, _event: wx.CommandEvent) -> None:
-        self.frame.Close(True)
+        self.frame.Destroy()

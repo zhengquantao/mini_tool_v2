@@ -20,7 +20,7 @@ def check_graph_df(func):
 
 
 def read_file(file_path) -> str:
-    with open(file_path, 'r', encoding='utf-8') as file:
+    with open(file_path, 'r', encoding='utf-8', errors="ignore") as file:
         data = file.read()
 
     return data

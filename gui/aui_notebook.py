@@ -100,8 +100,12 @@ class Notebook:
         # flex.AddGrowableCol(1)
         # panel.SetSizer(flex)
         # ctrl.AddPage(panel, "Disabled", False, page_bmp)
-        ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some text", wx.DefaultPosition, wx.DefaultSize,
-                                 wx.TE_MULTILINE | wx.NO_BORDER), "Welcome to MINI-TOOL", False, page_bmp)
+        page = wx.TextCtrl(ctrl, wx.ID_ANY, "Some text Welcome to MINI-TOOL", wx.DefaultPosition, wx.DefaultSize,
+                    wx.TE_MULTILINE | wx.NO_BORDER, name='Welcome to MINI-TOOL')
+        page.SetMargins(20)
+        font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
+        page.SetFont(font)
+        ctrl.AddPage(page, "Welcome to MINI-TOOL", False, page_bmp)
         ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition,
                                  wx.DefaultSize, wx.TE_MULTILINE | wx.NO_BORDER), "Blue Tab")
         ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition,
@@ -124,6 +128,7 @@ class Notebook:
         ctrl.SetPageTextColour(2, wx.RED)
         ctrl.SetPageTextColour(3, wx.BLUE)
         ctrl.SetRenamable(2, True)
+
         self.notebook_object = ctrl
         return ctrl
 
@@ -137,3 +142,4 @@ class Notebook:
 
         self.mgr.Update()
         ctrl.Refresh()
+

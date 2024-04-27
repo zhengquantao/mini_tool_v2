@@ -9,7 +9,7 @@ from gui.aui_notebook_options_res import (
     agw_style_flags as agw_flags, agw_tabart_provider as tabarts,
     agw_style_flag_masks as agw_masks, AUI_NB_CLOSE_MASK,
     default_checked_menus as check_menus)
-from gui.resources import CUSTOM_TAB_BUTTONS
+from settings.resources import CUSTOM_TAB_BUTTONS
 
 
 # noinspection PyPep8Naming

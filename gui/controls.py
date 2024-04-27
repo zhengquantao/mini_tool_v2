@@ -8,8 +8,8 @@ import wx.lib.agw.aui as aui
 # from typing import TYPE_CHECKING
 # if TYPE_CHECKING:
 #     from gui.main_frame import MainFrame
-from common import read_file
-from gui.resources import overview
+from common.common import read_file
+from settings.resources import overview
 
 
 class Singleton(type):
@@ -88,7 +88,7 @@ class TextCtrl(metaclass=Singleton):
     def start_position(self) -> wx.Point:
         return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
 
-    def create_ctrl(self, text: str = "", width: int = 150, height: int = 90) -> wx.TextCtrl:
+    def create_ctrl(self, text: str = "", width: int = 500, height: int = 400) -> wx.TextCtrl:
         self.__class__.counter += 1
         if text.strip():
             text_ctrl = text
@@ -322,7 +322,7 @@ class HTMLCtrl(metaclass=Singleton):
 
     def OnCreate(self, _event: wx.CommandEvent, caption="HTML Control", path=overview, width=700, height=400) -> None:
         ctrl: wx.html2.WebView = self.create_ctrl(path=path)
-        self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).Float().
+        self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).Float().Name("11.34t").
                          FloatingPosition(self.start_position()).BestSize(wx.Size(width, height)).
                          CloseButton(True).MaximizeButton(True).MinimizeButton(True))
 

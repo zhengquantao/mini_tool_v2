@@ -3,7 +3,7 @@ import wx.aui
 import wx.lib.agw.aui as aui
 from typing import TypeAlias
 
-from .resources import sids, cids, pallet_from_color, pallets_from_color
+from gui.resources import sids, cids, pallet_from_color, pallets_from_color
 
 wxControl: TypeAlias = wx.BitmapButton | wx.SpinCtrl | wx.CheckBox
 

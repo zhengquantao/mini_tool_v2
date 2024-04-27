@@ -3,12 +3,10 @@ import wx
 import wx.lib.agw.aui as aui
 from aui2 import svg_to_bitmap
 
-import constants as  cs
+from settings import settings as cs
 from gui.file_menu import FileManager
 from gui.main_frame import MainFrame
 from gui.main_menu import MainMenu
-from gui.toolbars import ToolBarManager
-from gui.context_menu import PopupMenu
 from gui.controls import SizeReportCtrl, TextCtrl, TreeCtrl, HTMLCtrl, GridCtrl
 from gui.aui_notebook import Notebook
 from gui.aui_notebook_options import NotebookOptions
@@ -16,7 +14,7 @@ from gui.aui_manager_options import ManagerOptions
 from gui.aui_dockart_options import DockArtOptions
 from gui.base_panes import PaneManager
 from gui.perspective import LayoutManager
-from settings.gui import SettingsPanel
+from gui.gui import SettingsPanel
 
 
 class MainApp:

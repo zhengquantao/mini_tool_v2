@@ -65,8 +65,8 @@ class FileManager:
         self.bind_menu()
         self.load_recent_project()
 
-    def __del__(self):
-        self.timer.Stop()
+    # def __del__(self):
+    #     self.timer.Stop()
 
     def bind_menu(self):
         mb_items: dict = self.mb_items

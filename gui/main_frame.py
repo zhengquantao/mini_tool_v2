@@ -25,6 +25,7 @@ class MainFrame:
         # super().__init__(parent, win_id, title, pos, size, style)
         # If subclassing wx.Frame, remove the next line or set it to self
         self.frame = wx.Frame(parent, win_id, title, pos, size, style)
+        self.frame.Bind(wx.EVT_CLOSE, self.OnExit)
 
     def init_man(self, mgr: aui.AuiManager) -> None:
         assert not self.initialized
@@ -40,5 +41,12 @@ class MainFrame:
 
     # If subclassing wx.Frame, uncomment the following lines and
     # remove .frame, if self.frame is not set to self
-    # def OnExit(self, _event: wx.CloseEvent) -> None:
-    #    self.frame.Close(True)
+    def OnExit(self, _event: wx.CloseEvent) -> None:
+        for pane in self.mgr.GetAllPanes():
+            if isinstance(pane.window, aui.AuiNotebook):
+                print(pane.window.GetPageCount())
+                for i in range(pane.window.GetPageCount()):
+                    print(pane.window.GetPage(i).GetName())
+                    print(pane.window.GetPageInfo(i).caption)
+        self.frame.Destroy()
+        # self.frame.Close(True)
