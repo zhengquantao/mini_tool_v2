@@ -1,4 +1,6 @@
 import os
+
+import pandas as pd
 import wx
 import wx.grid
 import wx.html2
@@ -8,8 +10,10 @@ import wx.lib.agw.aui as aui
 # from typing import TYPE_CHECKING
 # if TYPE_CHECKING:
 #     from gui.main_frame import MainFrame
-from common.common import read_file
+from common.common import read_file, remove_file, rename_file
+from common import loggers
 from settings.resources import overview
+from settings.settings import opening_dict, float_size, display_grid_count
 
 
 class Singleton(type):
@@ -47,12 +51,56 @@ class GridCtrl(metaclass=Singleton):
     def start_position(self) -> wx.Point:
         return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
 
-    def create_ctrl(self) -> wx.grid.Grid:
+    def create_ctrl(self, data_df=None) -> wx.grid.Grid:
         self.__class__.counter += 1
         grid = wx.grid.Grid(self.frame, wx.ID_ANY, wx.Point(0, 0), wx.Size(150, 250),
-                            wx.NO_BORDER | wx.WANTS_CHARS)
-        grid.CreateGrid(50, 20)
+                            wx.NO_BORDER)
+
+        grid.CreateGrid(100, 50)  # 创建一个n行n列的表格
+        grid.EnableScrolling(True, True)
+        # 边框颜色
+        grid.SetGridLineColour(wx.LIGHT_GREY)
+
+        # 渲染表格
+        self.render_grid(data_df, grid)
+
+        # 创建一个sizer对象
+        # sizer = wx.BoxSizer(wx.VERTICAL)
+        # sizer.Add(grid, 1, wx.EXPAND)
+        # self.frame.SetSizer(sizer)
+
         return grid
+
+    def render_grid(self, data: pd.DataFrame(), grid):
+        if not isinstance(data, pd.DataFrame):
+            return
+        # Clear old data
+        grid.ClearGrid()
+
+        # Get the current number of rows and columns
+        num_rows = grid.GetNumberRows()
+        num_cols = grid.GetNumberCols()
+
+        # Calculate the number of additional rows and columns needed
+        additional_rows = data.shape[0] - num_rows
+        additional_cols = data.shape[1] - num_cols
+
+        # Append additional rows and columns if needed
+        if additional_rows > 0:
+            grid.AppendRows(additional_rows)
+        if additional_cols > 0:
+            grid.AppendCols(additional_cols)
+
+        for col, val in enumerate(data.columns):
+            grid.SetCellValue(0, col, str(val))
+            grid.SetCellAlignment(0, col, wx.ALIGN_CENTER, wx.ALIGN_CENTER)
+
+        grid.BeginBatch()
+        for row in range(1, min(data.shape[0], display_grid_count)):
+            for col in range(data.shape[1]):
+                grid.SetCellValue(row, col, str(data.iat[row, col]))
+                grid.SetCellAlignment(row, col, wx.ALIGN_CENTER, wx.ALIGN_CENTER)
+        grid.EndBatch()
 
     def OnCreate(self, _event: wx.CommandEvent) -> None:
         ctrl: wx.grid.Grid = self.create_ctrl()
@@ -88,14 +136,16 @@ class TextCtrl(metaclass=Singleton):
     def start_position(self) -> wx.Point:
         return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
 
-    def create_ctrl(self, text: str = "", width: int = 500, height: int = 400) -> wx.TextCtrl:
+    def create_ctrl(self, text: str = "", width: int = 500, height: int = 400, style=wx.TE_MULTILINE,
+                    font=None) -> wx.TextCtrl:
         self.__class__.counter += 1
-        if text.strip():
-            text_ctrl = text
-        else:
-            text_ctrl = f"This is text box #{self.__class__.counter}."
-        return wx.TextCtrl(self.frame, wx.ID_ANY, text_ctrl, wx.DefaultPosition,
-                           wx.Size(width, height), style=wx.NO_BORDER | wx.TE_MULTILINE)
+        ctrl = wx.TextCtrl(self.frame, wx.ID_ANY, text, wx.DefaultPosition,
+                           wx.Size(width, height), style=style)
+        if not font:
+            font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
+        ctrl.SetMargins(8)
+        ctrl.SetFont(font)
+        return ctrl
 
     def OnCreate(self, _event: wx.CommandEvent) -> None:
         ctrl: wx.TextCtrl = self.create_ctrl()
@@ -214,35 +264,58 @@ class TreeCtrl(metaclass=Singleton):
         self.tree.PopupMenu(menu)
 
     def on_delete(self, event, path):
-        print(path)
-        item = self.tree.GetSelection()
-        path = self.tree.GetItemData(item)
         print(f"Delete clicked, path: {path}")
+        dlg = wx.MessageDialog(self.frame, f"你确认要删除文件 {path.split(os.sep)[-1]} 吗？",
+                               "刪除文件", wx.OK | wx.ICON_WARNING)
+        if dlg.ShowModal() != wx.ID_OK:
+            return
+        remove_file(path)
 
     def on_open(self, event, path):
-        print(f"Open clicked, path: {path}")
         if not os.path.isfile(path):
             return
 
+        loggers.logger.info(f"Open clicked, path: {path}")
         page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE, wx.ART_OTHER, wx.Size(16, 16))
         ctrl = self.notebook_ctrl.notebook_object
         file_name = path.split(os.sep)[-1]
         text = read_file(path)
 
+        pid = os.getpid()
+        opening_dict[pid]["records"][file_name] = path
+
         if path.endswith(".html"):
             ctrl.AddPage(self.html_ctrl.create_ctrl(path=path), file_name, True, page_bmp)
 
-        elif path.endswith(".csv"):
-            ctrl.AddPage(self.grid_ctrl.create_ctrl(), file_name, True, page_bmp)
+        elif any([path.endswith(".csv"), path.endswith(".xlsx"), path.endswith(".xls")]):
+            data_df = pd.read_csv(path)
+            ctrl.AddPage(self.grid_ctrl.create_ctrl(data_df), file_name, True, page_bmp)
+
+        elif any([path.endswith(".png"), path.endswith(".jpg"), path.endswith(".jpeg")]):
+            image = wx.Image(path)
+            size = self.mgr.GetPaneByName("notebook_content").window.GetSize()
+            image = image.Rescale(size[0], size[1])
+            image_ctrl = wx.StaticBitmap(self.frame, wx.ID_ANY, wx.BitmapFromImage(image))
+            ctrl.AddPage(image_ctrl, file_name, True, page_bmp)
 
         else:
+            page = wx.TextCtrl(ctrl, wx.ID_ANY, text, wx.DefaultPosition, wx.DefaultSize, wx.TE_MULTILINE|wx.NO_BORDER)
+            page.SetMargins(8)
+            font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
+            page.SetFont(font)
             ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, text, wx.DefaultPosition,
-                         wx.DefaultSize, wx.TE_MULTILINE | wx.NO_BORDER), file_name)
+                         wx.DefaultSize, wx.TE_MULTILINE | wx.NO_BORDER), file_name, True, page_bmp)
 
     def on_rename(self, event, path):
-        item = self.tree.GetSelection()
-        path = self.tree.GetItemData(item)
         print(f"Rename clicked, path: {path}")
+        dlg = wx.TextEntryDialog(self.frame, "请输入新文件名:", "文件重命名")
+        if dlg.ShowModal() != wx.ID_OK:
+            return
+
+        directory_name: str = dlg.GetValue()
+        file_list = path.split(os.sep)
+        file_list[-1] = directory_name
+        rename_file(path, os.sep.join(file_list))
 
     def on_model_1(self, event, path):
 
@@ -316,13 +389,13 @@ class HTMLCtrl(metaclass=Singleton):
         self.__class__.counter += 1
         if not parent:
             parent = self.frame
-        ctrl = wx.html2.WebView.New(parent)
+        ctrl = wx.html2.WebView.New(parent, size=wx.Size(*float_size))
         ctrl.LoadURL(f"file:///{path}")
         return ctrl
 
     def OnCreate(self, _event: wx.CommandEvent, caption="HTML Control", path=overview, width=700, height=400) -> None:
         ctrl: wx.html2.WebView = self.create_ctrl(path=path)
-        self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).Float().Name("11.34t").
+        self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).Float().Name("html_content").
                          FloatingPosition(self.start_position()).BestSize(wx.Size(width, height)).
                          CloseButton(True).MaximizeButton(True).MinimizeButton(True))
 

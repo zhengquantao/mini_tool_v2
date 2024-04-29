@@ -9,7 +9,7 @@ from wx.lib.agw.aui import aui_switcherdialog as asd
 # from typing import TYPE_CHECKING
 # if TYPE_CHECKING:
 #     from gui.main_frame import MainFrame
-
+from common import loggers
 from settings import resources as res
 from gui.controls import SizeReportCtrl, TextCtrl, TreeCtrl, HTMLCtrl, GridCtrl
 from gui.aui_notebook import Notebook
@@ -20,6 +20,9 @@ from gui.base_panes_res import (
 
 
 # noinspection PyPep8Naming
+from settings.settings import float_size
+
+
 class PaneManager:
     """Creates default panes."""
 
@@ -99,78 +102,81 @@ class PaneManager:
         grid_ctrl: GridCtrl = self.grid_ctrl
         notebook_ctrl: Notebook = self.notebook_ctrl
         # add a bunch of panes
-        self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
-                         Name("test1").Caption("Pane Caption").Top().MinimizeButton(True))
-
-        self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
-                         Name("test2").Caption("Client Size Reporter").
-                         Bottom().Position(1).CloseButton(True).MaximizeButton(True).
-                         MinimizeButton(True).CaptionVisible(True, left=True))
-
-        self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
-                         Name("test3").Caption("Client Size Reporter").
-                         Bottom().CloseButton(True).MaximizeButton(True).MinimizeButton(True).
-                         CaptionVisible(True, left=True))
-
-        self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
-                         Name("test4").Caption("Pane Caption").Left())
-
-        self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
-                         Name("test5").Caption("No Close Button").Right().CloseButton(False))
-
-        self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
-                         Name("test6").Caption("Client Size Reporter").Right().Row(1).
-                         CloseButton(True).MaximizeButton(True).MinimizeButton(True))
-
-        self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
-                         Name("test7").Caption("Client Size Reporter").Left().Layer(1).
-                         CloseButton(True).MaximizeButton(True).MinimizeButton(True))
+        # self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
+        #                  Name("test1").Caption("Pane Caption").Top().MinimizeButton(True))
+        #
+        # self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
+        #                  Name("test2").Caption("Client Size Reporter").
+        #                  Bottom().Position(1).CloseButton(True).MaximizeButton(True).
+        #                  MinimizeButton(True).CaptionVisible(True, left=True))
+        #
+        # self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
+        #                  Name("test3").Caption("Client Size Reporter").
+        #                  Bottom().CloseButton(True).MaximizeButton(True).MinimizeButton(True).
+        #                  CaptionVisible(True, left=True))
+        #
+        # self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
+        #                  Name("test4").Caption("Pane Caption").Left())
+        #
+        # self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
+        #                  Name("test5").Caption("No Close Button").Right().CloseButton(False))
+        #
+        # self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
+        #                  Name("test6").Caption("Client Size Reporter").Right().Row(1).
+        #                  CloseButton(True).MaximizeButton(True).MinimizeButton(True))
+        #
+        # self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
+        #                  Name("test7").Caption("Client Size Reporter").Left().Layer(1).
+        #                  CloseButton(True).MaximizeButton(True).MinimizeButton(True))
 
         # self.mgr.AddPane(tree_ctrl.create_ctrl(), aui.AuiPaneInfo().Name("test8").Caption("Project").
         #                  Left().Layer(1).Position(1).CloseButton(False).MaximizeButton(True).
         #                  MinimizeButton(True))
 
-        self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
-                         Name("test9").Caption("Min Size 200x100").
-                         BestSize(wx.Size(200, 100)).MinSize(wx.Size(200, 100)).Bottom().Layer(1).
-                         CloseButton(True).MaximizeButton(True).MinimizeButton(True))
+        # self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
+        #                  Name("test9").Caption("Min Size 200x100").
+        #                  BestSize(wx.Size(200, 100)).MinSize(wx.Size(200, 100)).Bottom().Layer(1).
+        #                  CloseButton(True).MaximizeButton(True).MinimizeButton(True))
 
-        self.mgr.AddPane(tree_ctrl.create_ctrl(), aui.AuiPaneInfo().
-                         Name("autonotebook").Caption("Auto NB").
-                         Bottom().Layer(1).Position(1).MinimizeButton(True))
+        self.mgr.AddPane(loggers.logger_frame, aui.AuiPaneInfo().
+                         Name("Console").Caption("Console").PaneBorder(False).FloatingSize(wx.Size(*float_size)).
+                         Bottom().Layer(2).Position(1).Floatable(True).CloseButton(False).
+                         MaximizeButton(True).MinimizeButton(True))
 
-        wnd10 = text_ctrl.create_ctrl("This pane will prompt the user before hiding.")
-        self.mgr.AddPane(wnd10, aui.AuiPaneInfo().
-                         Name("test10").Caption("Text Pane with Hide Prompt").
-                         Bottom().MinimizeButton(True), target=self.mgr.GetPane("autonotebook"))
+        # wnd10 = text_ctrl.create_ctrl("This pane will prompt the user before hiding.")
+        # self.mgr.AddPane(wnd10, aui.AuiPaneInfo().
+        #                  Name("test10").Caption("Text Pane with Hide Prompt").
+        #                  Bottom().MinimizeButton(True), target=self.mgr.GetPane("Console"))
 
-        self.mgr.AddPane(tree_ctrl.create_ctrl(), aui.AuiPaneInfo().
-                         Name("thirdauto").Caption("A Third Auto-NB Pane").
-                         Bottom().CloseButton(False).MaximizeButton(True).MinimizeButton(True),
-                         target=self.mgr.GetPane("autonotebook"))
+        # self.mgr.AddPane(tree_ctrl.create_ctrl(), aui.AuiPaneInfo().
+        #                  Name("thirdauto").Caption("A Third Auto-NB Pane").
+        #                  Bottom().CloseButton(False).MaximizeButton(True).MinimizeButton(True),
+        #                  target=self.mgr.GetPane("Console"))
 
-        self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
-                         Name("test11").Caption("Fixed Pane").
-                         Bottom().Layer(1).Position(2).Fixed().MinimizeButton(True))
+        # self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().
+        #                  Name("test11").Caption("Fixed Pane").
+        #                  Bottom().Layer(1).Position(2).Fixed().MinimizeButton(True))
 
         # create some center panes
-        self.mgr.AddPane(grid_ctrl.create_ctrl(), aui.AuiPaneInfo().Name("grid_content").
-                         CenterPane().Hide().MinimizeButton(True))
+        # self.mgr.AddPane(grid_ctrl.create_ctrl(), aui.AuiPaneInfo().Name("grid_content").
+        #                  CenterPane().Hide().MinimizeButton(True))
+        #
+        # self.mgr.AddPane(tree_ctrl.create_ctrl(), aui.AuiPaneInfo().Name("tree_content").
+        #                  CenterPane().Hide().MinimizeButton(True))
+        #
+        # self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().Name("sizereport_content").
+        #                  CenterPane().Hide().MinimizeButton(True))
 
-        self.mgr.AddPane(tree_ctrl.create_ctrl(), aui.AuiPaneInfo().Name("tree_content").
-                         CenterPane().Hide().MinimizeButton(True))
+        # self.mgr.AddPane(text_ctrl.create_ctrl(), aui.AuiPaneInfo().Name("text_content").
+        #                  CenterPane().Hide().MinimizeButton(True))
 
-        self.mgr.AddPane(size_reporter.create_ctrl(), aui.AuiPaneInfo().Name("sizereport_content").
-                         CenterPane().Hide().MinimizeButton(True))
-
-        self.mgr.AddPane(text_ctrl.create_ctrl(), aui.AuiPaneInfo().Name("text_content").
-                         CenterPane().Hide().MinimizeButton(True))
-
-        self.mgr.AddPane(html_ctrl.create_ctrl(), aui.AuiPaneInfo().Name("html_content").
-                         CenterPane().Hide().MinimizeButton(True))
+        # self.mgr.AddPane(html_ctrl.create_ctrl(), aui.AuiPaneInfo().Name("html_content").
+        #                  CenterPane().Hide().MinimizeButton(True))
 
         self.mgr.AddPane(notebook_ctrl.create_ctrl(), aui.AuiPaneInfo().Name("notebook_content").
-                         CenterPane().PaneBorder(False))
+                         CenterPane().PaneBorder(False).
+                         CloseButton(True).MaximizeButton(True).MinimizeButton(True).Movable(True).Floatable(True).
+                         FloatingSize(wx.Size(*float_size)))
 
         # Show how to add a control inside a tab
         notebook = self.mgr.GetPane("notebook_content").window
@@ -182,7 +188,7 @@ class PaneManager:
 
     def request_menu(self) -> None:
         self.collect_panes()
-        self.build_request_menu()
+        # self.build_request_menu()
 
     def collect_panes(self):
         pane: aui.AuiPaneInfo
@@ -190,7 +196,7 @@ class PaneManager:
         for pane in self.mgr.GetAllPanes():
             if not pane.IsToolbar() and pane.caption and pane.name:
                 panes.append(pane)
-        ref_ids: list[wx.WindowIDRef] = wx.NewIdRef(len(panes))
+        ref_ids: list[wx.WindowIDRef] = [wx.NewIdRef(len(panes))] if len(panes) <= 1 else wx.NewIdRef(len(panes))
         ref_id: wx.WindowIDRef
         self.req_pane_ids = {}
         for ref_id, pane in zip(ref_ids, panes):
@@ -211,9 +217,9 @@ class PaneManager:
     def bind_menu(self):
         mb_items: dict = self.mb_items
         menu_refid: wx.WindowIDRef
-        ctrl_key: str
-        for ctrl_key in content_ctrls.values():
-            self.frame.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=self.mb_items[ctrl_key]["id"])
+        # ctrl_key: str
+        # for ctrl_key in content_ctrls.values():
+        #     self.frame.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=self.mb_items[ctrl_key]["id"])
         self.frame.Bind(aui.EVT_AUI_PANE_CLOSE, self.OnPaneClose)
         self.frame.Bind(wx.EVT_MENU, self.OnVetoTree, id=self.mb_items["VetoTree"]["id"])
         self.frame.Bind(wx.EVT_MENU, self.OnVetoText, id=self.mb_items["VetoText"]["id"])
@@ -221,8 +227,8 @@ class PaneManager:
         self.frame.Bind(aui.EVT_AUI_PANE_FLOATED, self.OnFloatDock)
         self.frame.Bind(aui.EVT_AUI_PANE_DOCKING, self.OnFloatDock)
         self.frame.Bind(aui.EVT_AUI_PANE_DOCKED, self.OnFloatDock)
-        for menu_refid in self.flags:
-            self.frame.Bind(wx.EVT_MENU, self.OnMinimizeModeFlag, menu_refid)
+        # for menu_refid in self.flags:
+        #     self.frame.Bind(wx.EVT_MENU, self.OnMinimizeModeFlag, menu_refid)
         self.frame.Bind(wx.EVT_MENU, self.OnMinimizeModeFlag, id=mb_items["MinimizeCaptHide"]["id"])
         self.frame.Bind(wx.EVT_MENU, self.OnSetIconsOnPanes, id=mb_items["PaneIcons"]["id"])
         self.frame.Bind(wx.EVT_MENU, self.OnTransparentPane, id=mb_items["TransparentPane"]["id"])
@@ -235,21 +241,21 @@ class PaneManager:
         self.frame.Bind(wx.EVT_MENU, self.OnSwitchPane, id=mb_items["SwitchPane"]["id"])
 
     def default_layout(self):
-        all_panes: list[aui.AuiPaneInfo] = self.mgr.GetAllPanes()
-        pane: aui.AuiPaneInfo
-        for pane in all_panes:
-            if not pane.IsToolbar():
-                pane.Hide()
+        # all_panes: list[aui.AuiPaneInfo] = self.mgr.GetAllPanes()
+        # pane: aui.AuiPaneInfo
+        # for pane in all_panes:
+        #     if not pane.IsToolbar():
+        #         pane.Hide()
 
-        self.mgr.GetPane("tb1").Hide()
-        self.mgr.GetPane("tb7").Hide()
+        # self.mgr.GetPane("tb1").Hide()
+        # self.mgr.GetPane("tb7").Hide()
 
-        self.mgr.GetPane("test8").Show().Left().Layer(0).Row(0).Position(0)
-        self.mgr.GetPane(f"__notebook_{self.mgr.GetPane('test10').notebook_id}"
-                         ).Show().Bottom().Layer(0).Row(0).Position(0)
-        self.mgr.GetPane("autonotebook").Show()
-        self.mgr.GetPane("thirdauto").Show()
-        self.mgr.GetPane("test10").Show()
+        # self.mgr.GetPane("test8").Show().Left().Layer(0).Row(0).Position(0)
+        # self.mgr.GetPane(f"__notebook_{self.mgr.GetPane('test10').notebook_id}"
+        #                  ).Show().Bottom().Layer(0).Row(0).Position(0)
+        self.mgr.GetPane("Console").Show()
+        # self.mgr.GetPane("thirdauto").Show()
+        # self.mgr.GetPane("test10").Show()
         self.mgr.GetPane("notebook_content").Show()
         self.mgr.Update()
 
@@ -288,6 +294,7 @@ class PaneManager:
         self.veto_text = event.IsChecked()
 
     def OnFloatDock(self, event: aui.AuiManagerEvent) -> None:
+        print("--------------------")
         event_type = event.GetEventType()
         if event_type == aui.wxEVT_AUI_PANE_FLOATING:
             if event.pane.name == "test8" and self.veto_tree:
@@ -469,6 +476,7 @@ class PaneManager:
         # Add the main windows and toolbars, in two separate columns
         # We'll use the item 'id' to store the notebook selection, or -1 if not a page
         # [("<caption>", "<name>", <idx>, <bitmap>, <window>)]
+        print(222222222)
         TSwitcherPane = tuple[str, str, int, wx.Bitmap, wx.Window]
         spane: TSwitcherPane
         main_windows: list[TSwitcherPane] = []

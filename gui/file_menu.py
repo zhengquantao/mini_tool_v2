@@ -1,11 +1,12 @@
+import json
 import os
-import random
 import shutil
 
 import wx
 import wx.aui
 import wx.lib.agw.aui as aui
 
+from common.common import read_file, new_app
 from gui.controls import SizeReportCtrl, TextCtrl, TreeCtrl, HTMLCtrl, GridCtrl
 from gui.aui_notebook import Notebook
 from gui.main_menu import MainMenu
@@ -13,6 +14,9 @@ from gui.progress import ProgressGauge
 
 
 # noinspection PyPep8Naming
+from settings.settings import opening_dict
+
+
 class FileManager:
     """Creates default panes."""
 
@@ -41,17 +45,16 @@ class FileManager:
     mb_items: dict                       # menubar.items
     item_ids: dict[wx.WindowIDRef, str]  # menubar.item_ids
 
-    init: bool = False
-
     def __init__(self, frame: wx.Frame, mgr: aui.AuiManager, menubar: MainMenu, html_ctrl: HTMLCtrl,
-                 text_ctrl: TextCtrl, tree_ctrl: TreeCtrl, grid_ctrl: GridCtrl,
-                 size_reporter: SizeReportCtrl) -> None:
+                 text_ctrl: TextCtrl, tree_ctrl: TreeCtrl, grid_ctrl: GridCtrl, notebook_ctrl: Notebook,
+                 size_reporter: SizeReportCtrl, project_path=None) -> None:
         self.frame = frame
         self.mgr = mgr
         self.html_ctrl = html_ctrl
         self.text_ctrl = text_ctrl
         self.tree_ctrl = tree_ctrl
         self.grid_ctrl = grid_ctrl
+        self.notebook_ctrl = notebook_ctrl
         self.size_reporter = size_reporter
 
         # self.timer = wx.Timer(frame)
@@ -63,7 +66,7 @@ class FileManager:
         # self.init_maps()
         # self.init_ui_state()
         self.bind_menu()
-        self.load_recent_project()
+        self.load_recent_project(project_path)
 
     # def __del__(self):
     #     self.timer.Stop()
@@ -81,19 +84,28 @@ class FileManager:
         self.frame.Bind(wx.EVT_MENU_RANGE, self.RecentProject, id=wx.ID_FILE1, id2=wx.ID_FILE9)
 
     def open_project(self, path: str):
-
+        pid = os.getpid()
+        print(f"当前进程号：{pid}")
+        opening_dict[pid] = {"path": path, "records": {}}
         self.mgr.AddPane(self.tree_ctrl.create_ctrl(path), aui.AuiPaneInfo().Name("ProjectTree").Caption(path).
-                         Left().Layer(1).Position(1).CloseButton(self.init or False).MaximizeButton(True).
-                         MinimizeButton(True).Floatable(False))
-
+                         Left().Layer(1).Position(1).CloseButton(False).MaximizeButton(True).
+                         MinimizeButton(True).Floatable(False).Dockable(False))
         self.mgr.Update()
-        if not self.init:
-            self.init = True
 
-        # TODO: openfile
-        pass
+        data = read_file(os.path.join(path, ".mini"))
+        if not data:
+            return
+        try:
+            history_obj = json.loads(data)
+            for file_path in history_obj.get("file_path", []):
+                self.tree_ctrl.on_open("", file_path)
+        except:
+            pass
 
-    def load_recent_project(self):
+    def load_recent_project(self, path):
+        if path:
+            self.open_project(path)
+            return
         recent_project_path = self.get_recent_project_path()
         if recent_project_path:
             self.open_project(recent_project_path)
@@ -123,7 +135,9 @@ class FileManager:
         print(f"Chosen directory: {path}")
         os.makedirs(path)
         self.menubar.add_history(path)
-        self.open_project(path)
+
+        new_app(path)
+        # self.open_project(path)
 
     def OnOpenProject(self, event: wx.CommandEvent) -> None:
         select_dialog = wx.DirDialog(self.frame, "请选择要打开的项目：", style=wx.DD_DEFAULT_STYLE)
@@ -133,7 +147,8 @@ class FileManager:
         path = select_dialog.GetPath()
         print(f"Chosen directory: {path}")
         self.menubar.add_history(path)
-        self.open_project(path)
+        new_app(path)
+        # self.open_project(path)
 
     def OnOpenFile(self, event: wx.CommandEvent) -> None:
         select_dialog = wx.FileDialog(self.frame, "请选择要打开的文件：", style=wx.DD_DEFAULT_STYLE)
@@ -158,8 +173,10 @@ class FileManager:
         file_num = event.GetId() - wx.ID_FILE1
         path = self.menubar.filehistory.GetHistoryFile(file_num)
         self.menubar.filehistory.AddFileToHistory(path)
+        self.menubar.add_history(path)
         # reopen project
-        self.open_project(path)
+        new_app(path)
+        # self.open_project(path)
 
     def OnTimer(self, _event: wx.TimerEvent) -> None:
         try:

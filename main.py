@@ -1,8 +1,15 @@
 import sys
+from multiprocessing import freeze_support, Process
+
 import wx
 import wx.lib.agw.aui as aui
 from aui2 import svg_to_bitmap
 
+from common.common import daemon_app
+from common import loggers
+from html_server import run_server
+from gui.context_menu import PopupMenu
+from gui.toolbars import ToolBarManager
 from settings import settings as cs
 from gui.file_menu import FileManager
 from gui.main_frame import MainFrame
@@ -21,24 +28,24 @@ class MainApp:
     # If subclassing wx.App [class MainApp(wx.App):], remove the next line.
     app: wx.App
 
-    def __init__(self):
+    def __init__(self, project_path=None):
         # If subclassing wx.App, uncomment the next line.
         # super().__init__(redirect=False)
         # If subclassing wx.App, remove the next two lines.
         self.app = wx.App(False)
-        self.OnInit()
+        self.OnInit(project_path)
 
     # If subclassing wx.App, remove this method.
     def MainLoop(self):
         self.app.MainLoop()
 
-    def OnInit(self):
+    def OnInit(self, project_path=None):
         # If subclassing wx.App, this methods is envoked automatically by the framework.
         mgr: aui.AuiManager = aui.AuiManager()
 
         # If MainFrame subclasses wx.Frame and MainFrame().frame is not set to self,
         # remove the second line and rename main_frame -> frame.
-        main_frame: MainFrame = MainFrame(None, wx.ID_ANY, cs.main_title, size=wx.Size(800, 600))
+        main_frame: MainFrame = MainFrame(None, wx.ID_ANY, cs.main_title, size=wx.Size(*cs.window_size))
 
         # set icon
         icon = wx.Icon()
@@ -50,9 +57,9 @@ class MainApp:
 
         menubar = MainMenu(frame, mgr)
         # 注释侧边栏
-        # tbman: ToolBarManager = ToolBarManager(frame, mgr)
-        # popup: PopupMenu = PopupMenu(frame)
-        # popup.bind_DropDownToolbarItem(tbman.items["DropDownToolbarItem"]["id"])
+        tbman: ToolBarManager = ToolBarManager(frame, mgr)
+        popup: PopupMenu = PopupMenu(frame)
+        popup.bind_DropDownToolbarItem(tbman.items["DropDownToolbarItem"]["id"])
 
         ID_SizeReportCtrl: wx.WindowIDRef = menubar.items["CreateSizeReport"]["id"]
         size_reporter: SizeReportCtrl = SizeReportCtrl(frame, mgr, ID_SizeReportCtrl)
@@ -66,6 +73,13 @@ class MainApp:
         notebook_ctrl: Notebook = Notebook(frame, mgr, ID_NotebookCtrl, html_ctrl)
         ID_TreeCtrl: wx.WindowIDRef = menubar.items["CreateTree"]["id"]
         tree_ctrl: TreeCtrl = TreeCtrl(frame, mgr, ID_TreeCtrl, notebook_ctrl, html_ctrl, grid_ctrl)
+
+        # init log
+        logger_frames = text_ctrl.create_ctrl()
+        loggers.logger_frame = logger_frames
+        loggers.logger = loggers.init_log(logger_frames)
+        loggers.logger.info("正在运行中....")
+
         _notebook_options: NotebookOptions = NotebookOptions(
             frame, mgr, notebook_ctrl, menubar.items, menubar.item_ids)
         _manager_options: ManagerOptions = ManagerOptions(
@@ -87,7 +101,7 @@ class MainApp:
 
         file_manager: FileManager = FileManager(
             frame, mgr, menubar, html_ctrl, text_ctrl,
-            tree_ctrl, grid_ctrl, size_reporter)
+            tree_ctrl, grid_ctrl, notebook_ctrl, size_reporter, project_path)
         file_manager.bind_menu()
 
         main_frame.init_man(mgr)
@@ -96,7 +110,16 @@ class MainApp:
         return True
 
 
+def main(project_path=None):
+    web = Process(target=run_server)
+    web.start()
+
+    app = MainApp(project_path)
+    app.MainLoop()
+    daemon_app()
+
+
 if __name__ == "__main__":
     sys.path.insert(0, '.')
-    app = MainApp()
-    app.MainLoop()
+    freeze_support()
+    main()
