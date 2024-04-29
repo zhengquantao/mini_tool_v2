@@ -38,12 +38,12 @@ class ManagerOptions:
             menu_item.Check()
 
     def bind_menu(self):
-        # mb_items: dict = self.mb_items
-        # menu_refid: wx.WindowIDRef
-        # for menu_refid in self.flags:
-        #     self.frame.Bind(wx.EVT_MENU, self.OnManagerFlag, menu_refid)
-        # self.frame.Bind(wx.EVT_MENU, self.OnManagerFlag, id=mb_items["StandardGuides"]["id"])
-        # self.frame.Bind(wx.EVT_MENU, self.OnManagerFlag, id=mb_items["NoHint"]["id"])
+        mb_items: dict = self.mb_items
+        menu_refid: wx.WindowIDRef
+        for menu_refid in self.flags:
+            self.frame.Bind(wx.EVT_MENU, self.OnManagerFlag, menu_refid)
+        self.frame.Bind(wx.EVT_MENU, self.OnManagerFlag, id=mb_items["StandardGuides"]["id"])
+        self.frame.Bind(wx.EVT_MENU, self.OnManagerFlag, id=mb_items["NoHint"]["id"])
         pass
 
     def OnManagerFlag(self, event: wx.CommandEvent) -> None:

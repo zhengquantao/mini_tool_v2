@@ -11,6 +11,9 @@ import wx.lib.agw.aui as aui
 
 
 # noinspection PyPep8Naming
+from common.common import save_mini_file
+
+
 class MainFrame:
     initialized: bool = False
     mgr: aui.AuiManager
@@ -42,11 +45,9 @@ class MainFrame:
     # If subclassing wx.Frame, uncomment the following lines and
     # remove .frame, if self.frame is not set to self
     def OnExit(self, _event: wx.CloseEvent) -> None:
-        for pane in self.mgr.GetAllPanes():
-            if isinstance(pane.window, aui.AuiNotebook):
-                print(pane.window.GetPageCount())
-                for i in range(pane.window.GetPageCount()):
-                    print(pane.window.GetPage(i).GetName())
-                    print(pane.window.GetPageInfo(i).caption)
+        save_mini_file(self.mgr)
+        dlg = wx.MessageDialog(self.frame, f"你确认要退出吗？", "警告", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING)
+        if dlg.ShowModal() != wx.ID_YES:
+            return
         self.frame.Destroy()
         # self.frame.Close(True)

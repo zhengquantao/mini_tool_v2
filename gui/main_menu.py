@@ -7,6 +7,7 @@ dictionary for both top-level menu labels and menu items.
 import wx
 import wx.lib.agw.aui as aui
 
+from common.common import save_mini_file
 from settings import settings as cs
 from gui.main_menu_res import main_menu_items
 
@@ -106,6 +107,8 @@ class MainMenu:
         self.frame.Bind(wx.EVT_MENU, self.OnExit, id=wx.ID_EXIT)
         self.items["Help"].Append(wx.ID_HELP)
         self.frame.Bind(wx.EVT_MENU, self.OnHelp, id=wx.ID_HELP)
+        self.items["Help"].Append(wx.ID_ANY, "Contact Us")
+        self.frame.Bind(wx.EVT_MENU, self.OnContact, id=wx.ID_ANY)
         self.items["Help"].Append(wx.ID_ABOUT)
         self.frame.Bind(wx.EVT_MENU, self.OnAbout, id=wx.ID_ABOUT)
 
@@ -137,5 +140,16 @@ class MainMenu:
         dlg.ShowModal()
         dlg.Destroy()
 
+    def OnContact(self, _event: wx.CommandEvent):
+        msg = "Website: https://www.baidu.com \nPhone :110 3423 3242\n Email: 123234224324@qq.com \n Address: 中国广东省深圳市南山区前海街道50034号4楼"
+        dlg = wx.MessageDialog(self.frame, msg, "Contact Us", wx.OK | wx.ICON_INFORMATION)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def OnExit(self, _event: wx.CommandEvent) -> None:
+        save_mini_file(self.mgr)
+        dlg = wx.MessageDialog(self.frame, f"你确认要退出吗？", "警告", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING)
+        if dlg.ShowModal() != wx.ID_YES:
+            return
+
         self.frame.Destroy()
