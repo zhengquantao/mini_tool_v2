@@ -22,8 +22,7 @@ def new_app(path):
 
 def daemon_app():
     current_process = psutil.Process()
-
-    while len(current_process.children()) > 2:
+    while len(current_process.children()) > 3:
         time.sleep(3)
 
 

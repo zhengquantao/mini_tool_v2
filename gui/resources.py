@@ -21,47 +21,58 @@ sids = {
 cids = {
     "BackgroundColour": {
         "aui_id": aui.AUI_DOCKART_BACKGROUND_COLOUR,
-        "label": "Background Color:"
+        "label": "Background Color:",
+        "color": "#f0f0f0",
     },
     "SashColour": {
         "aui_id": aui.AUI_DOCKART_SASH_COLOUR,
-        "label": "Sash Color:"
+        "label": "Sash Color:",
+        "color": "#f0f0f0",
     },
     "InactiveCaptionColour": {
         "aui_id": aui.AUI_DOCKART_INACTIVE_CAPTION_COLOUR,
-        "label": "Normal Caption:"
+        "label": "Normal Caption:",
+        "color": "#c5c5c5",
     },
     "InactiveCaptionGradientColour": {
         "aui_id": aui.AUI_DOCKART_INACTIVE_CAPTION_GRADIENT_COLOUR,
-        "label": "Normal Caption Gradient:"
+        "label": "Normal Caption Gradient:",
+        "color": "#c5c5c5",
     },
     "InactiveCaptionTextColour": {
         "aui_id": aui.AUI_DOCKART_INACTIVE_CAPTION_TEXT_COLOUR,
-        "label": "Normal Caption Text:"
+        "label": "Normal Caption Text:",
+        "color": "#c5c5c5",
     },
     "ActiveCaptionColour": {
         "aui_id": aui.AUI_DOCKART_ACTIVE_CAPTION_COLOUR,
-        "label": "Active Caption:"
+        "label": "Active Caption:",
+        "color": "#f0f0f0",
     },
     "ActiveCaptionGradientColour": {
         "aui_id": aui.AUI_DOCKART_ACTIVE_CAPTION_GRADIENT_COLOUR,
-        "label": "Active Caption Gradient:"
+        "label": "Active Caption Gradient:",
+        "color": "#f0f0f0",
     },
     "ActiveCaptionTextColour": {
         "aui_id": aui.AUI_DOCKART_ACTIVE_CAPTION_TEXT_COLOUR,
-        "label": "Active Caption Text:"
+        "label": "Active Caption Text:",
+        "color": "#f0f0f0",
     },
     "BorderColour": {
         "aui_id": aui.AUI_DOCKART_BORDER_COLOUR,
-        "label": "Border Color:"
+        "label": "Border Color:",
+        "color": "#f0f0f0",
     },
     "GripperColour": {
         "aui_id": aui.AUI_DOCKART_GRIPPER_COLOUR,
-        "label": "Gripper Color:"
+        "label": "Gripper Color:",
+        "color": "#f0f0f0",
     },
     "HintColour": {
         "aui_id": aui.AUI_DOCKART_HINT_WINDOW_COLOUR,
-        "label": "Hint Window Colour:"
+        "label": "Hint Window Colour:",
+        "color": "#f0f0f0",
     },
 }
 

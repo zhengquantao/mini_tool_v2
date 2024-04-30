@@ -55,6 +55,7 @@ class SettingsPanel:
                 panel, ctrl_id, pallet_from_color(wx.BLACK), wx.DefaultPosition, wx.Size(50, 25))
             cids[ctrl_name]["ctrl"] = button
             self.add_basic_box_sizer(button, label)
+            self.art_provider().SetColour(cids[ctrl_name]["aui_id"], cids[ctrl_name]["color"])
             panel.Bind(wx.EVT_BUTTON, self.OnSetColor, id=ctrl_id)
 
         ctrl_id = wx.NewIdRef()
@@ -139,7 +140,7 @@ class SettingsPanel:
         ctrl_id: wx.WindowIDRef = event.GetId()
         ctrl_name = self.cid_ctrls[ctrl_id]
         aui_id = cids[ctrl_name]["aui_id"]
-        print(dlg.GetColourData().GetColour())
+
         self.art_provider().SetColour(aui_id, dlg.GetColourData().GetColour())
         self.update_colors()
         self.mgr.Update()

@@ -112,13 +112,13 @@ class MainApp:
 def run_gui(project_path=None):
     app = MainApp(project_path)
     app.MainLoop()
-    daemon_app()
 
 
 def main():
     web = Process(target=run_server)
     web.start()
     run_gui()
+    daemon_app()
 
 
 if __name__ == "__main__":
