@@ -16,11 +16,15 @@ main_menu_items = {
     "File": {
         "label": "&File",
         "children": {
-            "NewProject": {"label": "New &Project"},
-            "OpenProject": {"label": "Open &Project"},
-            "OpenFile": {"label": "Open &File"},
-            "SaveProject": {"label": "Save &Project"},
+            "NewProject": {"label": "New &Project", "id": wx.ID_NEW},
+            "OpenProject": {"label": "Open &Project", "id": wx.ID_OPEN},
+            "OpenFile": {"label": "Open &File", "id": wx.ID_FILE},
+            "SaveProject": {"label": "Save &Project", "id": wx.ID_SAVE},
         }
+    },
+    "Edit": {
+        "label": "&Edit",
+        "children": {}
     },
     "View": {
         "label": "&View",

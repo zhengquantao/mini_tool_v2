@@ -15,8 +15,8 @@ from settings.settings import opening_dict
 
 def new_app(path):
     from multiprocessing import Process
-    from main import main
-    app = Process(target=main, args=(path,))
+    from main import run_gui
+    app = Process(target=run_gui, args=(path,))
     app.start()
 
 

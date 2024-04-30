@@ -64,11 +64,6 @@ class GridCtrl(metaclass=Singleton):
         # 渲染表格
         self.render_grid(data_df, grid)
 
-        # 创建一个sizer对象
-        # sizer = wx.BoxSizer(wx.VERTICAL)
-        # sizer.Add(grid, 1, wx.EXPAND)
-        # self.frame.SetSizer(sizer)
-
         return grid
 
     def render_grid(self, data: pd.DataFrame(), grid):
@@ -264,7 +259,7 @@ class TreeCtrl(metaclass=Singleton):
         self.tree.PopupMenu(menu)
 
     def on_delete(self, event, path):
-        print(f"Delete clicked, path: {path}")
+        print(f"Delete clicked, file path: {path}")
         dlg = wx.MessageDialog(self.frame, f"你确认要删除文件 {path.split(os.sep)[-1]} 吗？",
                                "刪除文件", wx.OK | wx.ICON_WARNING)
         if dlg.ShowModal() != wx.ID_OK:
@@ -275,7 +270,7 @@ class TreeCtrl(metaclass=Singleton):
         if not os.path.isfile(path):
             return
 
-        loggers.logger.info(f"Open clicked, path: {path}")
+        loggers.logger.info(f"Open clicked, file path: {path}")
         page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE, wx.ART_OTHER, wx.Size(16, 16))
         ctrl = self.notebook_ctrl.notebook_object
         file_name = path.split(os.sep)[-1]
@@ -292,10 +287,10 @@ class TreeCtrl(metaclass=Singleton):
             ctrl.AddPage(self.grid_ctrl.create_ctrl(data_df), file_name, True, page_bmp)
 
         elif any([path.endswith(".png"), path.endswith(".jpg"), path.endswith(".jpeg")]):
-            image = wx.Image(path)
-            size = self.mgr.GetPaneByName("notebook_content").window.GetSize()
-            image = image.Rescale(size[0], size[1])
-            image_ctrl = wx.StaticBitmap(self.frame, wx.ID_ANY, wx.BitmapFromImage(image))
+            image = wx.Bitmap(path)
+            # size = self.mgr.GetPaneByName("notebook_content").window.GetSize()
+            # image = image.Rescale(size[0], size[1])
+            image_ctrl = wx.StaticBitmap(self.frame, wx.ID_ANY, image)
             ctrl.AddPage(image_ctrl, file_name, True, page_bmp)
 
         else:
@@ -307,7 +302,7 @@ class TreeCtrl(metaclass=Singleton):
                          wx.DefaultSize, wx.TE_MULTILINE | wx.NO_BORDER), file_name, True, page_bmp)
 
     def on_rename(self, event, path):
-        print(f"Rename clicked, path: {path}")
+        print(f"Rename clicked, file path: {path}")
         dlg = wx.TextEntryDialog(self.frame, "请输入新文件名:", "文件重命名")
         if dlg.ShowModal() != wx.ID_OK:
             return

@@ -4,6 +4,7 @@ import wx.lib.agw.aui as aui
 
 from typing import TYPE_CHECKING, Type
 
+from settings.resources import overview
 from settings.settings import float_size
 
 if TYPE_CHECKING:
@@ -83,6 +84,14 @@ class Notebook:
 
         page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE,
                                                        wx.ART_OTHER, wx.Size(16, 16))
+
+        page = wx.TextCtrl(ctrl, wx.ID_ANY, overview, wx.DefaultPosition, wx.Size(*float_size),
+                           wx.TE_MULTILINE | wx.NO_BORDER, name='Welcome to MINI-TOOL')
+        page.SetMargins(20)
+        font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
+        page.SetFont(font)
+        ctrl.AddPage(page, "Welcome to MINI-TOOL", False, page_bmp)
+
         file_path = r"D:\project\mini_tool_v2\test.html"
         ctrl.AddPage(self.html_ctrl.create_ctrl(path=file_path), "Welcome to AUI", True, page_bmp)
 
@@ -103,34 +112,29 @@ class Notebook:
         # flex.AddGrowableCol(1)
         # panel.SetSizer(flex)
         # ctrl.AddPage(panel, "Disabled", False, page_bmp)
-        page = wx.TextCtrl(ctrl, wx.ID_ANY, "Some text Welcome to MINI-TOOL", wx.DefaultPosition, wx.Size(*float_size),
-                    wx.TE_MULTILINE | wx.NO_BORDER, name='Welcome to MINI-TOOL')
-        page.SetMargins(20)
-        font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
-        page.SetFont(font)
-        ctrl.AddPage(page, "Welcome to MINI-TOOL", False, page_bmp)
-        ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition,
-                                 wx.Size(*float_size), wx.TE_MULTILINE | wx.NO_BORDER), "Blue Tab")
-        ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition,
-                                 wx.Size(*float_size), wx.TE_MULTILINE | wx.NO_BORDER), "A Control")
-        ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition,
-                                 wx.Size(*float_size), wx.TE_MULTILINE | wx.NO_BORDER), "wxTextCtrl 4")
-        ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition,
-                                 wx.DefaultSize, wx.TE_MULTILINE | wx.NO_BORDER), "wxTextCtrl 5")
-        ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition,
-                                 wx.Size(*float_size), wx.TE_MULTILINE | wx.NO_BORDER), "wxTextCtrl 6")
-        ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition, wx.Size(*float_size),
-                                 wx.TE_MULTILINE | wx.NO_BORDER), "wxTextCtrl 7 (longer title)")
-        ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition,
-                                 wx.Size(*float_size), wx.TE_MULTILINE | wx.NO_BORDER), "wxTextCtrl 8")
+
+        # ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition,
+        #                          wx.Size(*float_size), wx.TE_MULTILINE | wx.NO_BORDER), "Blue Tab")
+        # ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition,
+        #                          wx.Size(*float_size), wx.TE_MULTILINE | wx.NO_BORDER), "A Control")
+        # ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition,
+        #                          wx.Size(*float_size), wx.TE_MULTILINE | wx.NO_BORDER), "wxTextCtrl 4")
+        # ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition,
+        #                          wx.DefaultSize, wx.TE_MULTILINE | wx.NO_BORDER), "wxTextCtrl 5")
+        # ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition,
+        #                          wx.Size(*float_size), wx.TE_MULTILINE | wx.NO_BORDER), "wxTextCtrl 6")
+        # ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition, wx.Size(*float_size),
+        #                          wx.TE_MULTILINE | wx.NO_BORDER), "wxTextCtrl 7 (longer title)")
+        # ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, "Some more text", wx.DefaultPosition,
+        #                          wx.Size(*float_size), wx.TE_MULTILINE | wx.NO_BORDER), "wxTextCtrl 8")
 
         # Demonstrate how to disable a tab
         if self.__class__.counter == 1:
             ctrl.EnableTab(1, True)
 
-        ctrl.SetPageTextColour(2, wx.RED)
-        ctrl.SetPageTextColour(3, wx.BLUE)
-        ctrl.SetRenamable(2, True)
+        # ctrl.SetPageTextColour(2, wx.RED)
+        # ctrl.SetPageTextColour(1, wx.BLUE)
+        # ctrl.SetRenamable(1, True)
 
         self.notebook_object = ctrl
         return ctrl
@@ -141,7 +145,8 @@ class Notebook:
         self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).
                          Float().FloatingPosition(self.start_position()).
                          CloseButton(True).MaximizeButton(True).MinimizeButton(True).Movable(True).Floatable(True).
-                         BestSize(*float_size))
+                         BestSize(*float_size).BestSize(*float_size).MaxSize(*float_size).
+                         MaxSize(*float_size))
 
         self.mgr.Update()
         ctrl.Refresh()

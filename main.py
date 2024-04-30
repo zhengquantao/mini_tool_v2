@@ -102,7 +102,6 @@ class MainApp:
         file_manager: FileManager = FileManager(
             frame, mgr, menubar, html_ctrl, text_ctrl,
             tree_ctrl, grid_ctrl, notebook_ctrl, size_reporter, project_path)
-        file_manager.bind_menu()
 
         main_frame.init_man(mgr)
         frame.CenterOnScreen()
@@ -110,13 +109,16 @@ class MainApp:
         return True
 
 
-def main(project_path=None):
-    web = Process(target=run_server)
-    web.start()
-
+def run_gui(project_path=None):
     app = MainApp(project_path)
     app.MainLoop()
     daemon_app()
+
+
+def main():
+    web = Process(target=run_server)
+    web.start()
+    run_gui()
 
 
 if __name__ == "__main__":

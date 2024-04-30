@@ -1,43 +1,35 @@
 import wx
-import logging
-import threading
 
 
-class LogFrame(wx.Frame):
-    def __init__(self):
-        wx.Frame.__init__(self, None, title="实时日志显示")
-        self.log_ctrl = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY)
-        self.log_ctrl.Bind(wx.EVT_SIZE, self.OnResize)
-        self.Show()
+class Mywin(wx.Frame):
+    def __init__(self, parent, title):
+        super(Mywin, self).__init__(parent, title=title, size=(250, 150))
 
-    def OnResize(self, event):
-        self.log_ctrl.SetSize(event.GetSize())
+        panel = wx.Panel(self)
+        box = wx.BoxSizer(wx.VERTICAL)
 
+        self.text = wx.TextCtrl(panel, style=wx.TE_MULTILINE)
+        box.Add(self.text, 1, flag=wx.EXPAND | wx.ALL, border=20)
 
-class RealTimeLogHandler(logging.Handler):
-    def __init__(self, text_ctrl):
-        logging.Handler.__init__(self)
-        self.text_ctrl = text_ctrl
+        cpy = wx.Button(panel, -1, "复制")
+        cpy.Bind(wx.EVT_BUTTON, self.OnCopy)
+        box.Add(cpy, 0, flag=wx.ALIGN_CENTER | wx.ALL, border=10)
 
-    def emit(self, record):
-        message = self.format(record)
-        # 安全地在UI主线程中更新TextCtrl
-        wx.CallAfter(self.text_ctrl.AppendText, message + '\n')
+        pst = wx.Button(panel, -1, "粘贴")
+        pst.Bind(wx.EVT_BUTTON, self.OnPaste)
+        box.Add(pst, 0, flag=wx.ALIGN_CENTER | wx.ALL, border=10)
 
+        panel.SetSizer(box)
+        self.Center()
+        self.Show(True)
 
-def main():
-    app = wx.App(False)
-    frame = LogFrame()
-    log_handler = RealTimeLogHandler(frame.log_ctrl)
-    logger = logging.getLogger()
-    logger.addHandler(log_handler)
-    logger.setLevel(logging.DEBUG)
+    def OnCopy(self, event):
+        self.text.Copy()
 
-    # 测试日志输出
-    threading.Thread(target=lambda: logger.error('这是一条错误日志')).start()
-
-    app.MainLoop()
+    def OnPaste(self, event):
+        self.text.Paste()
 
 
-if __name__ == '__main__':
-    main()
+app = wx.App()
+Mywin(None, '复制粘贴示例')
+app.MainLoop()

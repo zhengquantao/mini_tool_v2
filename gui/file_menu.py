@@ -6,7 +6,8 @@ import wx
 import wx.aui
 import wx.lib.agw.aui as aui
 
-from common.common import read_file, new_app
+from settings import settings as cs
+from common.common import read_file, new_app, save_mini_file
 from gui.controls import SizeReportCtrl, TextCtrl, TreeCtrl, HTMLCtrl, GridCtrl
 from gui.aui_notebook import Notebook
 from gui.main_menu import MainMenu
@@ -75,6 +76,8 @@ class FileManager:
         mb_items: dict = self.mb_items
         menu_refid: wx.WindowIDRef
         ctrl_key: str
+        self.file_history()
+        mb_items["File"].Append(wx.ID_EXIT, "E&xit\tAlt-F4")
 
         # File
         self.frame.Bind(wx.EVT_MENU, self.OnNewProject, id=mb_items["NewProject"]["id"])
@@ -82,14 +85,31 @@ class FileManager:
         self.frame.Bind(wx.EVT_MENU, self.OnOpenFile, id=mb_items["OpenFile"]["id"])
         self.frame.Bind(wx.EVT_MENU, self.OnSaveProject, id=mb_items["SaveProject"]["id"])
         self.frame.Bind(wx.EVT_MENU_RANGE, self.RecentProject, id=wx.ID_FILE1, id2=wx.ID_FILE9)
+        self.frame.Bind(wx.EVT_MENU, self.OnExit, id=wx.ID_EXIT)
+
+    def file_history(self):
+        # 创建 FileHistory 对象
+        self.filehistory = wx.FileHistory(8)
+        self.config = wx.Config(cs.main_title, style=wx.CONFIG_USE_LOCAL_FILE)
+        self.filehistory.Load(self.config)
+        recent = wx.Menu()
+        self.filehistory.UseMenu(recent)
+        self.filehistory.AddFilesToMenu()
+        self.mb_items["File"].Append(wx.ID_ANY, '&Recent Project', recent)
+
+    def add_history(self, path: str):
+        # 将项目路径添加到 FileHistory 中
+        self.filehistory.AddFileToHistory(path)
+        self.filehistory.Save(self.config)
+        self.config.Flush()
 
     def open_project(self, path: str):
         pid = os.getpid()
         print(f"当前进程号：{pid}")
         opening_dict[pid] = {"path": path, "records": {}}
         self.mgr.AddPane(self.tree_ctrl.create_ctrl(path), aui.AuiPaneInfo().Name("ProjectTree").Caption(path).
-                         Left().Layer(1).Position(1).CloseButton(False).MaximizeButton(True).
-                         MinimizeButton(True).Floatable(False).Dockable(False))
+                         Left().CloseButton(False).MaximizeButton(True).
+                         MinimizeButton(True).Floatable(True))
         self.mgr.Update()
 
         data = read_file(os.path.join(path, ".mini"))
@@ -114,11 +134,11 @@ class FileManager:
 
     def get_recent_project_path(self) -> str:
 
-        if not self.menubar.filehistory.GetCount():
+        if not self.filehistory.GetCount():
             self.project_path = os.getcwd()
             return self.project_path
 
-        self.project_path = self.menubar.filehistory.GetHistoryFile(0)
+        self.project_path = self.filehistory.GetHistoryFile(0)
         return self.project_path
 
     def OnNewProject(self, event: wx.CommandEvent) -> None:
@@ -134,7 +154,7 @@ class FileManager:
         path = os.path.join(select_dialog.GetPath(), directory_name)
         print(f"Chosen directory: {path}")
         os.makedirs(path)
-        self.menubar.add_history(path)
+        self.add_history(path)
 
         new_app(path)
         # self.open_project(path)
@@ -146,7 +166,7 @@ class FileManager:
 
         path = select_dialog.GetPath()
         print(f"Chosen directory: {path}")
-        self.menubar.add_history(path)
+        self.add_history(path)
         new_app(path)
         # self.open_project(path)
 
@@ -171,12 +191,20 @@ class FileManager:
 
     def RecentProject(self, event: wx.CommandEvent) -> None:
         file_num = event.GetId() - wx.ID_FILE1
-        path = self.menubar.filehistory.GetHistoryFile(file_num)
-        self.menubar.filehistory.AddFileToHistory(path)
-        self.menubar.add_history(path)
+        path = self.filehistory.GetHistoryFile(file_num)
+        self.filehistory.AddFileToHistory(path)
+        self.add_history(path)
         # reopen project
         new_app(path)
         # self.open_project(path)
+
+    def OnExit(self, _event: wx.CommandEvent) -> None:
+        save_mini_file(self.mgr)
+        dlg = wx.MessageDialog(self.frame, f"你确认要退出吗？", "警告", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING)
+        if dlg.ShowModal() != wx.ID_YES:
+            return
+
+        self.frame.Destroy()
 
     def OnTimer(self, _event: wx.TimerEvent) -> None:
         try:

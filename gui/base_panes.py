@@ -67,10 +67,11 @@ class PaneManager:
         self.grid_ctrl = grid_ctrl
         self.size_reporter = size_reporter
         self.notebook_ctrl = notebook_ctrl
+        self.tmp_text = None
 
-        self.timer = wx.Timer(frame)
-        frame.Bind(wx.EVT_TIMER, self.OnTimer)
-        self.timer.Start(100)
+        # self.timer = wx.Timer(frame)
+        # frame.Bind(wx.EVT_TIMER, self.OnTimer)
+        # self.timer.Start(100)
 
         self.mb_items = mb_items
         self.item_ids = item_ids
@@ -78,8 +79,8 @@ class PaneManager:
         self.init_ui_state()
         self.bind_menu()
 
-    def __del__(self):
-        self.timer.Stop()
+    # def __del__(self):
+    #     self.timer.Stop()
 
     def init_maps(self):
         """Generate mappings for source identification in event handlers."""
@@ -140,7 +141,7 @@ class PaneManager:
 
         self.mgr.AddPane(loggers.logger_frame, aui.AuiPaneInfo().
                          Name("Console").Caption("Console").PaneBorder(False).FloatingSize(wx.Size(*float_size)).
-                         Bottom().Layer(2).Position(1).Floatable(True).CloseButton(False).
+                         Bottom().Floatable(True).CloseButton(False).
                          MaximizeButton(True).MinimizeButton(True))
 
         # wnd10 = text_ctrl.create_ctrl("This pane will prompt the user before hiding.")
@@ -175,13 +176,14 @@ class PaneManager:
 
         self.mgr.AddPane(notebook_ctrl.create_ctrl(), aui.AuiPaneInfo().Name("notebook_content").
                          CenterPane().PaneBorder(False).
-                         CloseButton(True).MaximizeButton(True).MinimizeButton(True).Movable(True).Floatable(True).
-                         FloatingSize(wx.Size(*float_size)))
+                         CloseButton(True).MaximizeButton(True).MinimizeButton(True).Movable(True).
+                         FloatingSize(wx.Size(*float_size)).BestSize(*float_size).MaxSize(*float_size).
+                         MaxSize(*float_size))
 
         # Show how to add a control inside a tab
         notebook = self.mgr.GetPane("notebook_content").window
-        self.gauge = ProgressGauge(notebook, size=wx.Size(55, 15))
-        notebook.AddControlToPage(4, self.gauge)
+        # self.gauge = ProgressGauge(notebook, size=wx.Size(55, 15))
+        # notebook.AddControlToPage(4, self.gauge)
 
         notebook_ctrl.main_notebook = notebook
         self.mgr.Update()
@@ -218,8 +220,8 @@ class PaneManager:
         mb_items: dict = self.mb_items
         menu_refid: wx.WindowIDRef
         # ctrl_key: str
-        # for ctrl_key in content_ctrls.values():
-        #     self.frame.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=self.mb_items[ctrl_key]["id"])
+        for ctrl_key in content_ctrls.values():
+            self.frame.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=self.mb_items[ctrl_key]["id"])
         self.frame.Bind(aui.EVT_AUI_PANE_CLOSE, self.OnPaneClose)
         self.frame.Bind(wx.EVT_MENU, self.OnVetoTree, id=self.mb_items["VetoTree"]["id"])
         self.frame.Bind(wx.EVT_MENU, self.OnVetoText, id=self.mb_items["VetoText"]["id"])
@@ -227,8 +229,8 @@ class PaneManager:
         self.frame.Bind(aui.EVT_AUI_PANE_FLOATED, self.OnFloatDock)
         self.frame.Bind(aui.EVT_AUI_PANE_DOCKING, self.OnFloatDock)
         self.frame.Bind(aui.EVT_AUI_PANE_DOCKED, self.OnFloatDock)
-        # for menu_refid in self.flags:
-        #     self.frame.Bind(wx.EVT_MENU, self.OnMinimizeModeFlag, menu_refid)
+        for menu_refid in self.flags:
+            self.frame.Bind(wx.EVT_MENU, self.OnMinimizeModeFlag, menu_refid)
         self.frame.Bind(wx.EVT_MENU, self.OnMinimizeModeFlag, id=mb_items["MinimizeCaptHide"]["id"])
         self.frame.Bind(wx.EVT_MENU, self.OnSetIconsOnPanes, id=mb_items["PaneIcons"]["id"])
         self.frame.Bind(wx.EVT_MENU, self.OnTransparentPane, id=mb_items["TransparentPane"]["id"])
@@ -239,6 +241,12 @@ class PaneManager:
         self.frame.Bind(wx.EVT_MENU, self.OnFlyOut, id=mb_items["FlyOut"]["id"])
         self.frame.Bind(wx.EVT_MENU, self.OnCustomPaneButtons, id=mb_items["CustomPaneButtons"]["id"])
         self.frame.Bind(wx.EVT_MENU, self.OnSwitchPane, id=mb_items["SwitchPane"]["id"])
+
+        self.frame.Bind(wx.EVT_MENU, self.OnDelete, id=wx.ID_DELETE)
+        self.frame.Bind(wx.EVT_MENU, self.OnBack, id=wx.ID_BACKWARD)
+        self.frame.Bind(wx.EVT_MENU, self.OnCut, id=wx.ID_CUT)
+        self.frame.Bind(wx.EVT_MENU, self.OnPaste, id=wx.ID_PASTE)
+        self.frame.Bind(wx.EVT_MENU, self.OnCopy, id=wx.ID_COPY)
 
     def default_layout(self):
         # all_panes: list[aui.AuiPaneInfo] = self.mgr.GetAllPanes()
@@ -258,6 +266,22 @@ class PaneManager:
         # self.mgr.GetPane("test10").Show()
         self.mgr.GetPane("notebook_content").Show()
         self.mgr.Update()
+
+    def OnCopy(self, _event: wx.CommandEvent) -> None:
+        print("------")
+        pass
+
+    def OnPaste(self, _event: wx.CommandEvent) -> None:
+        pass
+
+    def OnCut(self, _event: wx.CommandEvent) -> None:
+        pass
+
+    def OnDelete(self, _event: wx.CommandEvent) -> None:
+        pass
+
+    def OnBack(self, _event: wx.CommandEvent) -> None:
+        pass
 
     def OnChangeContentPane(self, event: wx.CommandEvent) -> None:
         ctrl_key: str
@@ -294,8 +318,9 @@ class PaneManager:
         self.veto_text = event.IsChecked()
 
     def OnFloatDock(self, event: aui.AuiManagerEvent) -> None:
-        print("--------------------")
+
         event_type = event.GetEventType()
+
         if event_type == aui.wxEVT_AUI_PANE_FLOATING:
             if event.pane.name == "test8" and self.veto_tree:
                 event.Veto()
@@ -476,7 +501,6 @@ class PaneManager:
         # Add the main windows and toolbars, in two separate columns
         # We'll use the item 'id' to store the notebook selection, or -1 if not a page
         # [("<caption>", "<name>", <idx>, <bitmap>, <window>)]
-        print(222222222)
         TSwitcherPane = tuple[str, str, int, wx.Bitmap, wx.Window]
         spane: TSwitcherPane
         main_windows: list[TSwitcherPane] = []

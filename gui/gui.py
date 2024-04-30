@@ -81,7 +81,7 @@ class SettingsPanel:
         cont_sizer.Add(grid_sizer, 1, wx.EXPAND | wx.ALL, 5)
         panel.SetSizer(cont_sizer)
         panel.GetSizer().SetSizeHints(panel)
-        self.update_colors()
+        # self.update_colors()
         self.mgr.AddPane(
             panel, aui.AuiPaneInfo().Name("settings").Caption("Dock Manager Settings").
             Dockable(False).Float().Hide().CloseButton(True).MaximizeButton(True))
@@ -139,6 +139,7 @@ class SettingsPanel:
         ctrl_id: wx.WindowIDRef = event.GetId()
         ctrl_name = self.cid_ctrls[ctrl_id]
         aui_id = cids[ctrl_name]["aui_id"]
+        print(dlg.GetColourData().GetColour())
         self.art_provider().SetColour(aui_id, dlg.GetColourData().GetColour())
         self.update_colors()
         self.mgr.Update()
