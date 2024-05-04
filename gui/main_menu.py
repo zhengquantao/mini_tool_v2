@@ -101,11 +101,14 @@ class MainMenu:
         self.items[item_key] = {"id": item_id, "type": item_type, "item": menu_item}
 
     def build_standard(self):
-        self.items["Edit"].Append(wx.ID_COPY, "copy")
-        self.items["Edit"].Append(wx.ID_PASTE, "paste")
+        self.items["Edit"].Append(wx.ID_COPY, "Copy")
+        self.items["Edit"].Append(wx.ID_PASTE, "Paste")
         self.items["Edit"].Append(wx.ID_CUT, "Cut")
-        self.items["Edit"].Append(wx.ID_DELETE, "Delete")
+
         self.items["Edit"].Append(wx.ID_BACKWARD, "Back")
+        self.items["Edit"].Enable(wx.ID_BACKWARD, False)
+
+        self.items["Edit"].Append(wx.ID_DELETE, "Delete")
 
         self.items["Help"].Append(wx.ID_HELP)
         self.frame.Bind(wx.EVT_MENU, self.OnHelp, id=wx.ID_HELP)

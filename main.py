@@ -118,7 +118,7 @@ def main():
     web = Process(target=run_server)
     web.start()
     run_gui()
-    daemon_app()
+    daemon_app(web)
 
 
 if __name__ == "__main__":

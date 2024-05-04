@@ -102,7 +102,7 @@ class ToolBarManager:
         # tb2.AddSpacer(5)
         tb2.AddSimpleTool(wx.ID_OPEN, "Project", wx.Bitmap(aui2.svg_to_bitmap(cs.op_svg)), short_help_string="打开项目")
         tb2.AddSimpleTool(wx.ID_SAVE, "Save", wx.Bitmap(aui2.svg_to_bitmap(cs.save_svg)), short_help_string="保存", )
-        tb2.AddSimpleTool(wx.BACKWARD, "Back", wx.Bitmap(aui2.svg_to_bitmap(cs.back_svg)), short_help_string="返回", )
+        tb2.AddSimpleTool(wx.ID_BACKWARD, "Back", wx.Bitmap(aui2.svg_to_bitmap(cs.back_svg)), short_help_string="返回", )
 
         tb2.AddSeparator()
         tb2.AddSimpleTool(wx.ID_EXIT, "Exit", wx.Bitmap(aui2.svg_to_bitmap(cs.exit_svg)), short_help_string="退出",)
@@ -111,7 +111,7 @@ class ToolBarManager:
         tb2.AddSimpleTool(wx.ID_CUT, "Cut", wx.Bitmap(aui2.svg_to_bitmap(cs.cut_svg)), short_help_string="剪切")
         # tb2.SetCustomOverflowItems([], append_items)
         tb2.Realize()
-        tb2.EnableTool(3, False)
+        tb2.EnableTool(wx.ID_BACKWARD, False)
 
         mgr.AddPane(tb2, aui.AuiPaneInfo().Name("toolbar_top").Caption("导航栏").ToolbarPane().Floatable(False)
                     .Dockable(False).Top())

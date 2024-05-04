@@ -1,4 +1,5 @@
 import random
+import keyboard
 import wx
 import wx.aui
 import wx.lib.agw.aui as aui
@@ -268,20 +269,20 @@ class PaneManager:
         self.mgr.Update()
 
     def OnCopy(self, _event: wx.CommandEvent) -> None:
-        print("------")
-        pass
+        # 模拟按键ctrl+c
+        keyboard.send('ctrl+c')
 
     def OnPaste(self, _event: wx.CommandEvent) -> None:
-        pass
+        keyboard.send('ctrl+v')
 
     def OnCut(self, _event: wx.CommandEvent) -> None:
-        pass
+        keyboard.send('ctrl+x')
 
     def OnDelete(self, _event: wx.CommandEvent) -> None:
         pass
 
     def OnBack(self, _event: wx.CommandEvent) -> None:
-        pass
+        keyboard.send('ctrl+z')
 
     def OnChangeContentPane(self, event: wx.CommandEvent) -> None:
         ctrl_key: str
