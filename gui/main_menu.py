@@ -3,11 +3,15 @@
 This class relies on the order-preserving behavior of the stock Python
 dictionary for both top-level menu labels and menu items.
 """
+import datetime
 
 import wx
 import wx.lib.agw.aui as aui
+from aui2 import svg_to_bitmap
 
 from gui.main_menu_res import main_menu_items
+from settings.settings import main_title, __version__, icon_svg
+
 
 # If MainFrame subclasses wx.Frame, uncomment the following lines
 # from typing import TYPE_CHECKING
@@ -118,8 +122,13 @@ class MainMenu:
         self.frame.Bind(wx.EVT_MENU, self.OnAbout, id=wx.ID_ABOUT)
 
     def OnAbout(self, _event: wx.CommandEvent) -> None:
-        msg = "wx.aui Demo\nAn advanced library for wxWidgets"
-        dlg = wx.MessageDialog(self.frame, msg, "About wx.aui Demo", wx.OK | wx.ICON_INFORMATION)
+        # msg = "wx.aui Demo\nAn advanced library for wxWidgets"
+        # dlg = wx.MessageDialog(self.frame, msg, "About wx.aui Demo", wx.OK | wx.ICON_INFORMATION)
+        # dlg.ShowModal()
+        # dlg.Destroy()
+
+        """show about dialog"""
+        dlg = AboutDialog(self.frame)
         dlg.ShowModal()
         dlg.Destroy()
 
@@ -134,3 +143,82 @@ class MainMenu:
         dlg = wx.MessageDialog(self.frame, msg, "Contact Us", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
+
+
+class AboutDialog(wx.Dialog):
+    def __init__(self, parent):
+        wx.Dialog.__init__(self,
+                           parent,
+                           title=f"About {main_title}",
+                           style=wx.DEFAULT_DIALOG_STYLE)
+
+        szAll = wx.BoxSizer(wx.VERTICAL)
+
+        self.panel = wx.Panel(self, style=wx.TAB_TRAVERSAL)
+        self.panel.SetBackgroundColour(wx.WHITE)
+
+        szPanelAll = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.header = wx.StaticBitmap(self.panel)
+        self.header.SetBitmap(svg_to_bitmap(icon_svg, size=(128, 128), win=self))
+        szPanelAll.Add(self.header, 0, wx.EXPAND | wx.LEFT, 4)
+
+        szPanel = wx.BoxSizer(wx.VERTICAL)
+        szPanel.AddStretchSpacer(1)
+        MAX_SIZE = 300
+        caption = f'{main_title} {__version__}'
+        self.stCaption = wx.StaticText(self.panel, wx.ID_ANY, caption)
+        self.stCaption.SetMaxSize((MAX_SIZE, -1))
+        self.stCaption.Wrap(MAX_SIZE)
+        self.stCaption.SetFont(wx.Font(pointSize=16, family=wx.FONTFAMILY_DEFAULT,
+                                       style=wx.FONTSTYLE_NORMAL,
+                                       weight=wx.FONTWEIGHT_NORMAL,
+                                       underline=False))
+
+        szPanel.Add(self.stCaption, 0, wx.ALL | wx.EXPAND, 5)
+
+        strCopyright = f'(c) 2018-{datetime.datetime.now().year} Shenzhen LiangYun.\n All rights reserved.'
+        self.stCopyright = wx.StaticText(self.panel, wx.ID_ANY, strCopyright)
+        self.stCopyright.SetMaxSize((MAX_SIZE, -1))
+        self.stCopyright.Wrap(MAX_SIZE)
+        self.stCopyright.SetFont(wx.Font(pointSize=10, family=wx.FONTFAMILY_DEFAULT,
+                                         style=wx.FONTSTYLE_NORMAL,
+                                         weight=wx.FONTWEIGHT_NORMAL,
+                                         underline=False))
+        szPanel.Add(self.stCopyright, 0, wx.ALL | wx.EXPAND, 5)
+
+        build = wx.GetOsDescription() + '; wxWidgets ' + wx.version()
+        self.stBuild = wx.StaticText(self.panel, wx.ID_ANY, build)
+        self.stBuild.SetMaxSize((MAX_SIZE, -1))
+        self.stBuild.Wrap(MAX_SIZE)
+        self.stBuild.SetFont(wx.Font(pointSize=10, family=wx.FONTFAMILY_DEFAULT,
+                                     style=wx.FONTSTYLE_NORMAL,
+                                     weight=wx.FONTWEIGHT_NORMAL,
+                                     underline=False))
+        szPanel.Add(self.stBuild, 0, wx.ALL | wx.EXPAND, 5)
+
+        stLine = wx.StaticLine(self.panel, style=wx.LI_HORIZONTAL)
+        szPanel.Add(stLine, 0, wx.EXPAND | wx.ALL, 10)
+        szPanel.AddStretchSpacer(1)
+
+        szPanelAll.Add(szPanel, 1, wx.EXPAND | wx.ALL, 5)
+
+        self.panel.SetSizer(szPanelAll)
+        self.panel.Layout()
+        szPanel.Fit(self.panel)
+
+        szAll.Add(self.panel, 1, wx.EXPAND | wx.ALL, 0)
+
+        btnsizer = wx.StdDialogButtonSizer()
+
+        self.btnOK = wx.Button(self, wx.ID_OK)
+        self.btnOK.SetDefault()
+        btnsizer.AddButton(self.btnOK)
+        btnsizer.Realize()
+
+        szAll.Add(btnsizer, 0, wx.ALIGN_RIGHT | wx.BOTTOM, 5)
+
+        self.SetSizer(szAll)
+        self.Layout()
+        szAll.Fit(self)
+        self.Centre()
