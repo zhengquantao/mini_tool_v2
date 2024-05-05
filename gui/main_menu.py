@@ -108,10 +108,8 @@ class MainMenu:
         self.items["Edit"].Append(wx.ID_COPY, "Copy")
         self.items["Edit"].Append(wx.ID_PASTE, "Paste")
         self.items["Edit"].Append(wx.ID_CUT, "Cut")
-
         self.items["Edit"].Append(wx.ID_BACKWARD, "Back")
         self.items["Edit"].Enable(wx.ID_BACKWARD, False)
-
         self.items["Edit"].Append(wx.ID_DELETE, "Delete")
 
         self.items["Help"].Append(wx.ID_HELP)
@@ -120,6 +118,8 @@ class MainMenu:
         self.frame.Bind(wx.EVT_MENU, self.OnContact, id=wx.ID_HELP_CONTEXT)
         self.items["Help"].Append(wx.ID_ABOUT)
         self.frame.Bind(wx.EVT_MENU, self.OnAbout, id=wx.ID_ABOUT)
+        self.items["Help"].Append(wx.ID_HELP_CONTENTS, "WebSite")
+        self.frame.Bind(wx.EVT_MENU, self.OnWebHome, id=wx.ID_HELP_CONTENTS)
 
     def OnAbout(self, _event: wx.CommandEvent) -> None:
         # msg = "wx.aui Demo\nAn advanced library for wxWidgets"
@@ -143,6 +143,13 @@ class MainMenu:
         dlg = wx.MessageDialog(self.frame, msg, "Contact Us", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
+
+    def OnWebHome(self, _event: wx.CommandEvent):
+        """go to web homepage"""
+        wx.BeginBusyCursor()
+        import webbrowser
+        webbrowser.open("https://www.quant-cloud.cn/home.html")
+        wx.EndBusyCursor()
 
 
 class AboutDialog(wx.Dialog):
