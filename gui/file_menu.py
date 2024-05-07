@@ -109,7 +109,7 @@ class FileManager:
         opening_dict[pid] = {"path": path, "records": {}}
         self.mgr.AddPane(self.tree_ctrl.create_ctrl(path), aui.AuiPaneInfo().Name("ProjectTree").Caption(path).
                          Left().CloseButton(False).MaximizeButton(True).
-                         MinimizeButton(True).Floatable(True))
+                         MinimizeButton(True).Floatable(False).Dockable(False))
         self.mgr.Update()
 
         data = read_file(os.path.join(path, ".mini"))
@@ -128,9 +128,12 @@ class FileManager:
             return
         recent_project_path = self.get_recent_project_path()
         if recent_project_path:
-            self.open_project(recent_project_path)
-        else:
-            self.open_project(os.getcwd())
+            try:
+                self.open_project(recent_project_path)
+                return
+            except Exception as e:
+                pass
+        self.open_project(os.getcwd())
 
     def get_recent_project_path(self) -> str:
 

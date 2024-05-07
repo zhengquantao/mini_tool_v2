@@ -28,3 +28,20 @@ log_level = "INFO"
 # 单个表格展示数据条数
 display_grid_count = 100
 
+# 理论功率曲线
+power_theoretical = "power_theoretical.csv"
+
+geolocation = "geolocation.csv"
+
+turbine_title = {
+    # "turbine_code": "风机号",
+    "real_time": "时间",
+    "wind_dirction": "风向",
+    "wind_speed": "风速",
+    "power": "功率",
+    "air_density": "空气密度",
+    "generator_speed": "发电机转速",
+    "pitch_angle": "变桨角度",
+    "nacelle_temperture": "机舱温度",
+
+}

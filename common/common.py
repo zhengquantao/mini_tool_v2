@@ -29,8 +29,8 @@ def daemon_app(app):
     app.terminate()
 
 
-def random_name(f_type="html"):
-    return f"date{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.{f_type}"
+def random_name(turbine, desc, f_type="html"):
+    return f"{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}-{turbine}-{desc}.{f_type}"
 
 
 def check_graph_df(func):
@@ -89,3 +89,12 @@ def save_mini_file(mgr):
     write_file(opening_dicts["path"], {"file_path": opening_list})
 
 
+def get_file_info(directory='.'):
+    res = []
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            file_path = os.path.join(root, file)
+            # file_size = os.path.getsize(file_path)
+            # print(f'文件名: {file}, 路径: {file_path}, 大小: {file_size} bytes')
+            res.append(file_path)
+    return res

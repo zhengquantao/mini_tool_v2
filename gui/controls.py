@@ -10,8 +10,9 @@ import wx.lib.agw.aui as aui
 # from typing import TYPE_CHECKING
 # if TYPE_CHECKING:
 #     from gui.main_frame import MainFrame
-from common.common import read_file, remove_file, rename_file
+from common.common import read_file, remove_file, rename_file, get_file_info
 from common import loggers
+from models.compare_curve import compare_curve
 from settings.resources import overview
 from settings.settings import opening_dict, float_size, display_grid_count
 
@@ -175,7 +176,20 @@ class TreeCtrl(metaclass=Singleton):
         self.notebook_ctrl = notebook_ctrl
         self.html_ctrl = html_ctrl
         self.grid_ctrl = grid_ctrl
+        self.now_file_list = []
         frame.Bind(wx.EVT_MENU, self.OnCreate, id=self.create_menu_id)
+        frame.Bind(wx.EVT_ACTIVATE, self.on_update)
+
+    def on_update(self, event):
+        project_path = opening_dict[os.getpid()]["path"]
+        if get_file_info(project_path) == self.now_file_list:
+            return
+        print("当前有文件改动")
+        self.tree.DeleteChildren(self.root)
+        self.build_tree(project_path, self.root)
+        self.tree.SortChildren(self.root)
+        self.tree.Expand(self.root)
+        # self.tree.Refresh()
 
     def start_position(self) -> wx.Point:
         return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
@@ -183,18 +197,21 @@ class TreeCtrl(metaclass=Singleton):
     def create_ctrl(self, path="./") -> wx.TreeCtrl:
         self.__class__.counter += 1
         self.tree: wx.TreeCtrl = wx.TreeCtrl(self.frame, wx.ID_ANY, wx.Point(0, 0), wx.Size(160, 250),
-                                             wx.TR_DEFAULT_STYLE | wx.NO_BORDER)
+                                             wx.TR_DEFAULT_STYLE | wx.TR_TWIST_BUTTONS | wx.TR_NO_LINES | wx.NO_BORDER)
+        self.tree.SetDoubleBuffered(True)
         imglist: wx.ImageList = wx.ImageList(16, 16, True, 2)
         icons = [wx.ART_FOLDER, wx.ART_FILE_OPEN, wx.ART_NORMAL_FILE]
         for icon in icons:
             imglist.Add(wx.ArtProvider.GetBitmap(icon, wx.ART_OTHER, wx.Size(16, 16)))
         self.tree.AssignImageList(imglist)
         root_name = path.split(os.sep)[-1]
-        root: wx.TreeItemId = self.tree.AddRoot(root_name, 0)
-        self.tree.SetItemImage(root, 0, wx.TreeItemIcon_Expanded)
+        self.now_file_list = get_file_info(path)
+        self.root: wx.TreeItemId = self.tree.AddRoot(root_name, 0)
+        self.tree.SetItemImage(self.root, 0, wx.TreeItemIcon_Expanded)
 
-        self.build_tree(path, root)
-        self.tree.Expand(root)
+        self.build_tree(path, self.root)
+        self.tree.SortChildren(self.root)
+        self.tree.Expand(self.root)
 
         self.tree.Bind(wx.EVT_TREE_ITEM_RIGHT_CLICK, self.on_right_click)
         self.tree.Bind(wx.EVT_TREE_ITEM_EXPANDED, self.on_item_expanded)
@@ -332,16 +349,37 @@ class TreeCtrl(metaclass=Singleton):
         HTMLCtrl(self.frame, self.mgr, ID_HTMLCtrl).OnCreate(wx.wxEVT_NULL, file_path, file_path)
 
     def on_model_4(self, event, path):
-        print(f"model clicked, path: {path}")
-        file_path = r"D:\project\mini_tool_v2\test.html"
-        ID_HTMLCtrl: wx.WindowIDRef = wx.NewIdRef()
-        HTMLCtrl(self.frame, self.mgr, ID_HTMLCtrl).OnCreate(wx.wxEVT_NULL, file_path, file_path)
+        """理论与实际功率对比分析"""
+        loggers.logger.info(f"model clicked, path: {path}")
+        if os.path.isdir(path):
+            for ph in os.listdir(path):
+                # file_paths = compare_curve(ph)
+                pass
+            return
+
+        # 理论和实际功率曲线对比
+        file_paths, file_name = compare_curve(path)
+        page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE, wx.ART_OTHER, wx.Size(16, 16))
+        ctrl = self.notebook_ctrl.notebook_object
+        pid = os.getpid()
+        opening_dict[pid]["records"][file_name] = file_paths
+        ctrl.AddPage(self.html_ctrl.create_ctrl(path=file_paths), file_name, True, page_bmp)
 
     def on_model_5(self, event, path):
-        print(f"model clicked, path: {path}")
-        file_path = r"D:\project\mini_tool_v2\test.html"
-        ID_HTMLCtrl: wx.WindowIDRef = wx.NewIdRef()
-        HTMLCtrl(self.frame, self.mgr, ID_HTMLCtrl).OnCreate(wx.wxEVT_NULL, file_path, file_path)
+        """风资源对比图"""
+        loggers.logger.info(f"model clicked, path: {path}")
+        if os.path.isdir(path):
+            for ph in os.listdir(path):
+                # file_paths = compare_curve(ph)
+                pass
+            return
+
+        # 理论和实际功率曲线对比
+        file_paths, file_name = compare_curve(path, select=True)
+        page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE, wx.ART_OTHER, wx.Size(16, 16))
+        ctrl = self.notebook_ctrl.notebook_object
+        opening_dict[os.getpid()]["records"][file_name] = file_paths
+        ctrl.AddPage(self.html_ctrl.create_ctrl(path=file_paths), file_name, True, page_bmp)
 
     def on_item_expanded(self, event):
         print("Item expanded!")
