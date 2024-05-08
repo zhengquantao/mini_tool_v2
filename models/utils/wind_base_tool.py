@@ -194,7 +194,7 @@ def cut_speed(dataset):
             logger.info("风速分仓数据为空：{}".format(speed_item))
 
     # ! 小于2.25特殊处理
-    dataset.loc[dataset[wind_speed_label] < 2.25, wind_speed_bin_label] = -1
+    dataset.loc[dataset[wind_speed_label] < 2.25, wind_speed_bin_label] = 0
 
     # ! 大于20特殊处理：超过额定风速，统一处理
     # ? 20与风速区间25存在冲突

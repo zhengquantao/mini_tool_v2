@@ -33,7 +33,7 @@ import os
 # ? 为了处理读入的CSV数据当中，发电机转速"1,147.00"转为浮点数类型
 import locale
 import shutil
-
+import logging as logger
 import pandas as pd
 
 from ..data_integration import extra_data
@@ -42,7 +42,6 @@ locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 from .wind_base_tool import wind_speed_binning
 from .power_curve_tool import calc_actual_power_curve, scatter_curve
 from .aep_tool import aep_calc
-from .log_util import get_mp_rotating_logger
 from ..data_cleansing import *
 
 
@@ -51,8 +50,8 @@ from ..data_cleansing import *
 # main function
 #
 # --------------------------------------------------------------------
-def aep_main(file_path, real_time, wind_col, dirction_col, temperature_col, airdensity_col, target_columns,
-             curve_line_path, result_path, img_path, confidence_num, logger, farm_name):
+def aep_main(file_path, farm_name, real_time, wind_col, dirction_col, temperature_col, airdensity_col, target_columns,
+             curve_line_path, confidence_num):
     """
 
     Parameters
@@ -71,8 +70,11 @@ def aep_main(file_path, real_time, wind_col, dirction_col, temperature_col, aird
     """
 
     # *** ---------- 1 基础设置和参数初始化 ----------
+    if os.path.isfile(file_path):
+        scada_files = [file_path]
+    else:
 
-    scada_files = os.listdir(file_path)
+        scada_files = [os.path.join(file_path, scada_file) for scada_file in os.listdir(file_path)]
 
     # # 平均空气密度
     # avg_air_density = 1.0496
@@ -110,8 +112,9 @@ def aep_main(file_path, real_time, wind_col, dirction_col, temperature_col, aird
             # *** ---------- 3 数据提取 ----------
             # ** 3.1 CSV数据读取 **
             # SCADA数据文件夹
-            turbine_code = scada_file.split(".csv")[0]
-            data = pd.read_csv(os.path.join(file_path, scada_file)).fillna(1)  # , encoding="GB2312"
+            # turbine_code = scada_file.split(".csv")[0]
+            turbine_code = file_path.split(os.sep)[-1].split(".")[0]
+            data = pd.read_csv(scada_file).fillna(1)  # , encoding="GB2312"
 
             # 当前SCADA数据机组编号           # turbine_code = data.loc[0, "风机"]
 
@@ -131,9 +134,9 @@ def aep_main(file_path, real_time, wind_col, dirction_col, temperature_col, aird
             if len(wind_col) != 0:
                 table.append("wind_speed")
             if len(dirction_col) != 0:
-                table.append("wind_direction")
+                table.append("wind_dirction")
             if len(temperature_col) != 0:
-                table.append("OutdoorTemperature")
+                table.append("nacelle_temperture")
             if len(airdensity_col) != 0:
                 table.append("air_density")
             if len(target_columns) != 0:
@@ -145,7 +148,7 @@ def aep_main(file_path, real_time, wind_col, dirction_col, temperature_col, aird
             # ** 3.4 数值类型转换 **
             ### np.issubdtype  or pandas.api.types.****
             for col in data.columns:
-                if np.issubdtype(data[col], np.float) or np.issubdtype(data[col], np.int):
+                if np.issubdtype(data[col], np.float16) or np.issubdtype(data[col], np.int16):
                     data.loc[:, col] = data.loc[:, col].astype("float")
 
             # data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: locale.atof(x))
@@ -178,10 +181,10 @@ def aep_main(file_path, real_time, wind_col, dirction_col, temperature_col, aird
             ## 使用拟合功率曲线+置信区间进行数据清洗
             norm_data, clean_percentage = confidence_interval(norm_data_2, confidence_num, ["wind_speed"], ["power"],
                                                               logger=logger, plot_name=turbine_code[-3:], plot_flag=1)
-            if clean_percentage > 0.3:
-                if os.path.exists(os.path.join("E:\scy\能效评估数据\hlh\old_data\异常风机-采样平均值", scada_file)):
-                    os.remove(os.path.join(file_path, scada_file))
-                shutil.move(os.path.join(file_path, scada_file), "E:\scy\能效评估数据\hlh\old_data\异常风机-采样平均值")
+            # if clean_percentage > 0.3:
+            #     if os.path.exists(os.path.join("E:\scy\能效评估数据\hlh\old_data\异常风机-采样平均值", scada_file)):
+            #         os.remove(os.path.join(file_path, scada_file))
+            #     shutil.move(os.path.join(file_path, scada_file), "E:\scy\能效评估数据\hlh\old_data\异常风机-采样平均值")
             # *** ---------- 5 拟合实际功率曲线 ----------
             # 拟合实际功率曲线，将生成的实际功率曲线到表中
 
@@ -222,15 +225,17 @@ def aep_main(file_path, real_time, wind_col, dirction_col, temperature_col, aird
 
             # *** ---------- 6 AEP计算 ----------
             statistics = aep_calc(norm_data_2, power_curve, turbine_code, clean_percentage)
-            all_statistics = all_statistics.append(statistics).reset_index(drop=True)
+            all_statistics = pd.concat([all_statistics, statistics]).reset_index(drop=True)
             type_flie = scada_file.split(".")[1]
 
         except Exception as e:
-            logger.error(e)
+            import traceback
+            print(traceback.format_exc())
+            logger.error(traceback.format_exc())
     # *** ---------- 7 结果数据导出 ----------
 
     all_statistics.index = all_statistics["turbine_code"].apply(lambda x: int(x[-3:]))
-    all_statistics.to_excel(os.path.join(result_path, farm_name + "_aep_result.xlsx"))
+    # all_statistics.to_excel(os.path.join(result_path, farm_name + "_aep_result.xlsx"))
     performance_ratio = all_statistics[["turbine_code", "performance_ratio"]]
     base_turbine = performance_ratio.sort_values(by="performance_ratio").iloc[int(len(performance_ratio) / 2), :][
         "turbine_code"]

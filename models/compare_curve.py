@@ -20,16 +20,20 @@ def compare_curve(file_path, num=1, select=False):
     # data = pd.read_csv(file_path).dropna(axis=0)
     data = pd.read_csv(file_path)
 
-    df1, speed_list = cut_speed(data, "wind_dirction")
+    df1, speed_list = cut_speed(data)
 
     # 功率曲线, 概率密度图和功率曲线图, 异常点, 拟合功率曲线, 清洗后的点
     curve_line, plot_power_distplot, abnormal_scatter, fitting_line, normal_scatter = plot_confidence_interval(
         df1, 0.8, ["wind_speed"], ["power"], plot_name=plna, num=num)
 
-    xticks = np.arange(0, 26, 1)
+    xticks = np.arange(0, 20.5, 0.5)
 
     if select:
-        file_paths, file_name = power_density_chart.build_html(factor_path, turbine_code, plot_power_distplot, xticks)
+        plot_power_df, _ = cut_speed(pd.DataFrame({"wind_speed": plot_power_distplot[0],
+                                                   "power": plot_power_distplot[1],
+                                                   "air_density": df1["air_density"]}))
+        file_paths, file_name = power_density_chart.build_html(factor_path, turbine_code, plot_power_df, xticks,
+                                                               plot_power_distplot[2])
         return file_paths, file_name
 
     # 理论功率曲线
@@ -87,7 +91,7 @@ def plot_confidence_interval(data, confidence_interval=0.8, use_column=None, tar
     return (curve_line, plot_power_distplot, abnormal_scatter, fitting_line, normal_scatter)
 
 
-def cut_speed(data, lable):
+def cut_speeds(data, lable):
     """
     对风速进行划分和分组
     :param data:

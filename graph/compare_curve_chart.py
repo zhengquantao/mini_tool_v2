@@ -68,7 +68,7 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
         .add_yaxis(fitting_line[2], fitting_line[1],
                    label_opts=opts.LabelOpts(is_show=False),
                    is_symbol_show=False,
-                   z=10, z_level=10)
+                   z=10, z_level=10, color="red")
         .set_global_opts(title_opts=opts.TitleOpts(title=fitting_line[2]))
     )
     line2 = (
@@ -79,7 +79,7 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
                    # 隐藏标签点
                    is_symbol_show=False,
                    # 控制页面层级
-                   z=10, z_level=10)
+                   z=10, z_level=10, color="blue")
         .set_global_opts(title_opts=opts.TitleOpts(title=power_line[2]),)
     )
 

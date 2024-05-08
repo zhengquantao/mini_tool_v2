@@ -13,6 +13,7 @@ import wx.lib.agw.aui as aui
 from common.common import read_file, remove_file, rename_file, get_file_info
 from common import loggers
 from models.compare_curve import compare_curve
+from models.dswe_main import iec_main
 from settings.resources import overview
 from settings.settings import opening_dict, float_size, display_grid_count
 
@@ -337,10 +338,23 @@ class TreeCtrl(metaclass=Singleton):
         HTMLCtrl(self.frame, self.mgr, ID_HTMLCtrl).OnCreate(wx.wxEVT_NULL, file_path, file_path)
 
     def on_model_2(self, event, path):
-        print(f"model clicked, path: {path}")
-        file_path = r"D:\project\mini_tool_v2\test.html"
-        ID_HTMLCtrl: wx.WindowIDRef = wx.NewIdRef()
-        HTMLCtrl(self.frame, self.mgr, ID_HTMLCtrl).OnCreate(wx.wxEVT_NULL, file_path, file_path)
+        """能效评估结果总览"""
+        loggers.logger.info(f"model clicked, path: {path}")
+        if os.path.isdir(path):
+            for ph in os.listdir(path):
+                # file_paths = compare_curve(ph)
+                pass
+            return
+
+        # 能效评估结果总览
+        # file_paths, file_name = compare_curve(path)
+        file_paths, file_name = iec_main(path)
+
+        page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE, wx.ART_OTHER, wx.Size(16, 16))
+        ctrl = self.notebook_ctrl.notebook_object
+        pid = os.getpid()
+        opening_dict[pid]["records"][file_name] = file_paths
+        ctrl.AddPage(self.html_ctrl.create_ctrl(path=file_paths), file_name, True, page_bmp)
 
     def on_model_3(self, event, path):
         print(f"model clicked, path: {path}")

@@ -9,23 +9,28 @@ from settings.settings import float_size
 CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/static/"
 
 from pyecharts import options as opts
-from pyecharts.charts import Bar, Line
+from pyecharts.charts import Bar, Line, Page
 
 
-def build_html(factor_path, turbine, plot_power_df, xticks, name, *args, **kwargs):
-    # 计算概率密度
-    # hist, bin_edges = np.histogram(plot_power_df["wind_speed"], bins=xticks)
-    plot_power_df["wind_speed2"] = plot_power_df.apply(lambda row: pow(row["wind_speed"], 3), axis=1)
-    grouped_mean = plot_power_df[plot_power_df["groups"] >= 0].groupby("groups").agg(
-        {"power": "mean", "wind_speed": "size", "air_density": "mean", "wind_speed2": "mean"})
+def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
+
+    page = page_simple_layout(plot_power_df)
+    file_name = random_name(turbine, "发电量与能效对比分析")
+    html_path = page.render(os.path.join(factor_path, file_name))
+
+    return html_path, file_name
+
+
+def top_page(plot_power_df):
     bar = (
         Bar(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
-        .add_xaxis(grouped_mean.index.tolist())
-        .add_yaxis("概率密度", grouped_mean["wind_speed"].tolist(),  yaxis_index=1, color="#ffc084")
+        .add_xaxis(plot_power_df["turbine_code"].tolist())
+        .add_yaxis("理论发电量", plot_power_df["pdf_power"].tolist(), yaxis_index=1)
+        .add_yaxis("实际发电量", plot_power_df["iec_power"].tolist(), yaxis_index=1)
         .extend_axis(
             yaxis=opts.AxisOpts(
                 type_="value",
-                name="数量",
+                name="发电量(kw/h)",
                 min_=0,
                 position="left",
                 # axislabel_opts=opts.LabelOpts(formatter="{value} °C"),
@@ -35,14 +40,7 @@ def build_html(factor_path, turbine, plot_power_df, xticks, name, *args, **kwarg
             ),
         )
         .set_global_opts(
-            title_opts=opts.TitleOpts(title=name),
-            xaxis_opts=opts.AxisOpts(
-                name="风速(m/s)",
-                # type_="value",
-                # splitline_opts=opts.SplitLineOpts(is_show=True),
-                # min_=0,
-                # max_=max(xticks),
-            ),
+            title_opts=opts.TitleOpts(title="发电量与能效对比分析"),
             yaxis_opts=opts.AxisOpts(
                 type_="value",
                 name="功率(kw)",
@@ -78,26 +76,26 @@ def build_html(factor_path, turbine, plot_power_df, xticks, name, *args, **kwarg
     # 创建Line图
     line1 = (
         Line()
-        .add_xaxis(grouped_mean.index.tolist())
-        .add_yaxis("功率曲线", grouped_mean["power"].tolist(),
+        .add_xaxis(plot_power_df["turbine_code"].tolist())
+        .add_yaxis("能效系数", plot_power_df["performance_ratio"].tolist(),
                    label_opts=opts.LabelOpts(is_show=False),
-                   is_symbol_show=False, color="#1f77b4",
+                   is_symbol_show=False,
                    z=1, z_level=1, yaxis_index=0)
-    )
-    grouped_mean = grouped_mean.fillna(0)
-    grouped_mean["wind_power_density"] = grouped_mean.apply(
-        lambda row: row["air_density"]*row["wind_speed"]*pow(row["wind_speed2"], 3)/2, axis=1)
-    line2 = (
-        Line()
-        .add_xaxis(grouped_mean.index.tolist())
-        .add_yaxis("风功率密度", grouped_mean["wind_power_density"].tolist(),
+        .add_yaxis("实际发电量/理论发电量系数", plot_power_df["eba_ratio"].tolist(),
                    label_opts=opts.LabelOpts(is_show=False),
-                   is_symbol_show=False, color="#bf8232",
+                   is_symbol_show=False,
                    z=1, z_level=1, yaxis_index=0)
     )
 
-    page = bar.overlap(line1).overlap(line2)
-    file_name = random_name(turbine, "风资源对比图")
-    html_path = page.render(os.path.join(factor_path, file_name))
+    page = bar.overlap(line1)
+    return page
 
-    return html_path, file_name
+
+def page_simple_layout(plot_power_df):
+    page = Page(layout=Page.SimplePageLayout)
+    page.add(
+        top_page(plot_power_df),
+        # line_markpoint(),
+
+    )
+    return page

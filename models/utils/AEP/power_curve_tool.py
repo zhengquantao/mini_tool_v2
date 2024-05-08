@@ -149,7 +149,7 @@ def calc_actual_power_curve(data, speed_list, logger):
             actual_power = subdata[power_label].mean()
             actual_power_curve = pd.DataFrame([index, actual_power]).T
             actual_power_curve.columns = [wind_speed_label, actual_power_label]
-            actual_power_df = actual_power_df.append(actual_power_curve)
+            actual_power_df = pd.concat([actual_power_df, actual_power_curve])
 
     # 2.2 最终的实际功率曲线数据
     actual_power_df = actual_power_df[actual_power_df[wind_speed_label] != -1].sort_values(
