@@ -30,7 +30,7 @@ def daemon_app(app):
 
 
 def random_name(turbine, desc, f_type="html"):
-    return f"{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}-{turbine}-{desc}.{f_type}"
+    return f"{turbine}-{desc}-{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.{f_type}"
 
 
 def check_graph_df(func):
@@ -62,11 +62,14 @@ def write_file(file_path, data, file_name='.mini'):
 
 
 def remove_file(path):
-    if os.path.isfile(path):
-        os.remove(path)
-        return
+    try:
+        if os.path.isfile(path):
+            os.remove(path)
+            return
 
-    shutil.rmtree(path)
+        shutil.rmtree(path)
+    except:
+        pass
 
 
 def rename_file(old_name, new_name):
@@ -98,3 +101,12 @@ def get_file_info(directory='.'):
             # print(f'文件名: {file}, 路径: {file_path}, 大小: {file_size} bytes')
             res.append(file_path)
     return res
+
+
+def add_notebook_page(notebook_ctrl, html_ctrl, file_paths, file_name):
+    page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE, wx.ART_OTHER, wx.Size(16, 16))
+    ctrl = notebook_ctrl.notebook_object
+    pid = os.getpid()
+    opening_dict[pid]["records"][file_name] = file_paths
+    ctrl.AddPage(html_ctrl.create_ctrl(path=file_paths), file_name, True, page_bmp)
+    return ctrl

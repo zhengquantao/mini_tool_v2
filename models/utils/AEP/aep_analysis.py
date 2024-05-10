@@ -32,8 +32,6 @@
 import os
 # ? 为了处理读入的CSV数据当中，发电机转速"1,147.00"转为浮点数类型
 import locale
-import shutil
-import logging as logger
 import pandas as pd
 
 from ..data_integration import extra_data
@@ -51,7 +49,7 @@ from ..data_cleansing import *
 #
 # --------------------------------------------------------------------
 def aep_main(file_path, farm_name, real_time, wind_col, dirction_col, temperature_col, airdensity_col, target_columns,
-             curve_line_path, confidence_num):
+             curve_line_path, confidence_num, logger=None):
     """
 
     Parameters
@@ -113,7 +111,7 @@ def aep_main(file_path, farm_name, real_time, wind_col, dirction_col, temperatur
             # ** 3.1 CSV数据读取 **
             # SCADA数据文件夹
             # turbine_code = scada_file.split(".csv")[0]
-            turbine_code = file_path.split(os.sep)[-1].split(".")[0]
+            turbine_code = scada_file.split(os.sep)[-1].split(".")[0]
             data = pd.read_csv(scada_file).fillna(1)  # , encoding="GB2312"
 
             # 当前SCADA数据机组编号           # turbine_code = data.loc[0, "风机"]
@@ -230,7 +228,6 @@ def aep_main(file_path, farm_name, real_time, wind_col, dirction_col, temperatur
 
         except Exception as e:
             import traceback
-            print(traceback.format_exc())
             logger.error(traceback.format_exc())
     # *** ---------- 7 结果数据导出 ----------
 

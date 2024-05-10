@@ -1,3 +1,5 @@
+import os
+
 import wx
 import wx.aui
 import wx.lib.agw.aui as aui
@@ -85,15 +87,15 @@ class Notebook:
         page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE,
                                                        wx.ART_OTHER, wx.Size(16, 16))
 
-        page = wx.TextCtrl(ctrl, wx.ID_ANY, overview, wx.DefaultPosition, wx.Size(*float_size),
-                           wx.TE_MULTILINE | wx.NO_BORDER, name='Welcome to MINI-TOOL')
-        page.SetMargins(20)
-        font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
-        page.SetFont(font)
-        ctrl.AddPage(page, "Welcome to MINI-TOOL", False, page_bmp)
+        # page = wx.TextCtrl(ctrl, wx.ID_ANY, overview, wx.DefaultPosition, wx.Size(*float_size),
+        #                    wx.TE_MULTILINE | wx.NO_BORDER, name='Welcome to MINI-TOOL')
+        # page.SetMargins(20)
+        # font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
+        # page.SetFont(font)
+        # ctrl.AddPage(page, "Welcome to MINI-TOOL", False, page_bmp)
 
-        file_path = r"D:\project\mini_tool_v2\test.html"
-        ctrl.AddPage(self.html_ctrl.create_ctrl(path=file_path), "Welcome to AUI", True, page_bmp)
+        file_path = os.path.join(os.getcwd(), r"introduce.html")
+        ctrl.AddPage(self.html_ctrl.create_ctrl(path=file_path), "Welcome to MINI-TOOL", True, page_bmp)
 
         # panel: wx.Panel = wx.Panel(ctrl, wx.ID_ANY)
         # flex: wx.FlexGridSizer = wx.FlexGridSizer(rows=0, cols=2, vgap=2, hgap=2)
@@ -130,7 +132,7 @@ class Notebook:
 
         # Demonstrate how to disable a tab
         if self.__class__.counter == 1:
-            ctrl.EnableTab(1, True)
+            ctrl.EnableTab(0, True)
 
         # ctrl.SetPageTextColour(2, wx.RED)
         # ctrl.SetPageTextColour(1, wx.BLUE)

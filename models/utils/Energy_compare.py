@@ -5,13 +5,15 @@ coding:utf-8
 @Author: Natsu
 '''
 
-from dswe import ComparePCurve, CovMatch
+from models.dswe import ComparePCurve, CovMatch
 from pandas import DataFrame, concat, read_csv
 import os
-from utils.data_cleansing import *
+from models.utils.data_cleansing import *
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
-from utils.plot_utils import *
+from models.utils.plot_utils import *
+
+from models.utils.data_cleansing import confidence_interval
 
 rcParams['font.family'] = 'Microsoft YaHei'
 import seaborn as sns

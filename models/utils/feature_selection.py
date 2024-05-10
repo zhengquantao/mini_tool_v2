@@ -1,13 +1,13 @@
 import pandas as pd
 import random
 from sklearn.preprocessing import MinMaxScaler
-from utils.data_cleansing import *
+from models.utils.data_cleansing import *
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_squared_error, make_scorer, mean_absolute_error, precision_score, recall_score, \
     f1_score, accuracy_score, roc_curve, auc
 from math import sqrt
-from utils.data_cleansing import *
+from models.utils.data_cleansing import *
 
 
 def base_data_pro(filepath, feature_columns, target_columns):

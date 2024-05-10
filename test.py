@@ -1,34 +1,40 @@
-from pyecharts.charts import Bar, Line
-from pyecharts import options as opts
+import wx
+import wx.aui
 
-# 数据
-x_data = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-bar_data = [820, 932, 901, 934, 1290, 1330, 1320]
-line_data = [820, 932, 901, 934, 1290, 1330, 1320, 1400, 1500, 1600, 1700, 1800]
+class MyFrame(wx.Frame):
+    def __init__(self, parent, id=-1, title="AUI Test",
+                 pos=wx.DefaultPosition, size=(800, 600)):
+        wx.Frame.__init__(self, parent, id, title, pos, size)
+        self._mgr = wx.aui.AuiManager(self)
 
-# 创建一个Bar对象
-bar = (
-    Bar()
-    .add_xaxis(x_data)
-    .add_yaxis("商家A", bar_data)
-)
+        text1 = wx.TextCtrl(self, -1, "Pane 1", style=wx.NO_BORDER | wx.TE_MULTILINE)
+        self._mgr.AddPane(text1, wx.aui.AuiPaneInfo().Bottom().Name("Pane Number One").Caption("Pane Number One"))
 
-# 创建一个Line对象
-line = (
-    Line()
-    .add_xaxis(x_data + ["Extra1", "Extra2", "Extra3", "Extra4", "Extra5"])
-    .add_yaxis("商家B", line_data, yaxis_index=1)
-)
+        # 添加一个恢复按钮
+        self.restore_button = wx.Button(self, -1, "Restore Pane")
+        self.Bind(wx.EVT_BUTTON, self.OnRestoreButton, self.restore_button)
+        self._mgr.AddPane(self.restore_button, wx.aui.AuiPaneInfo().Top().Caption("Restore Button"))
 
-# 将Line图添加到Bar图中
-bar.overlap(line)
+        self._mgr.Update()
+        self.Bind(wx.aui.EVT_AUI_PANE_CLOSE, self.OnPaneClose)
 
-# 设置全局配置项
-bar.set_global_opts(
-    title_opts=opts.TitleOpts(title="Bar-Line双轴图"),
-    yaxis_opts=opts.AxisOpts(name="商家A"),
+    def OnPaneClose(self, event):
+        pane = event.GetPane()
+        pane.Hide()
+        self._mgr.Update()
 
-)
+    def OnRestoreButton(self, event):
+        self.RestorePane()
 
-# 渲染图像
-bar.render()
+    def RestorePane(self):
+        pane = self._mgr.GetPane("Pane Number One")
+        if pane.IsShown():
+            print("Pane is already shown")
+        else:
+            pane.Show()
+            self._mgr.Update()
+
+app = wx.App()
+frame = MyFrame(None)
+frame.Show()
+app.MainLoop()

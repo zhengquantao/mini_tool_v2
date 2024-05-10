@@ -108,8 +108,8 @@ class FileManager:
         print(f"当前进程号：{pid}")
         opening_dict[pid] = {"path": path, "records": {}}
         self.mgr.AddPane(self.tree_ctrl.create_ctrl(path), aui.AuiPaneInfo().Name("ProjectTree").Caption(path).
-                         Left().CloseButton(False).MaximizeButton(True).
-                         MinimizeButton(True).Floatable(False).Dockable(False))
+                         Left().Position(1).Layer(0).Row(0).CloseButton(False).MaximizeButton(True).
+                         MinimizeButton(True).Floatable(False))
         self.mgr.Update()
 
         data = read_file(os.path.join(path, ".mini"))
@@ -180,6 +180,7 @@ class FileManager:
 
         path = select_dialog.GetPath()
         print(f"Chosen directory: {path}")
+        self.tree_ctrl.on_open(event, path)
 
     def OnSaveProject(self, event: wx.CommandEvent) -> None:
         select_dialog = wx.DirDialog(self.frame, "请选择要保存的路径：", style=wx.DD_DEFAULT_STYLE)

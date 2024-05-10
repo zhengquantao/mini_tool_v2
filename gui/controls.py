@@ -10,10 +10,11 @@ import wx.lib.agw.aui as aui
 # from typing import TYPE_CHECKING
 # if TYPE_CHECKING:
 #     from gui.main_frame import MainFrame
-from common.common import read_file, remove_file, rename_file, get_file_info
+from common.common import read_file, remove_file, rename_file, get_file_info, add_notebook_page
 from common import loggers
-from models.compare_curve import compare_curve
+from models.compare_curve import compare_curve, compare_curve_all
 from models.dswe_main import iec_main
+from models.geo_main import geo_main
 from settings.resources import overview
 from settings.settings import opening_dict, float_size, display_grid_count
 
@@ -183,13 +184,16 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_update(self, event):
         project_path = opening_dict[os.getpid()]["path"]
-        if get_file_info(project_path) == self.now_file_list:
+        new_file_list = get_file_info(project_path)
+        if new_file_list == self.now_file_list:
             return
-        print("当前有文件改动")
+
         self.tree.DeleteChildren(self.root)
         self.build_tree(project_path, self.root)
         self.tree.SortChildren(self.root)
         self.tree.Expand(self.root)
+        self.now_file_list = new_file_list
+        loggers.logger.info("当前有文件改动")
         # self.tree.Refresh()
 
     def start_position(self) -> wx.Point:
@@ -207,7 +211,7 @@ class TreeCtrl(metaclass=Singleton):
         self.tree.AssignImageList(imglist)
         root_name = path.split(os.sep)[-1]
         self.now_file_list = get_file_info(path)
-        self.root: wx.TreeItemId = self.tree.AddRoot(root_name, 0)
+        self.root: wx.TreeItemId = self.tree.AddRoot(root_name, 0, data=path)
         self.tree.SetItemImage(self.root, 0, wx.TreeItemIcon_Expanded)
 
         self.build_tree(path, self.root)
@@ -259,7 +263,8 @@ class TreeCtrl(metaclass=Singleton):
         menu.AppendSeparator()
         model_1 = sub_model_menu.Append(wx.ID_ANY, '能效等级总览')
         model_2 = sub_model_menu.Append(wx.ID_ANY, '能效评估结果总览')
-        model_3 = sub_model_menu.Append(wx.ID_ANY, '能效排行')
+        model_3 = sub_model_menu.Append(wx.ID_ANY, '能效排行总览')
+        model_6 = sub_model_menu.Append(wx.ID_ANY, '风资源对比总览')
         model_4 = sub_model_menu.Append(wx.ID_ANY, '理论与实际功率对比分析')
         model_5 = sub_model_menu.Append(wx.ID_ANY, '风资源对比')
         menu.AppendSubMenu(sub_model_menu, '模型图')
@@ -273,11 +278,12 @@ class TreeCtrl(metaclass=Singleton):
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_3(event, path), model_3)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_4(event, path), model_4)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_5(event, path), model_5)
+        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_6(event, path), model_6)
 
         self.tree.PopupMenu(menu)
 
     def on_delete(self, event, path):
-        print(f"Delete clicked, file path: {path}")
+        loggers.logger.info(f"Delete clicked, file path: {path}")
         dlg = wx.MessageDialog(self.frame, f"你确认要删除文件 {path.split(os.sep)[-1]} 吗？",
                                "刪除文件", wx.OK | wx.ICON_WARNING)
         if dlg.ShowModal() != wx.ID_OK:
@@ -312,15 +318,15 @@ class TreeCtrl(metaclass=Singleton):
             ctrl.AddPage(image_ctrl, file_name, True, page_bmp)
 
         else:
-            page = wx.TextCtrl(ctrl, wx.ID_ANY, text, wx.DefaultPosition, wx.DefaultSize, wx.TE_MULTILINE|wx.NO_BORDER)
-            page.SetMargins(8)
+            page = wx.TextCtrl(ctrl, wx.ID_ANY, text, wx.DefaultPosition, wx.DefaultSize,
+                               wx.TE_MULTILINE | wx.NO_BORDER)
+            page.SetMargins(5, top=3)
             font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
             page.SetFont(font)
-            ctrl.AddPage(wx.TextCtrl(ctrl, wx.ID_ANY, text, wx.DefaultPosition,
-                         wx.DefaultSize, wx.TE_MULTILINE | wx.NO_BORDER), file_name, True, page_bmp)
+            ctrl.AddPage(page, file_name, True, page_bmp)
 
     def on_rename(self, event, path):
-        print(f"Rename clicked, file path: {path}")
+        loggers.logger.info(f"Rename clicked, file path: {path}")
         dlg = wx.TextEntryDialog(self.frame, "请输入新文件名:", "文件重命名")
         if dlg.ShowModal() != wx.ID_OK:
             return
@@ -331,69 +337,59 @@ class TreeCtrl(metaclass=Singleton):
         rename_file(path, os.sep.join(file_list))
 
     def on_model_1(self, event, path):
+        """能效等级总览"""
+        file_paths, file_name = geo_main(path)
 
-        print(f"model clicked, path: {path}")
-        file_path = r"D:\project\mini_tool_v2\test.html"
-        ID_HTMLCtrl: wx.WindowIDRef = wx.NewIdRef()
-        HTMLCtrl(self.frame, self.mgr, ID_HTMLCtrl).OnCreate(wx.wxEVT_NULL, file_path, file_path)
+        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
 
     def on_model_2(self, event, path):
         """能效评估结果总览"""
         loggers.logger.info(f"model clicked, path: {path}")
-        if os.path.isdir(path):
-            for ph in os.listdir(path):
-                # file_paths = compare_curve(ph)
-                pass
-            return
 
         # 能效评估结果总览
-        # file_paths, file_name = compare_curve(path)
         file_paths, file_name = iec_main(path)
-
-        page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE, wx.ART_OTHER, wx.Size(16, 16))
-        ctrl = self.notebook_ctrl.notebook_object
-        pid = os.getpid()
-        opening_dict[pid]["records"][file_name] = file_paths
-        ctrl.AddPage(self.html_ctrl.create_ctrl(path=file_paths), file_name, True, page_bmp)
+        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
 
     def on_model_3(self, event, path):
-        print(f"model clicked, path: {path}")
-        file_path = r"D:\project\mini_tool_v2\test.html"
-        ID_HTMLCtrl: wx.WindowIDRef = wx.NewIdRef()
-        HTMLCtrl(self.frame, self.mgr, ID_HTMLCtrl).OnCreate(wx.wxEVT_NULL, file_path, file_path)
+        """能效排行"""
+        loggers.logger.info(f"model clicked, path: {path}")
+
+        # 能效评估结果总览
+        file_paths, file_name = iec_main(path, sort_only=True)
+        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
 
     def on_model_4(self, event, path):
         """理论与实际功率对比分析"""
         loggers.logger.info(f"model clicked, path: {path}")
         if os.path.isdir(path):
-            for ph in os.listdir(path):
-                # file_paths = compare_curve(ph)
-                pass
             return
 
         # 理论和实际功率曲线对比
         file_paths, file_name = compare_curve(path)
-        page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE, wx.ART_OTHER, wx.Size(16, 16))
-        ctrl = self.notebook_ctrl.notebook_object
-        pid = os.getpid()
-        opening_dict[pid]["records"][file_name] = file_paths
-        ctrl.AddPage(self.html_ctrl.create_ctrl(path=file_paths), file_name, True, page_bmp)
+        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
 
     def on_model_5(self, event, path):
         """风资源对比图"""
         loggers.logger.info(f"model clicked, path: {path}")
         if os.path.isdir(path):
-            for ph in os.listdir(path):
-                # file_paths = compare_curve(ph)
-                pass
+            loggers.logger.error("请选择不要选择文件夹")
             return
 
         # 理论和实际功率曲线对比
         file_paths, file_name = compare_curve(path, select=True)
-        page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE, wx.ART_OTHER, wx.Size(16, 16))
-        ctrl = self.notebook_ctrl.notebook_object
-        opening_dict[os.getpid()]["records"][file_name] = file_paths
-        ctrl.AddPage(self.html_ctrl.create_ctrl(path=file_paths), file_name, True, page_bmp)
+        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
+
+    def on_model_6(self, event, path):
+        """风资源对比总览图"""
+        loggers.logger.info(f"model clicked, path: {path}")
+
+        if not os.path.isdir(path):
+            loggers.logger.error("风资源对比总览图，多台风机！请选择存在多台风机的文件夹")
+            return
+
+        # 风资源对比总览图
+        file_paths, file_name = compare_curve_all(path, select=True)
+        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
 
     def on_item_expanded(self, event):
         print("Item expanded!")

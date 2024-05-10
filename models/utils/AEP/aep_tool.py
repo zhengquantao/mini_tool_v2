@@ -153,15 +153,18 @@ def aep_calc(data, power_curve, turbine_code, clean_percentage=None):
     performance_ratio = (iec_power - pdf_power) / pdf_power * 100
     # logger.info("IEC_aep为{}，pdf_aep为{}，性能比为{}".format(iec_power, pdf_power, performance_ratio))
 
+    ## EBA系数=实际发电量/理论发电量
+    EBA_ratio = iec_power / pdf_power * 100
+
     # *** ---------- 4 将统计信息和相关的数据组合起来 ----------
     statistics = pd.DataFrame([turbine_code, miss_length, power_hours,
                                round(min_speed, 2), round(mean_speed, 2), round(max_speed, 2),
                                round(min_power, 2), round(mean_power, 2), round(max_power, 2),
                                round(iec_power, 2), round(pdf_power, 2), round(performance_ratio, 2),
-                               clean_percentage]).T
+                               clean_percentage, round(EBA_ratio, 2)]).T
     statistics.columns = ["turbine_code", "miss_length", "power_hours",
                           "min_speed", "mean_speed", "max_speed",
                           "min_power", "mean_power", "max_power",
-                          "iec_power(mWh)", "pdf_power(mWh)", "performance_ratio", "clean_percentage"]
+                          "iec_power(mWh)", "pdf_power(mWh)", "performance_ratio", "clean_percentage", "EBA_ratio"]
 
     return statistics

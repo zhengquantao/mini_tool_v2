@@ -37,15 +37,15 @@ import logging
 
 import statsmodels.formula.api as smf
 
-import seaborn as sns
-import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
+# import seaborn as sns
+# import matplotlib.pyplot as plt
+# import matplotlib.font_manager as fm
 
 # ? 中文乱码问题
-font = fm.FontProperties(fname='微软雅黑.ttf')
-# ? 字体设置：SimHei
-plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
-plt.rcParams["axes.unicode_minus"] = False
+# font = fm.FontProperties(fname='微软雅黑.ttf')
+# # ? 字体设置：SimHei
+# plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+# plt.rcParams["axes.unicode_minus"] = False
 
 #
 import warnings

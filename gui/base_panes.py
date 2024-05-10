@@ -11,6 +11,9 @@ from wx.lib.agw.aui import aui_switcherdialog as asd
 # if TYPE_CHECKING:
 #     from gui.main_frame import MainFrame
 from common import loggers
+from common.common import add_notebook_page
+from graph import simple_chart
+from gui.simple_dialog import SimpleDialog
 from settings import resources as res
 from gui.controls import SizeReportCtrl, TextCtrl, TreeCtrl, HTMLCtrl, GridCtrl
 from gui.aui_notebook import Notebook
@@ -21,7 +24,7 @@ from gui.base_panes_res import (
 
 
 # noinspection PyPep8Naming
-from settings.settings import float_size
+from settings.settings import float_size, opening_dict
 
 
 class PaneManager:
@@ -68,7 +71,6 @@ class PaneManager:
         self.grid_ctrl = grid_ctrl
         self.size_reporter = size_reporter
         self.notebook_ctrl = notebook_ctrl
-        self.tmp_text = None
 
         # self.timer = wx.Timer(frame)
         # frame.Bind(wx.EVT_TIMER, self.OnTimer)
@@ -249,6 +251,9 @@ class PaneManager:
         self.frame.Bind(wx.EVT_MENU, self.OnPaste, id=wx.ID_PASTE)
         self.frame.Bind(wx.EVT_MENU, self.OnCopy, id=wx.ID_COPY)
 
+        self.frame.Bind(wx.EVT_MENU, self.OnLinePlot, id=mb_items["LinePlot"]["id"])
+        self.frame.Bind(wx.EVT_MENU, self.OnBarPlot, id=mb_items["BarPlot"]["id"])
+
     def default_layout(self):
         # all_panes: list[aui.AuiPaneInfo] = self.mgr.GetAllPanes()
         # pane: aui.AuiPaneInfo
@@ -267,6 +272,32 @@ class PaneManager:
         # self.mgr.GetPane("test10").Show()
         self.mgr.GetPane("notebook_content").Show()
         self.mgr.Update()
+
+    def OnLinePlot(self, _event: wx.CommandEvent):
+        self.echarts_show("Line Chart", "Line")
+
+    def OnBarPlot(self, _event: wx.CommandEvent):
+        self.echarts_show("Bar Chart", "Bar")
+
+    def echarts_show(self, title, echart_type, save_path=None):
+        dlg = SimpleDialog(self.frame, title=title)
+        result = dlg.ShowModal()
+        if result != wx.ID_OK:
+            dlg.Destroy()
+            return
+        y_list = dlg.ylist.GetSelections()
+        checks = dlg.ylist.GetCheckedItems()
+        x_num = dlg.xlist.GetSelection()
+        y_list.extend(checks)
+        selected_items = []
+        for sel in y_list:
+            # 使用GetStringSelection获取选中项的文本
+            selected_items.append(dlg.ylist.GetString(sel))
+        dlg.Destroy()
+
+        file_paths, file_name = simple_chart.build_html(x=dlg.data_df.iloc[:, x_num], y=dlg.data_df.iloc[:, y_list],
+                                                        title=title, echart_type=echart_type, save_path=save_path)
+        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
 
     def OnCopy(self, _event: wx.CommandEvent) -> None:
         # 模拟按键ctrl+c
@@ -293,17 +324,29 @@ class PaneManager:
         self.mgr.Update()
 
     def OnPaneClose(self, event: aui.AuiManagerEvent) -> None:
-        if not event.pane.name == "test10":
+        print(event.pane.name, event.GetEventType())
+        # if not event.pane.name == "test10":
+        #     return
+        # self.mgr.GetPane(event.GetPane().window)
+        # self.mgr.Update()
+        if event.pane.name not in ["ProjectTree_min", "Console_min"]:
             return
-        if event.GetEventType() == aui.wxEVT_AUI_PANE_MINIMIZE:
-            action = "minimize"
-        else:
-            action = "close/hide"
 
-        result = wx.MessageBox(f"Are you sure you want to {action} this pane?",
-                               "AUI", wx.YES_NO, self.frame)
-        if result != wx.YES:
-            event.Veto()
+        pane_info = event.GetPane()
+
+        # self.mgr.RestorePane(pane_info)
+        # page
+        self.mgr.Update()
+
+        # if event.GetEventType() == aui.wxEVT_AUI_PANE_MINIMIZE:
+        #     action = "minimize"
+        # else:
+        #     action = "close/hide"
+        #
+        # result = wx.MessageBox(f"Are you sure you want to {action} this pane?",
+        #                        "AUI", wx.YES_NO, self.frame)
+        # if result != wx.YES:
+        #     event.Veto()
 
     def OnTimer(self, _event: wx.TimerEvent) -> None:
         try:

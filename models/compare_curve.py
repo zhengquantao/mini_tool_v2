@@ -3,11 +3,11 @@ import os
 import numpy as np
 import pandas as pd
 
-from graph import compare_curve_chart, power_density_chart
+from graph import compare_curve_chart, power_density_chart, power_density_all_chart
 from models.utils.data_cleansing import curve_sigmod, sigmoid
 from models.utils.data_integration import curve_line_extra
 from models.utils.wind_base_tool import cut_speed
-from settings.settings import opening_dict, power_theoretical
+from settings.settings import opening_dict, power_theoretical, geolocation
 
 
 def compare_curve(file_path, num=1, select=False):
@@ -44,6 +44,56 @@ def compare_curve(file_path, num=1, select=False):
                                                            normal_scatter, power_line, xticks)
 
     return file_paths, file_name
+
+
+def compare_curve_all(file_path, num=1, select=False):
+    factor_path = opening_dict[os.getpid()]["path"]
+    factor_name = factor_path.split(os.sep)[-1]
+
+    res_list = []
+    for file in os.listdir(file_path):
+        if not file.endswith(".csv"):
+            continue
+
+        if file in [power_theoretical, geolocation]:
+            continue
+
+        turbine_code = file_path.split(os.sep)[-1].split(".")[0]
+
+        plna = str(turbine_code) + "号风机"
+
+        # data = pd.read_csv(file_path).dropna(axis=0)
+        data = pd.read_csv(os.path.join(file_path, file))
+
+        df1, speed_list = cut_speed(data)
+
+        # 功率曲线, 概率密度图和功率曲线图, 异常点, 拟合功率曲线, 清洗后的点
+        curve_line, plot_power_distplot, abnormal_scatter, fitting_line, normal_scatter = plot_confidence_interval(
+            df1, 0.8, ["wind_speed"], ["power"], plot_name=plna, num=num)
+        xticks = np.arange(0, 20.5, 0.5)
+
+        plot_power_df, _ = cut_speed(pd.DataFrame({"wind_speed": plot_power_distplot[0],
+                                                   "power": plot_power_distplot[1],
+                                                   "air_density": df1["air_density"]}))
+        plot_power_distplot = (plot_power_df, plot_power_distplot[2])
+
+        res_list.append(
+            (curve_line, plot_power_distplot, abnormal_scatter, fitting_line, normal_scatter, xticks, turbine_code)
+        )
+
+    if select:
+
+        file_paths, file_name = power_density_all_chart.build_html(factor_path, res_list, factor_name)
+        return file_paths, file_name
+
+    # # 理论功率曲线
+    # power_line = curve_line_extra(os.path.join(factor_path, power_theoretical), factor_name)
+    # power_line = (power_line.iloc[:, 0], power_line.iloc[:, 1], "理论功率曲线")
+    #
+    # file_paths, file_name = compare_curve_chart.build_html(factor_path, turbine_code, abnormal_scatter, fitting_line,
+    #                                                        normal_scatter, power_line, xticks)
+    #
+    # return file_paths, file_name
 
 
 def plot_confidence_interval(data, confidence_interval=0.8, use_column=None, target_column=None, plot_name=None,

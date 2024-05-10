@@ -49,8 +49,8 @@ main_menu_items = {
     "Graph": {
         "label": "&Graph",
         "children": {
-            "Line Plot":           {"label": "&Line Plot"},
-            "Bar Plot":           {"label": "&Bar Plot"},
+            "LinePlot":           {"label": "&Line Plot"},
+            "BarPlot":           {"label": "&Bar Plot"},
         }
     },
     "Options": {

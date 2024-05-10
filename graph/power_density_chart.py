@@ -13,6 +13,14 @@ from pyecharts.charts import Bar, Line
 
 
 def build_html(factor_path, turbine, plot_power_df, xticks, name, *args, **kwargs):
+    page = build_page(plot_power_df, name)
+    file_name = random_name(turbine, "风资源对比图")
+    html_path = page.render(os.path.join(factor_path, file_name))
+
+    return html_path, file_name
+
+
+def build_page(plot_power_df, name):
     # 计算概率密度
     # hist, bin_edges = np.histogram(plot_power_df["wind_speed"], bins=xticks)
     plot_power_df["wind_speed2"] = plot_power_df.apply(lambda row: pow(row["wind_speed"], 3), axis=1)
@@ -21,7 +29,7 @@ def build_html(factor_path, turbine, plot_power_df, xticks, name, *args, **kwarg
     bar = (
         Bar(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
         .add_xaxis(grouped_mean.index.tolist())
-        .add_yaxis("概率密度", grouped_mean["wind_speed"].tolist(),  yaxis_index=1, color="#ffc084")
+        .add_yaxis("概率密度", grouped_mean["wind_speed"].tolist(), yaxis_index=1, color="#ffc084")
         .extend_axis(
             yaxis=opts.AxisOpts(
                 type_="value",
@@ -31,8 +39,7 @@ def build_html(factor_path, turbine, plot_power_df, xticks, name, *args, **kwarg
                 # axislabel_opts=opts.LabelOpts(formatter="{value} °C"),
                 splitline_opts=opts.SplitLineOpts(
                     is_show=True
-                ),
-            ),
+                ),),
         )
         .set_global_opts(
             title_opts=opts.TitleOpts(title=name),
@@ -72,8 +79,8 @@ def build_html(factor_path, turbine, plot_power_df, xticks, name, *args, **kwarg
                 # 'none': 什么都不触发
                 trigger="axis",
                 axis_pointer_type="cross",
-        ))
-        )
+            ))
+    )
 
     # 创建Line图
     line1 = (
@@ -81,23 +88,21 @@ def build_html(factor_path, turbine, plot_power_df, xticks, name, *args, **kwarg
         .add_xaxis(grouped_mean.index.tolist())
         .add_yaxis("功率曲线", grouped_mean["power"].tolist(),
                    label_opts=opts.LabelOpts(is_show=False),
-                   is_symbol_show=False, color="#1f77b4",
+                   is_symbol_show=False, color="#1f77b4", is_smooth=True,
                    z=1, z_level=1, yaxis_index=0)
     )
     grouped_mean = grouped_mean.fillna(0)
     grouped_mean["wind_power_density"] = grouped_mean.apply(
-        lambda row: row["air_density"]*row["wind_speed"]*pow(row["wind_speed2"], 3)/2, axis=1)
+        lambda row: row["air_density"] * row["wind_speed"] * pow(row["wind_speed2"], 3) / 2, axis=1)
     line2 = (
         Line()
         .add_xaxis(grouped_mean.index.tolist())
         .add_yaxis("风功率密度", grouped_mean["wind_power_density"].tolist(),
                    label_opts=opts.LabelOpts(is_show=False),
-                   is_symbol_show=False, color="#bf8232",
+                   is_symbol_show=False, color="#bf8232", is_smooth=True,
                    z=1, z_level=1, yaxis_index=0)
     )
 
     page = bar.overlap(line1).overlap(line2)
-    file_name = random_name(turbine, "风资源对比图")
-    html_path = page.render(os.path.join(factor_path, file_name))
+    return page
 
-    return html_path, file_name

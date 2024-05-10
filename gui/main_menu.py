@@ -111,6 +111,7 @@ class MainMenu:
         self.items["Edit"].Append(wx.ID_BACKWARD, "Back")
         self.items["Edit"].Enable(wx.ID_BACKWARD, False)
         self.items["Edit"].Append(wx.ID_DELETE, "Delete")
+        self.items["Edit"].Enable(wx.ID_DELETE, False)
 
         self.items["Help"].Append(wx.ID_HELP)
         self.frame.Bind(wx.EVT_MENU, self.OnHelp, id=wx.ID_HELP)

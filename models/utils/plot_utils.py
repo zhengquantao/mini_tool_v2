@@ -6,11 +6,11 @@ coding:utf-8
 '''
 
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import pandas as pd
 import scipy.stats as stats
 from sklearn.neighbors import KernelDensity
-import seaborn as sns
+# import seaborn as sns
 
 np.random.seed(8)
 
