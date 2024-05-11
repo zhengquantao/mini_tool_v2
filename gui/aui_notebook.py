@@ -147,8 +147,7 @@ class Notebook:
         self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).
                          Float().FloatingPosition(self.start_position()).
                          CloseButton(True).MaximizeButton(True).MinimizeButton(True).Movable(True).Floatable(True).
-                         BestSize(*float_size).BestSize(*float_size).MaxSize(*float_size).
-                         MaxSize(*float_size))
+                         BestSize(*float_size).MinSize(*float_size))
 
         self.mgr.Update()
         ctrl.Refresh()

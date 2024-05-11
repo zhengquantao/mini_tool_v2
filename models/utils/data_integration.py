@@ -7,7 +7,7 @@ coding:utf-8
 import os
 
 import pandas as pd
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from models.utils.data_cleansing import *
 from models.utils.wind_base_tool import *
 from models.utils.AEP.wind_base_tool import *

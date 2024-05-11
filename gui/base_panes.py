@@ -14,6 +14,7 @@ from wx.lib.agw.aui import aui_switcherdialog as asd
 from common import loggers
 from common.common import add_notebook_page
 from graph import simple_chart
+from gui.aui_notebook_options_res import agw_tabart_provider
 from gui.simple_dialog import SimpleDialog
 from settings import resources as res
 from settings import settings as cs
@@ -80,8 +81,8 @@ class PaneManager:
 
         self.mb_items = mb_items
         self.item_ids = item_ids
-        self.init_maps()
-        self.init_ui_state()
+        # self.init_maps()
+        # self.init_ui_state()
         self.bind_menu()
 
     # def __del__(self):
@@ -182,8 +183,7 @@ class PaneManager:
         self.mgr.AddPane(notebook_ctrl.create_ctrl(), aui.AuiPaneInfo().Name("notebook_content").
                          CenterPane().PaneBorder(False).
                          CloseButton(True).MaximizeButton(True).MinimizeButton(True).Movable(True).
-                         FloatingSize(wx.Size(*float_size)).BestSize(*float_size).MaxSize(*float_size).
-                         MaxSize(*float_size))
+                         FloatingSize(wx.Size(*float_size)).BestSize(*float_size).MinSize(*float_size))
 
         # Show how to add a control inside a tab
         notebook = self.mgr.GetPane("notebook_content").window
@@ -195,7 +195,7 @@ class PaneManager:
 
     def request_menu(self) -> None:
         self.collect_panes()
-        # self.build_request_menu()
+        self.build_request_menu()
 
     def collect_panes(self):
         pane: aui.AuiPaneInfo
@@ -224,28 +224,32 @@ class PaneManager:
     def bind_menu(self):
         mb_items: dict = self.mb_items
         menu_refid: wx.WindowIDRef
+        self.themes = {self.mb_items[key]["id"]: agw_tabart_provider[key] for key in agw_tabart_provider}
+        for menu_refid in self.themes:
+            self.frame.Bind(wx.EVT_MENU, self.OnNotebookTheme, menu_refid)
+
         # ctrl_key: str
-        for ctrl_key in content_ctrls.values():
-            self.frame.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=self.mb_items[ctrl_key]["id"])
+        # for ctrl_key in content_ctrls.values():
+        #     self.frame.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=self.mb_items[ctrl_key]["id"])
         self.frame.Bind(aui.EVT_AUI_PANE_CLOSE, self.OnPaneClose)
-        self.frame.Bind(wx.EVT_MENU, self.OnVetoTree, id=self.mb_items["VetoTree"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnVetoText, id=self.mb_items["VetoText"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.OnVetoTree, id=self.mb_items["VetoTree"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.OnVetoText, id=self.mb_items["VetoText"]["id"])
         self.frame.Bind(aui.EVT_AUI_PANE_FLOATING, self.OnFloatDock)
         self.frame.Bind(aui.EVT_AUI_PANE_FLOATED, self.OnFloatDock)
         self.frame.Bind(aui.EVT_AUI_PANE_DOCKING, self.OnFloatDock)
         self.frame.Bind(aui.EVT_AUI_PANE_DOCKED, self.OnFloatDock)
-        for menu_refid in self.flags:
-            self.frame.Bind(wx.EVT_MENU, self.OnMinimizeModeFlag, menu_refid)
-        self.frame.Bind(wx.EVT_MENU, self.OnMinimizeModeFlag, id=mb_items["MinimizeCaptHide"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnSetIconsOnPanes, id=mb_items["PaneIcons"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnTransparentPane, id=mb_items["TransparentPane"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnDockArt, id=mb_items["DefaultDockArt"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnDockArt, id=mb_items["ModernDockArt"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnSnapToScreen, id=mb_items["SnapToScreen"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnSnapPanes, id=mb_items["SnapPanes"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnFlyOut, id=mb_items["FlyOut"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnCustomPaneButtons, id=mb_items["CustomPaneButtons"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnSwitchPane, id=mb_items["SwitchPane"]["id"])
+        # for menu_refid in self.flags:
+        #     self.frame.Bind(wx.EVT_MENU, self.OnMinimizeModeFlag, menu_refid)
+        # self.frame.Bind(wx.EVT_MENU, self.OnMinimizeModeFlag, id=mb_items["MinimizeCaptHide"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.OnSetIconsOnPanes, id=mb_items["PaneIcons"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.OnTransparentPane, id=mb_items["TransparentPane"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.OnDockArt, id=mb_items["DefaultDockArt"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.OnDockArt, id=mb_items["ModernDockArt"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.OnSnapToScreen, id=mb_items["SnapToScreen"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.OnSnapPanes, id=mb_items["SnapPanes"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.OnFlyOut, id=mb_items["FlyOut"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.OnCustomPaneButtons, id=mb_items["CustomPaneButtons"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.OnSwitchPane, id=mb_items["SwitchPane"]["id"])
 
         self.frame.Bind(wx.EVT_MENU, self.OnDelete, id=wx.ID_DELETE)
         self.frame.Bind(wx.EVT_MENU, self.OnBack, id=wx.ID_BACKWARD)
@@ -275,6 +279,20 @@ class PaneManager:
         # self.mgr.GetPane("test10").Show()
         self.mgr.GetPane("notebook_content").Show()
         self.mgr.Update()
+
+    def OnNotebookTheme(self, event: wx.CommandEvent) -> None:
+        """Update notebook theme (TabArt provider)."""
+        event_id: wx.WindowIDRef = event.GetId()
+        if self.notebook_ctrl.notebook_theme == self.themes[event_id]["rowid"]:
+            return
+        self.notebook_ctrl.notebook_theme = self.themes[event_id]["rowid"]
+        art_provider = self.themes[event_id]["provider"]()
+
+        nb: aui.AuiNotebook
+        for nb in self.notebook_ctrl.all_notebooks():
+            nb.SetArtProvider(art_provider)
+            nb.Refresh()
+            nb.Update()
 
     def OnLinePlot(self, _event: wx.CommandEvent):
         self.echarts_show("Line Chart", "Line")
@@ -611,8 +629,9 @@ class PaneManager:
             item: asd.SwitcherItem = items.GetItem(dlg.GetSelection())
             if item.GetId() == -1:
                 pane = self.mgr.GetPane(item.GetName())
-                pane.Show()
                 pane.window.SetFocus()
+                pane.Show()
+
             else:
                 nb = item.GetWindow().GetParent()
                 if isinstance(nb, aui.AuiNotebook):

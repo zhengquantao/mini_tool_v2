@@ -29,7 +29,7 @@ __version__ = 0.1
 opening_dict = {}
 
 # 主窗口大小
-window_size = (1500, 1000)
+window_size = (1200, 800)
 # 浮动窗口大小
 float_size = (800, 600)
 # 日志等级

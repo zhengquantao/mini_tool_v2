@@ -61,17 +61,17 @@ class MainApp:
         popup: PopupMenu = PopupMenu(frame)
         popup.bind_DropDownToolbarItem(tbman.items["DropDownToolbarItem"]["id"])
 
-        ID_SizeReportCtrl: wx.WindowIDRef = menubar.items["CreateSizeReport"]["id"]
+        ID_SizeReportCtrl: wx.WindowIDRef = wx.WindowIDRef()
         size_reporter: SizeReportCtrl = SizeReportCtrl(frame, mgr, ID_SizeReportCtrl)
-        ID_TextCtrl: wx.WindowIDRef = menubar.items["CreateText"]["id"]
+        ID_TextCtrl: wx.WindowIDRef = wx.WindowIDRef()
         text_ctrl: TextCtrl = TextCtrl(frame, mgr, ID_TextCtrl)
-        ID_HTMLCtrl: wx.WindowIDRef = menubar.items["CreateHTML"]["id"]
+        ID_HTMLCtrl: wx.WindowIDRef = wx.WindowIDRef()
         html_ctrl: HTMLCtrl = HTMLCtrl(frame, mgr, ID_HTMLCtrl)
-        ID_GridCtrl: wx.WindowIDRef = menubar.items["CreateGrid"]["id"]
+        ID_GridCtrl: wx.WindowIDRef = wx.WindowIDRef()
         grid_ctrl: GridCtrl = GridCtrl(frame, mgr, ID_GridCtrl)
-        ID_NotebookCtrl: wx.WindowIDRef = menubar.items["CreateNotebook"]["id"]
+        ID_NotebookCtrl: wx.WindowIDRef = wx.WindowIDRef()
         notebook_ctrl: Notebook = Notebook(frame, mgr, ID_NotebookCtrl, html_ctrl)
-        ID_TreeCtrl: wx.WindowIDRef = menubar.items["CreateTree"]["id"]
+        ID_TreeCtrl: wx.WindowIDRef = wx.WindowIDRef()
         tree_ctrl: TreeCtrl = TreeCtrl(frame, mgr, ID_TreeCtrl, notebook_ctrl, html_ctrl, grid_ctrl)
 
         # init log
@@ -80,22 +80,22 @@ class MainApp:
         loggers.logger = loggers.init_log(logger_frames)
         loggers.logger.info("正在运行中....")
 
-        _notebook_options: NotebookOptions = NotebookOptions(
-            frame, mgr, notebook_ctrl, menubar.items, menubar.item_ids)
-        _manager_options: ManagerOptions = ManagerOptions(
-            frame, mgr, menubar.items, menubar.item_ids)
-        _dockart_options: DockArtOptions = DockArtOptions(
-            frame, mgr, menubar.items, menubar.item_ids)
+        # _notebook_options: NotebookOptions = NotebookOptions(
+        #     frame, mgr, notebook_ctrl, menubar.items, menubar.item_ids)
+        # _manager_options: ManagerOptions = ManagerOptions(
+        #     frame, mgr, menubar.items, menubar.item_ids)
+        # _dockart_options: DockArtOptions = DockArtOptions(
+        #     frame, mgr, menubar.items, menubar.item_ids)
 
         paneman: PaneManager = PaneManager(
             frame, mgr, menubar.items, menubar.item_ids, html_ctrl, text_ctrl,
             tree_ctrl, grid_ctrl, size_reporter, notebook_ctrl)
         paneman.build_panes()
-        paneman.request_menu()
-        layman: LayoutManager = LayoutManager(frame, mgr, menubar.items)
-        layman.save("All Panes")
+        # paneman.request_menu()
+        # layman: LayoutManager = LayoutManager(frame, mgr, menubar.items)
+        # layman.save("All Panes")
         paneman.default_layout()
-        layman.save("Default Startup")
+        # layman.save("Default Startup")
         setman: SettingsPanel = SettingsPanel(frame, mgr)
         setman.build_panel(menubar.items)
 
