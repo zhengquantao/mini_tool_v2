@@ -8,12 +8,13 @@ from settings.settings import float_size, opening_dict
 CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/static/"
 
 from pyecharts import options as opts
-from pyecharts.charts import Bar, Line
+from pyecharts.charts import Bar, Line, Scatter
 
 
 Echarts_Type = {
     "Bar": Bar,
     "Line": Line,
+    "Scatter": Scatter,
 }
 
 

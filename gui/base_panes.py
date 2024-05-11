@@ -4,6 +4,7 @@ import wx
 import wx.aui
 import wx.lib.agw.aui as aui
 import wx.lib.embeddedimage as ei
+from aui2 import svg_to_bitmap
 from wx.lib.agw.aui import aui_switcherdialog as asd
 
 # If MainFrame subclasses wx.Frame, uncomment the following lines
@@ -15,6 +16,7 @@ from common.common import add_notebook_page
 from graph import simple_chart
 from gui.simple_dialog import SimpleDialog
 from settings import resources as res
+from settings import settings as cs
 from gui.controls import SizeReportCtrl, TextCtrl, TreeCtrl, HTMLCtrl, GridCtrl
 from gui.aui_notebook import Notebook
 from gui.progress import ProgressGauge
@@ -144,8 +146,8 @@ class PaneManager:
 
         self.mgr.AddPane(loggers.logger_frame, aui.AuiPaneInfo().
                          Name("Console").Caption("Console").PaneBorder(False).FloatingSize(wx.Size(*float_size)).
-                         Bottom().Floatable(True).CloseButton(False).
-                         MaximizeButton(True).MinimizeButton(True))
+                         Bottom().Floatable(False).CloseButton(False).
+                         MaximizeButton(True).MinimizeButton(True).Icon(svg_to_bitmap(cs.console_svg, size=(20, 18))))
 
         # wnd10 = text_ctrl.create_ctrl("This pane will prompt the user before hiding.")
         # self.mgr.AddPane(wnd10, aui.AuiPaneInfo().
@@ -253,6 +255,7 @@ class PaneManager:
 
         self.frame.Bind(wx.EVT_MENU, self.OnLinePlot, id=mb_items["LinePlot"]["id"])
         self.frame.Bind(wx.EVT_MENU, self.OnBarPlot, id=mb_items["BarPlot"]["id"])
+        self.frame.Bind(wx.EVT_MENU, self.OnScatterPlot, id=mb_items["ScatterPlot"]["id"])
 
     def default_layout(self):
         # all_panes: list[aui.AuiPaneInfo] = self.mgr.GetAllPanes()
@@ -278,6 +281,9 @@ class PaneManager:
 
     def OnBarPlot(self, _event: wx.CommandEvent):
         self.echarts_show("Bar Chart", "Bar")
+
+    def OnScatterPlot(self, _event: wx.CommandEvent):
+        self.echarts_show("Scatter Chart", "Scatter")
 
     def echarts_show(self, title, echart_type, save_path=None):
         dlg = SimpleDialog(self.frame, title=title)
@@ -332,21 +338,18 @@ class PaneManager:
         if event.pane.name not in ["ProjectTree_min", "Console_min"]:
             return
 
-        pane_info = event.GetPane()
+        # pane_info = event.GetPane()
+        # self.mgr.Update()
 
-        # self.mgr.RestorePane(pane_info)
-        # page
-        self.mgr.Update()
+        if event.GetEventType() == aui.wxEVT_AUI_PANE_MINIMIZE:
+            action = "minimize"
+        else:
+            action = "close/hide"
 
-        # if event.GetEventType() == aui.wxEVT_AUI_PANE_MINIMIZE:
-        #     action = "minimize"
-        # else:
-        #     action = "close/hide"
-        #
-        # result = wx.MessageBox(f"Are you sure you want to {action} this pane?",
-        #                        "AUI", wx.YES_NO, self.frame)
-        # if result != wx.YES:
-        #     event.Veto()
+        result = wx.MessageBox(f"Are you sure you want to {action} this pane?",
+                               "MINI-TOOL", wx.YES_NO, self.frame)
+        if result != wx.YES:
+            event.Veto()
 
     def OnTimer(self, _event: wx.TimerEvent) -> None:
         try:

@@ -10,13 +10,15 @@ import wx.lib.agw.aui as aui
 # from typing import TYPE_CHECKING
 # if TYPE_CHECKING:
 #     from gui.main_frame import MainFrame
+from aui2 import svg_to_bitmap
+
 from common.common import read_file, remove_file, rename_file, get_file_info, add_notebook_page
 from common import loggers
 from models.compare_curve import compare_curve, compare_curve_all
 from models.dswe_main import iec_main
 from models.geo_main import geo_main
 from settings.resources import overview
-from settings.settings import opening_dict, float_size, display_grid_count
+from settings.settings import opening_dict, float_size, display_grid_count, model_svg
 
 
 class Singleton(type):
@@ -229,9 +231,9 @@ class TreeCtrl(metaclass=Singleton):
     def OnCreate(self, _event: wx.CommandEvent) -> None:
         ctrl: wx.TreeCtrl = self.create_ctrl()
         caption = "Tree Control"
-        self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).Float().
-                         FloatingPosition(self.start_position()).CloseButton(True).
-                         MaximizeButton(True).MinimizeButton(True))
+        self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).Float().Left().
+                         FloatingPosition(self.start_position()).CloseButton(False).
+                         MaximizeButton(True).MinimizeButton(True).Floatable(False).Dockable(False))
         self.mgr.Update()
         ctrl.Refresh()
 
@@ -267,8 +269,14 @@ class TreeCtrl(metaclass=Singleton):
         model_6 = sub_model_menu.Append(wx.ID_ANY, '风资源对比总览')
         model_4 = sub_model_menu.Append(wx.ID_ANY, '理论与实际功率对比分析')
         model_5 = sub_model_menu.Append(wx.ID_ANY, '风资源对比')
-        menu.AppendSubMenu(sub_model_menu, '模型图')
-
+        # Bin分仓
+        model_7 = sub_model_menu.Append(wx.ID_ANY, '风速-风能利用系数Cp曲线')
+        model_8 = sub_model_menu.Append(wx.ID_ANY, '风速-桨距角曲线')
+        model_9 = sub_model_menu.Append(wx.ID_ANY, '桨距角-功率曲线')
+        model_10 = sub_model_menu.Append(wx.ID_ANY, '风速-转速曲线')
+        model_11 = sub_model_menu.Append(wx.ID_ANY, '转速-功率曲线')
+        model_menu_item = menu.AppendSubMenu(sub_model_menu, '模型图')
+        model_menu_item.SetBitmap(svg_to_bitmap(model_svg, size=(13, 13)))
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_open(event, path), open_item)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_delete(event, path), delete_item)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_rename(event, path), rename_item)
@@ -279,6 +287,12 @@ class TreeCtrl(metaclass=Singleton):
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_4(event, path), model_4)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_5(event, path), model_5)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_6(event, path), model_6)
+
+        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_7(event, path), model_7)
+        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_8(event, path), model_8)
+        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_9(event, path), model_9)
+        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_10(event, path), model_10)
+        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_11(event, path), model_11)
 
         self.tree.PopupMenu(menu)
 
@@ -390,6 +404,26 @@ class TreeCtrl(metaclass=Singleton):
         # 风资源对比总览图
         file_paths, file_name = compare_curve_all(path, select=True)
         add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
+
+    def on_model_7(self, event, path):
+        """风速-风能利用系数Cp曲线"""
+        loggers.logger.info(f"model clicked, path: {path}")
+
+    def on_model_8(self, event, path):
+        """风速-桨距角曲线"""
+        loggers.logger.info(f"model clicked, path: {path}")
+
+    def on_model_9(self, event, path):
+        """桨距角-功率曲线"""
+        loggers.logger.info(f"model clicked, path: {path}")
+
+    def on_model_10(self, event, path):
+        """风速-转速曲线"""
+        loggers.logger.info(f"model clicked, path: {path}")
+
+    def on_model_11(self, event, path):
+        """转速-功率曲线"""
+        loggers.logger.info(f"model clicked, path: {path}")
 
     def on_item_expanded(self, event):
         print("Item expanded!")

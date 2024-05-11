@@ -42,7 +42,7 @@ cids = {
     "InactiveCaptionTextColour": {
         "aui_id": aui.AUI_DOCKART_INACTIVE_CAPTION_TEXT_COLOUR,
         "label": "Normal Caption Text:",
-        "color": "#c5c5c5",
+        "color": "#000000",
     },
     "ActiveCaptionColour": {
         "aui_id": aui.AUI_DOCKART_ACTIVE_CAPTION_COLOUR,

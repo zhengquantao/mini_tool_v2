@@ -4,6 +4,7 @@ All keys/item_ids should be unique within entire structure.
 """
 import wx
 
+from settings.settings import line_svg, bar_svg, scatter_svg, open_svg
 
 if wx.Platform == "__WXMAC__":
     switcher_accel = "Alt+Tab"
@@ -17,7 +18,7 @@ main_menu_items = {
         "label": "&File",
         "children": {
             "NewProject": {"label": "New &Project", "id": wx.ID_NEW},
-            "OpenProject": {"label": "Open &Project", "id": wx.ID_OPEN},
+            "OpenProject": {"label": "Open &Project", "id": wx.ID_OPEN, "icon": open_svg},
             "OpenFile": {"label": "Open &File", "id": wx.ID_FILE},
             "SaveProject": {"label": "Save &Project", "id": wx.ID_SAVE},
         }
@@ -49,8 +50,9 @@ main_menu_items = {
     "Graph": {
         "label": "&Graph",
         "children": {
-            "LinePlot":           {"label": "&Line Plot"},
-            "BarPlot":           {"label": "&Bar Plot"},
+            "LinePlot":           {"label": "&Line Plot", "icon": line_svg},
+            "BarPlot":           {"label": "&Bar Plot", "icon": bar_svg},
+            "ScatterPlot":           {"label": "&Scatter Plot", "icon": scatter_svg},
         }
     },
     "Options": {

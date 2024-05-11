@@ -10,7 +10,7 @@ import wx.lib.agw.aui as aui
 from aui2 import svg_to_bitmap
 
 from gui.main_menu_res import main_menu_items
-from settings.settings import main_title, __version__, icon_svg
+from settings.settings import main_title, __version__, icon_svg, delete_svg, contact_svg, web_svg
 
 
 # If MainFrame subclasses wx.Frame, uncomment the following lines
@@ -81,11 +81,11 @@ class MainMenu:
                 self.items[child_key] = submenu
                 menu.AppendSubMenu(submenu, child_label)
             else:
-                self.append_menu_line(menu, child_key, child_label, child_type, item_id)
+                self.append_menu_line(menu, child_key, child_label, child_type, item_id, child.get("icon"))
         return menu
 
     def append_menu_line(self, menu: wx.Menu, item_key: str, item_label: str,
-                         item_type: str, item_id: wx.WindowIDRef = wx.ID_ANY) -> None:
+                         item_type: str, item_id: wx.WindowIDRef = wx.ID_ANY, icon=None) -> None:
         menu_item: wx.MenuItem
         if not item_label:
             menu_item = menu.AppendSeparator()
@@ -101,6 +101,7 @@ class MainMenu:
             menu_item = menu.AppendCheckItem(item_id, item_label)
         else:
             raise ValueError(f"Unknown menu item type: <{item_type}>")
+        icon and menu_item.SetBitmap(svg_to_bitmap(icon, size=(16, 16)))
         self.item_ids[item_id] = item_key
         self.items[item_key] = {"id": item_id, "type": item_type, "item": menu_item}
 
@@ -110,16 +111,19 @@ class MainMenu:
         self.items["Edit"].Append(wx.ID_CUT, "Cut")
         self.items["Edit"].Append(wx.ID_BACKWARD, "Back")
         self.items["Edit"].Enable(wx.ID_BACKWARD, False)
-        self.items["Edit"].Append(wx.ID_DELETE, "Delete")
+        delete_menu = self.items["Edit"].Append(wx.ID_DELETE, "Delete")
+        delete_menu.SetBitmap(svg_to_bitmap(delete_svg, size=(16, 16)))
         self.items["Edit"].Enable(wx.ID_DELETE, False)
 
         self.items["Help"].Append(wx.ID_HELP)
         self.frame.Bind(wx.EVT_MENU, self.OnHelp, id=wx.ID_HELP)
-        self.items["Help"].Append(wx.ID_HELP_CONTEXT, "Contact Us")
+        contact_menu = self.items["Help"].Append(wx.ID_HELP_CONTEXT, "Contact Us")
+        contact_menu.SetBitmap(svg_to_bitmap(contact_svg, size=(15, 15)))
         self.frame.Bind(wx.EVT_MENU, self.OnContact, id=wx.ID_HELP_CONTEXT)
         self.items["Help"].Append(wx.ID_ABOUT)
         self.frame.Bind(wx.EVT_MENU, self.OnAbout, id=wx.ID_ABOUT)
-        self.items["Help"].Append(wx.ID_HELP_CONTENTS, "WebSite")
+        web_menu = self.items["Help"].Append(wx.ID_HELP_CONTENTS, "WebSite")
+        web_menu.SetBitmap(svg_to_bitmap(web_svg, size=(15, 15)))
         self.frame.Bind(wx.EVT_MENU, self.OnWebHome, id=wx.ID_HELP_CONTENTS)
 
     def OnAbout(self, _event: wx.CommandEvent) -> None:

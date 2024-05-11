@@ -5,6 +5,7 @@ import shutil
 import wx
 import wx.aui
 import wx.lib.agw.aui as aui
+from aui2 import svg_to_bitmap
 
 from settings import settings as cs
 from common.common import read_file, new_app, save_mini_file
@@ -108,8 +109,9 @@ class FileManager:
         print(f"当前进程号：{pid}")
         opening_dict[pid] = {"path": path, "records": {}}
         self.mgr.AddPane(self.tree_ctrl.create_ctrl(path), aui.AuiPaneInfo().Name("ProjectTree").Caption(path).
-                         Left().Position(1).Layer(0).Row(0).CloseButton(False).MaximizeButton(True).
-                         MinimizeButton(True).Floatable(False))
+                         Left().Position(1).Layer(0).Row(1).CloseButton(False).MaximizeButton(True).
+                         MinimizeButton(True).Movable(False).Floatable(False).Dockable(False).
+                         Icon(svg_to_bitmap(cs.tree_svg, size=(20, 20))))
         self.mgr.Update()
 
         data = read_file(os.path.join(path, ".mini"))
