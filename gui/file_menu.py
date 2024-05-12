@@ -109,8 +109,8 @@ class FileManager:
         print(f"当前进程号：{pid}")
         opening_dict[pid] = {"path": path, "records": {}}
         self.mgr.AddPane(self.tree_ctrl.create_ctrl(path), aui.AuiPaneInfo().Name("ProjectTree").Caption(path).
-                         Left().Position(1).Layer(0).Row(1).CloseButton(False).MaximizeButton(True).
-                         MinimizeButton(True).Movable(False).Floatable(False).Dockable(False).
+                         CloseButton(False).MaximizeButton(True).
+                         MinimizeButton(True).Movable(False).Floatable(False).
                          Icon(svg_to_bitmap(cs.tree_svg, size=(20, 20))))
         self.mgr.Update()
 

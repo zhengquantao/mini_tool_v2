@@ -232,6 +232,7 @@ class PaneManager:
         # for ctrl_key in content_ctrls.values():
         #     self.frame.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=self.mb_items[ctrl_key]["id"])
         self.frame.Bind(aui.EVT_AUI_PANE_CLOSE, self.OnPaneClose)
+        # self.frame.Bind(aui.EVT_AUI_PANE_MINIMIZE, self.OnPaneMin)
         # self.frame.Bind(wx.EVT_MENU, self.OnVetoTree, id=self.mb_items["VetoTree"]["id"])
         # self.frame.Bind(wx.EVT_MENU, self.OnVetoText, id=self.mb_items["VetoText"]["id"])
         self.frame.Bind(aui.EVT_AUI_PANE_FLOATING, self.OnFloatDock)
@@ -347,6 +348,24 @@ class PaneManager:
             self.mgr.GetPane(pane_key).Show(ref_id == self.mb_items[ctrl_key]["id"])
         self.mgr.Update()
 
+    # def OnPaneMin(self, event: aui.AuiManagerEvent) -> None:
+    #     print(event.pane.name, event.GetEventType())
+    #     # if not event.pane.name == "test10":
+    #     #     return
+    #     # self.mgr.GetPane(event.GetPane().window)
+    #     # self.mgr.Update()
+    #     # if event.pane.name not in ["ProjectTree_min", "Console_min"]:
+    #     #     return
+    #
+    #     if event.pane.name == "ProjectTree":
+    #
+    #         tree = event.pane
+    #         # tree.MinimizeMode(aui.AUI_MINIMIZE_POS_TOOLBAR)
+    #         toolbar_pane = self.mgr.GetPane("toolbar_right")
+    #         tree.MinimizeTarget(toolbar_pane)
+    #         self.mgr.Update()
+    #         return
+
     def OnPaneClose(self, event: aui.AuiManagerEvent) -> None:
         print(event.pane.name, event.GetEventType())
         # if not event.pane.name == "test10":
@@ -399,6 +418,7 @@ class PaneManager:
 
     def OnMinimizeModeFlag(self, event: wx.CommandEvent) -> None:
         """Updates minimize mode state based on menu events."""
+        print("--------------")
         min_mode: int = self.min_mode
         event_id: wx.WindowIDRef = event.GetId()
         menu_key: str = self.item_ids[event_id]

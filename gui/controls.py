@@ -231,7 +231,7 @@ class TreeCtrl(metaclass=Singleton):
     def OnCreate(self, _event: wx.CommandEvent) -> None:
         ctrl: wx.TreeCtrl = self.create_ctrl()
         caption = "Tree Control"
-        self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).Float().Left().
+        self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).
                          FloatingPosition(self.start_position()).CloseButton(False).
                          MaximizeButton(True).MinimizeButton(True).Floatable(False).Dockable(False))
         self.mgr.Update()

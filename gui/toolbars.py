@@ -2,6 +2,7 @@ import wx
 import wx.aui
 import wx.lib.agw.aui as aui
 import aui2
+from aui2 import svg_to_bitmap
 
 # If MainFrame subclasses wx.Frame, uncomment the following lines
 # from typing import TYPE_CHECKING
@@ -164,10 +165,10 @@ class ToolBarManager:
         # tb_id: int = wx.NewIdRef()
         # tb5 = aui.AuiToolBar(frame, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
         #                      agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_VERTICAL)
-        # self.toolbar_ids[tb_id] = "tb5"
-        # self.toolbars["tb5"] = {"id": tb_id, "item": tb5}
+        # self.toolbar_ids[tb_id] = "toolbar_left"
+        # self.toolbars["toolbar_left"] = {"id": tb_id, "item": tb5}
         # tb5.SetToolBitmapSize(wx.Size(48, 48))
-        # tb5.AddSimpleTool(wx.NewIdRef(), "Test", wx.ArtProvider.GetBitmap(wx.ART_ERROR))
+        # tb5.AddSimpleTool(wx.NewIdRef(), "Root", svg_to_bitmap(cs.tree_svg, size=(20, 20)))
         # tb5.AddSeparator()
         # tb5.AddSimpleTool(wx.NewIdRef(), "Test", wx.ArtProvider.GetBitmap(wx.ART_QUESTION))
         # tb5.AddSimpleTool(wx.NewIdRef(), "Test", wx.ArtProvider.GetBitmap(wx.ART_INFORMATION))
@@ -175,7 +176,7 @@ class ToolBarManager:
         # tb5.AddSimpleTool(wx.NewIdRef(), "Test", wx.ArtProvider.GetBitmap(wx.ART_MISSING_IMAGE))
         # tb5.SetCustomOverflowItems([], append_items)
         # tb5.Realize()
-        # mgr.AddPane(tb5, aui.AuiPaneInfo().Name("tb5").Caption("Vertical Toolbar").ToolbarPane().Left().GripperTop())
+        # mgr.AddPane(tb5, aui.AuiPaneInfo().Name("toolbar_left").Caption("左边栏").ToolbarPane().Left().GripperTop())
 
         tb_id: int = wx.NewIdRef()
         tb6 = aui.AuiToolBar(frame, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
@@ -201,9 +202,9 @@ class ToolBarManager:
 
         # Show how to get a custom minimizing behaviour, i.e., to minimize a pane
         # inside an existing AuiToolBar
-        # tree = self.mgr.GetPane("test8")
+        # tree = self.mgr.GetPane("ProjectTree")
         # tree.MinimizeMode(aui.AUI_MINIMIZE_POS_TOOLBAR)
-        # toolbar_pane = self.mgr.GetPane(tb4)
+        # toolbar_pane = self.mgr.GetPane(tb2)
         # tree.MinimizeTarget(toolbar_pane)
 
         # "commit" all changes made to AuiManager
