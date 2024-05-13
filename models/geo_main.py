@@ -16,7 +16,7 @@ def geo_main(file_path):
     turbine_code = file_path.split(os.sep)[-1].split(".")[0]
 
     base_turbine, all_statistics = aep_analysis.aep_main(file_path, factor_name, ["real_time"], ["wind_speed"],
-                                                         ["wind_dirction"],
+                                                         ["wind_direction"],
                                                          ["nacelle_temperture"], [],  # ["air_density"]
                                                          ["power"], curve_line_path, confidence_num=0.8,
                                                          logger=loggers.logger)

@@ -29,7 +29,7 @@ def iec_main(file_path, sort_only=False):
     curve_line_path = os.path.join(factor_path, power_theoretical)
     turbine_code = file_path.split(os.sep)[-1].split(".")[0]
 
-    _, all_statistics = aep_analysis.aep_main(file_path, factor_name, ["real_time"], ["wind_speed"], ["wind_dirction"],
+    _, all_statistics = aep_analysis.aep_main(file_path, factor_name, ["real_time"], ["wind_speed"], ["wind_direction"],
                                               ["nacelle_temperture"], [], ["power"], curve_line_path,  # ["air_density"]
                                               confidence_num=0.8, logger=loggers.logger)
     if sort_only:

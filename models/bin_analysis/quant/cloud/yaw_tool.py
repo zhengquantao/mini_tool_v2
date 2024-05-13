@@ -28,40 +28,40 @@
 # ***
 # --------------------------------------------------------------------
 import os
-import math
-import numpy as np
-
-import pandas as pd
-
 import logging
 
+import math
+import numpy as np
+import pandas as pd
+
+#
 import statsmodels.formula.api as smf
 
-# import seaborn as sns
-# import matplotlib.pyplot as plt
-# import matplotlib.font_manager as fm
+#
+import seaborn as sns
 
-# ? 中文乱码问题
-# font = fm.FontProperties(fname='微软雅黑.ttf')
-# # ? 字体设置：SimHei
-# plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
-# plt.rcParams["axes.unicode_minus"] = False
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+#? 中文乱码问题
+font = fm.FontProperties(fname='微软雅黑.ttf')
+#? 字体设置：SimHei
+plt.rcParams["font.sans-serif"]=["Microsoft YaHei"]
+plt.rcParams["axes.unicode_minus"]=False
 
 #
 import warnings
-
 warnings.filterwarnings("ignore")
 
 #
 import re
-
 # 正则表达式匹配开头数字
 digit_pattern = re.compile(r'(-?\d+)(\.\d+)?')
 
 #
-from file_dir_tool import create_proj_dir, create_dir
-from wind_base_tool import rule_removal, wind_speed_binning, binning_proc, box_drop_abnormal
-from wind_base_tool import mark_label
+from models.bin_analysis.quant.cloud.file_dir_tool import create_proj_dir, create_dir
+from models.bin_analysis.quant.cloud.wind_base_tool import rule_removal, wind_speed_binning, windspeed_binning_proc, box_drop_abnormal
+from models.bin_analysis.quant.cloud.wind_base_tool import mark_label
+
 
 # --------------------------------------------------------------------
 # ***
@@ -72,6 +72,7 @@ from wind_base_tool import mark_label
 # *** ---------- 日志 ----------
 # logger
 logger = logging.getLogger()
+
 
 # --------------------------------------------------------------------
 # ***
@@ -146,18 +147,18 @@ def three_sigma(dataset, field_name):
 # ***
 # --------------------------------------------------------------------
 
-def yaw_deviation_calc(data, wind_direction_lable, nacelle_direction_lable):
+def yaw_deviation_calc(data, wind_dirction_lable, nacelle_direction_lable):
     """
     根据'风向对北角度'和'机舱对北角度'进行偏航对风偏差进行计算
 
     :param data: 输入数据时序集
-    :param wind_direction_lable: 自然风向标签
+    :param wind_dirction_lable: 自然风向标签
     :param nacelle_direction_lable: 主机机舱方向
 
     :return: 计算了偏航的对风偏差
     """
 
-    yaw_deviation_list = data[wind_direction_lable] - data[nacelle_direction_lable]
+    yaw_deviation_list = data[wind_dirction_lable] - data[nacelle_direction_lable]
     data.insert(len(data.columns), yaw_deviation_label, yaw_deviation_list)
 
     return data
@@ -172,33 +173,33 @@ def data_cut_proc(data, wind_speed_label):
 
     :return: 进行了风速和偏航对风偏差分箱标记的数据
     """
-
+    
     # *** ---------- 1 偏航的对风偏差数据清洗 ----------
     data = data[((data[yaw_deviation_label] >= -10) & (data[yaw_deviation_label] <= 10))]
     data = data[(data[wind_speed_label] > 3) & (data[wind_speed_label] < 11)]
-
+    
     # *** ---------- 2 自然风速分箱 ----------
     cut_bins = np.arange(3.0, 11.5, 0.5)
     # wind speed bin labels
-    wind_speed_bin_labels = ["3-3.5", "3.5-4", "4-4.5", "4.5-5", "5-5.5", "5.5-6",
-                             "6-6.5", "6.5-7", "7-7.5", "7.5-8", "8-8.5", "8.5-9",
-                             "9-9.5", "9.5-10", "10-10.5", "10.5-11", ]
+    wind_speed_bin_labels =["3-3.5", "3.5-4", "4-4.5", "4.5-5", "5-5.5", "5.5-6", 
+                            "6-6.5", "6.5-7", "7-7.5", "7.5-8", "8-8.5", "8.5-9", 
+                            "9-9.5", "9.5-10", "10-10.5", "10.5-11", ]
     # "11-11.5", "11.5-12", "12-12.5", "12.5-13", "13-13.5", "13.5-14", 
     # "14-14.5", "14.5-15", "15-15.5", "15.5-16", "16-16.5", "16.5-17",
     # "17-17.5", "17.5-18"]
-
-    data[wind_speed_bin_label] = pd.cut(data[wind_speed_label], bins=cut_bins,
+    
+    data[wind_speed_bin_label] = pd.cut(data[wind_speed_label], bins=cut_bins, 
                                         labels=wind_speed_bin_labels, include_lowest=True)
-
+    
     # *** ---------- 3 偏航对风偏差分箱 ----------
     cut_bins = np.arange(-10, 11, 1)
-    yaw_deviation_bin_labels = ["-10°_-9°", "-9°_-8°", "-8°_-7°", "-7°_-6°", "-6°_-5°",
-                                "-5°_-4°", "-4°_-3°", "-3°_-2°", "-2°_-1°", "-1°_0°",
-                                "0°_1°", "1°_2°", "2°_3°", "3°_4°", "4°_5°",
+    yaw_deviation_bin_labels = ["-10°_-9°", "-9°_-8°", "-8°_-7°", "-7°_-6°", "-6°_-5°", 
+                                "-5°_-4°", "-4°_-3°", "-3°_-2°", "-2°_-1°", "-1°_0°", 
+                                "0°_1°", "1°_2°", "2°_3°", "3°_4°", "4°_5°", 
                                 "5°_6°", "6°_7°", "7°_8°", "8°_9°", "9°_10°"]
-    data[yaw_deviation_bin_label] = pd.cut(data[yaw_deviation_label], bins=cut_bins,
+    data[yaw_deviation_bin_label] = pd.cut(data[yaw_deviation_label], bins=cut_bins, 
                                            labels=yaw_deviation_bin_labels, include_lowest=True)
-
+    
     return data
 
 
@@ -219,8 +220,8 @@ def yaw_bin_analysis(data, wind_speed_label, power_label):
 
     # 各风速分箱、偏航对风偏差分箱区间内: 出现的次数计数【最终的频次、出现概率研究】
     count_data = pd.DataFrame()
-
-    wind_speed_bin_colums = sorted(data[wind_speed_bin_label].unique().tolist(),
+    
+    wind_speed_bin_colums = sorted(data[wind_speed_bin_label].unique().tolist(), 
                                    key=lambda bin: float(digit_pattern.match(bin).group(0)))
     yaw_dev_bin_rows = sorted(data[yaw_deviation_bin_label].unique().tolist(),
                               key=lambda bin: float(digit_pattern.match(bin).group(0)))
@@ -233,17 +234,17 @@ def yaw_bin_analysis(data, wind_speed_label, power_label):
             # 特定的风速分箱区间、偏航对风偏差分箱区间组合的单元格数据
             cell_data = data[(data[wind_speed_bin_label] == col) & (data[yaw_deviation_bin_label] == row)]
 
-            # ! 参考论文: 2019_基于风机运行数据的偏航误差分析与校正
+            #! 参考论文: 2019_基于风机运行数据的偏航误差分析与校正
             # 求得各角度区间内的P与v**3 的比值的平均值，即0.5ρACp的平均值，记为R
-            R = cell_data[power_label] / (cell_data[wind_speed_label] ** 3)
-
+            R = cell_data[power_label] / ( cell_data[wind_speed_label] ** 3)
+            
             cap_list.append(R.mean())
             count_list.append(cell_data.shape[0])
-
+            
             # logger.info(cell_data.shape[0])
         cap_data[col] = cap_list
         count_data[col] = count_list
-
+    
     cap_data.index = yaw_dev_bin_rows
     count_data.index = yaw_dev_bin_rows
 
@@ -270,51 +271,51 @@ def yaw_quant_reg(data, wind_speed_label, power_label, turbine_code, dir_path):
     """
 
     # 风速分箱标签
-    wind_speed_bins = sorted(data[wind_speed_bin_label].unique().tolist(),
-                             key=lambda bin: float(digit_pattern.match(bin).group(0)))
-
+    wind_speed_bins = sorted(data[wind_speed_bin_label].unique().tolist(), 
+                                   key=lambda bin: float(digit_pattern.match(bin).group(0)))
+    
     # 风速分箱-偏航对风偏差 列表
     dev_list = []
 
     # 创建分仓偏航对风偏差分析图片保存目录
     file_path = create_dir("bin_yaw_img", dir_path)
     bin_yaw_img_title = "偏航对风偏差识别：\n   机组{}   风速仓：{} 偏差角：{}°"
-
+    
     for speed_bin in wind_speed_bins:
         # 特定的风速分箱区间的偏航数据
         bin_data = data[data[wind_speed_bin_label] == speed_bin]
 
-        # ! 参考论文: 2020_风力发电机组对风偏差检测算法研究与应用_李闯
-        # ? 基于中位数回归，使用二次函数拟合[偏航对风偏差] 和[P与v**3 的比值] 曲线
-        # ? => 判断对风偏差角
+        #! 参考论文: 2020_风力发电机组对风偏差检测算法研究与应用_李闯
+        #? 基于中位数回归，使用二次函数拟合[偏航对风偏差] 和[P与v**3 的比值] 曲线
+        #? => 判断对风偏差角
         # *** ---------- 1 数据准备 ----------
         '''
         #? 数据清洗
         if len(bin_data) > 200:
             bin_data = box_drop_abnormal(bin_data, power_label)
         '''
-
+        
         x = bin_data[yaw_deviation_label]
-        y = bin_data[power_label] / (bin_data[wind_speed_label] ** 3)
+        y = bin_data[power_label] / ( bin_data[wind_speed_label] ** 3)
 
         bin_data[yaw_bin_cap_label] = y
         bin_data[mark_label] = 0
 
         if len(bin_data) > 200:
             bin_data = box_drop_abnormal(bin_data, yaw_bin_cap_label)
-
+        
         bin_data = bin_data[bin_data[mark_label] == 0]
 
-        training_data = {'dev': bin_data[yaw_deviation_label],
+        training_data = {'dev': bin_data[yaw_deviation_label], 
                          'cap': bin_data[yaw_bin_cap_label]}
         df = pd.DataFrame(data=training_data)
-
+        
         # *** ---------- 2 二次分位数回归拟合 ----------
         mod = smf.quantreg('cap ~ dev + I(dev ** 2.0)', df)
         res = mod.fit(q=.5)
         # logger.info(res.summary())
         # res.predict({'dev': x_dev})
-
+        
         # *** ---------- 3 拟合参数提取 ----------
         # 截距
         intercept = res.params["Intercept"]
@@ -325,15 +326,15 @@ def yaw_quant_reg(data, wind_speed_label, power_label, turbine_code, dir_path):
 
         #
         bin_data[yaw_bin_fitted_label] = res.fittedvalues
-
+        
         # *** ---------- 3 偏差结果统计 ----------
-        bin_dev = - linear_coef / (2 * quadratic_coef)
+        bin_dev = - linear_coef/(2 * quadratic_coef)
         # 保留四位小数
         bin_dev = round(bin_dev, 2)
         dev_list.append(bin_dev)
 
         # *** ---------- 4 绘制分仓图形 ----------
-        # TODO:
+        #TODO:
         xlabel = "偏航对风偏差角度"
         ylabel = "功率指数"
         title = bin_yaw_img_title.format(turbine_code, speed_bin, str(bin_dev))
@@ -341,13 +342,13 @@ def yaw_quant_reg(data, wind_speed_label, power_label, turbine_code, dir_path):
         file_name = "{}-{}.png".format(turbine_code, speed_bin)
         full_path = os.path.join(file_path, file_name)
 
-        bin_yaw_plot(bin_data, yaw_deviation_label, yaw_bin_cap_label, yaw_bin_fitted_label, xlabel, ylabel,
+        bin_yaw_plot(bin_data, yaw_deviation_label, yaw_bin_cap_label, yaw_bin_fitted_label, xlabel, ylabel, 
                      title, full_path)
-
+    
     # 
     logger.info("分箱偏航性能诊断对风偏差：\n {}".format(wind_speed_bins))
     logger.info(dev_list)
-
+    
     return dev_list, wind_speed_bins
 
 
@@ -369,16 +370,16 @@ def bin_yaw_plot(data, col_x, col_y, fitted_label, xlabel, ylabel, title, file_p
     
     :return:
     """
-
+    
     #
-    band_data = data[(data[col_y] < data[fitted_label] * 1.2) & (data[col_y] > data[fitted_label] * 0.9)]
+    band_data = data[(data[col_y] < data[fitted_label]*1.2) & (data[col_y] > data[fitted_label]*0.9)]
 
     # 
     fig, ax = plt.subplots()
-    # ? hue="label": 标记异常数据与否
+    #? hue="label": 标记异常数据与否
     g = sns.scatterplot(data=band_data, x=col_x, y=col_y, hue=hue, size=size, ax=ax)
-
-    # ? 下标$_x$ 上标$^x$
+    
+    #? 下标$_x$ 上标$^x$
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
@@ -388,7 +389,7 @@ def bin_yaw_plot(data, col_x, col_y, fitted_label, xlabel, ylabel, title, file_p
     # ax.plot(data[col_x], data[fitted_label], '-', lw=2, color='blue')
     data = data.sort_values(col_x)
     ax.plot(data[col_x].tolist(), data[fitted_label].tolist(), 'r--')
-
+    
     # plt.show()
     plt.savefig(file_path)
     plt.close()
@@ -408,7 +409,7 @@ def yaw_dev_bin_clean(dev_list, wind_speed_bins):
     dev_array = np.array(dev_list)
     indexs = np.where(np.abs(dev_array) <= 10)[0].tolist()
 
-    dev_list_x = [dev_list[x] for x in indexs]
+    dev_list_x = [dev_list[x] for x in indexs ]
     wind_speed_bins_x = [wind_speed_bins[x] for x in indexs]
 
     return dev_list_x, wind_speed_bins_x
@@ -430,7 +431,7 @@ def yaw_misalignment_calc1(data, wind_speed_label, dev_list, wind_speed_bins):
 
     # 偏航对风偏差 数值清洗
     dev_list_x, wind_speed_bins_x = yaw_dev_bin_clean(dev_list, wind_speed_bins)
-
+    
     wind_speed_avg_list = []
     for speed_bin in wind_speed_bins_x:
         # 特定的风速分箱区间的偏航数据
@@ -441,14 +442,14 @@ def yaw_misalignment_calc1(data, wind_speed_label, dev_list, wind_speed_bins):
 
         wind_speed_avg = bin_data[wind_speed_label].mean()
         wind_speed_avg_list.append(wind_speed_avg)
-
+    
     # 使用加权平均法计算机组的综合偏差
-    speed_3_sum = sum([item ** 3 for item in wind_speed_avg_list])
-    weight_list = [round(item ** 3 / speed_3_sum, 3) for item in wind_speed_avg_list] \
- \
+    speed_3_sum = sum([item**3 for item in wind_speed_avg_list])
+    weight_list = [round(item**3 / speed_3_sum, 3) for item in wind_speed_avg_list]\
+    
     logger.info("分仓加权计算的综合偏差【模式一】：权重 {}".format(weight_list))
-    # ! 参考论文: 2020_风力发电机组对风偏差检测算法研究与应用_李闯
-    dev_angle = sum([x * y for x, y in zip(dev_list_x, weight_list)])
+    #! 参考论文: 2020_风力发电机组对风偏差检测算法研究与应用_李闯
+    dev_angle = sum([x*y for x,y in zip(dev_list_x, weight_list)])
     dev_angle = round(dev_angle, 2)
     logger.info(dev_angle)
 
@@ -480,30 +481,30 @@ def yaw_misalignment_calc2(data, wind_speed_label, dev_list, wind_speed_bins, ai
         # 特定的风速分箱区间的偏航数据
         bin_data = data[data[wind_speed_bin_label] == speed_bin]
 
-        # ! 是否有空气密度数据，如果没有则不考虑空气密度系数
+        #! 是否有空气密度数据，如果没有则不考虑空气密度系数
         bin_wpd_sum = 0
         if air_density_label is not None:
-            bin_wpd_sum = bin_data.apply(lambda row: 0.5 * row[air_density_label]
-                                                     * pow(row[wind_speed_label], 3), axis=1).sum()
+            bin_wpd_sum = bin_data.apply(lambda row: 0.5* row[air_density_label] 
+                                         *pow(row[wind_speed_label], 3), axis=1).sum()
         else:
-            bin_wpd_sum = bin_data[wind_speed_label].apply(lambda x: 0.5 * pow(x, 3)).sum()
-
+            bin_wpd_sum = bin_data[wind_speed_label].apply(lambda x: 0.5* pow(x, 3)).sum()
+        
         bin_wpd_sum_list.append(bin_wpd_sum)
-
+    
     # 使用加权平均法计算机组的综合偏差
     wpd_sum = sum(bin_wpd_sum_list)
     weight_list = [round(item / wpd_sum, 3) for item in bin_wpd_sum_list]
 
     logger.info("分仓加权计算的综合偏差【模式二】：权重 {}".format(weight_list))
-    # ! 基于[Wind power density]计算权重，进行综合偏差分析
-    dev_angle = sum([x * y for x, y in zip(dev_list_x, weight_list)])
+    #! 基于[Wind power density]计算权重，进行综合偏差分析
+    dev_angle = sum([x*y for x,y in zip(dev_list_x, weight_list)])
     dev_angle = round(dev_angle, 2)
     logger.info(dev_angle)
 
     return dev_angle
 
 
-def yaw_misalignment_proc(data, wind_speed_label, power_label, turbine_code,
+def yaw_misalignment_proc(data, wind_speed_label, power_label, turbine_code, 
                           dir_path, air_density_label=None):
     """
     通过分仓和拟合，根据每个风速分箱对风偏差的集合，使用加权平均法计算机组的综合偏差
@@ -527,15 +528,15 @@ def yaw_misalignment_proc(data, wind_speed_label, power_label, turbine_code,
     # dev_list: 风速分箱-偏航对风偏差 列表
     # wind_speed_bins: 风速分箱标签 列表
     dev_list, wind_speed_bins = yaw_quant_reg(data, wind_speed_label, power_label, turbine_code, dir_path)
-
+    
     # *** ---------- 2 分箱对风偏差加权计算整体偏差 ----------
     # 该机组最终 偏航对风偏差角度数值
-    # ! [二选一]两种模式计算选择一种即可
-    # ? 通过风速分仓和拟合，对每个分箱对风偏差的集合加权平均
-    # 【模式一】根据风速三次方加权拟合
+    #! [二选一]两种模式计算选择一种即可
+    #? 通过风速分仓和拟合，对每个分箱对风偏差的集合加权平均
+    #【模式一】根据风速三次方加权拟合
     dev_angle = yaw_misalignment_calc1(data, wind_speed_label, dev_list, wind_speed_bins)
 
-    # 【模式二】根据风能密度（Wind power density, WPD）加权拟合
+    #【模式二】根据风能密度（Wind power density, WPD）加权拟合
     dev_angle = yaw_misalignment_calc2(data, wind_speed_label, dev_list, wind_speed_bins, air_density_label)
 
     return dev_angle
@@ -549,8 +550,9 @@ def energy_loss_calc(yaw_misalignment_angle):
 
     :return: 返回 偏航对风偏差角度
     """
-
-    loss = 1 - pow(math.cos(yaw_misalignment_angle * math.pi / 180), 3)
+    
+    loss = 1 - pow(math.cos(yaw_misalignment_angle* math.pi / 180), 3)
     loss_percent = round(loss * 100, 3)
 
     return loss_percent
+

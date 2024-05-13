@@ -1,45 +1,44 @@
-
 import wx
-import wx.lib.agw.aui as aui
-# 定义数据模型
-class MyModel:
-    def __init__(self):
-        self.count = 0
-    def increase_count(self):
-        self.count += 1
-# 定义视图
-class MyView(wx.Frame):
-    def __init__(self, parent=None, title="My View", pos=wx.DefaultPosition, size=wx.DefaultSize):
-        super().__init__(parent, title=title, pos=pos, size=size)
-        self.model = MyModel()
-        self.create_button()
-        self.create_notebook()
-    def create_button(self):
-        self.toolbar = self.CreateToolBar()
-        # self.toolbar.AddTool(wx.ID_ANY, 'Click me', "")
-        self.toolbar.Realize()
 
-    def create_notebook(self):
-        self.notebook = aui.AuiNotebook(self, -1, agwStyle=aui.AUI_NB_TAB_SPLIT | aui.AUI_NB_CLOSE_ON_ALL_TABS)
-        self.notebook.AddPage(wx.Panel(self.notebook), "Page A")
-        self.notebook.AddPage(wx.Panel(self.notebook), "Page B")
+
+class ImageViewer(wx.Frame):
+    def __init__(self, parent, title):
+        super(ImageViewer, self).__init__(parent, title=title, size=(600, 450))
+        self.InitUI()
+        self.Show()
+
+    def InitUI(self):
+        panel = wx.Panel(self)
+        self.image = wx.Image(r'C:\Users\EDY\Desktop\30057\wind_speed_tsr_19#.png', wx.BITMAP_TYPE_ANY)
+        self.bitmap = wx.StaticBitmap(panel, wx.ID_ANY, wx.BitmapFromImage(self.image))
+
+        # 放大按钮
+        self.button_zoom_in = wx.Button(panel, label='Zoom In')
+        self.button_zoom_in.Bind(wx.EVT_BUTTON, self.OnZoomIn)
+
+        # 缩小按钮
+        self.button_zoom_out = wx.Button(panel, label='Zoom Out')
+        self.button_zoom_out.Bind(wx.EVT_BUTTON, self.OnZoomOut)
+
+        # 布局
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.notebook, 1, wx.EXPAND)
-        self.SetSizer(sizer)
-    def get_count(self):
-        return self.model.count
-# 定义控制器
-class MyController:
-    def __init__(self, view):
-        self.view = view
-        self.view.Bind(wx.EVT_TOOL, self.on_tool_click)
-    def on_tool_click(self, event):
-        self.view.model.increase_count()
-        count = self.view.get_count()
-        wx.MessageBox(f'Button clicked {count} times', 'Info', wx.OK | wx.ICON_INFORMATION)
-if __name__ == "__main__":
-    app = wx.App()
-    view = MyView(title="My App", size=(500, 500))
-    controller = MyController(view)
-    view.Show()
+        sizer.Add(self.bitmap, 1, wx.EXPAND)
+        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        button_sizer.Add(self.button_zoom_in)
+        button_sizer.Add(self.button_zoom_out)
+        sizer.Add(button_sizer, 0, wx.ALIGN_CENTER | wx.TOP | wx.BOTTOM, 10)
+        panel.SetSizer(sizer)
+
+    def OnZoomIn(self, event):
+        self.image.Rescale(int(self.image.GetWidth() * 0.2) + self.image.GetWidth(), int(self.image.GetWidth() * 0.2) + self.image.GetHeight())
+        self.Refresh()
+
+    def OnZoomOut(self, event):
+        self.image.Rescale(self.image.GetWidth() * 0.8, self.image.GetHeight() * 0.8)
+        self.Refresh()
+
+
+if __name__ == '__main__':
+    app = wx.App(False)
+    frame = ImageViewer(None, 'Image Viewer')
     app.MainLoop()

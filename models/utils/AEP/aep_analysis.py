@@ -132,7 +132,7 @@ def aep_main(file_path, farm_name, real_time, wind_col, dirction_col, temperatur
             if len(wind_col) != 0:
                 table.append("wind_speed")
             if len(dirction_col) != 0:
-                table.append("wind_dirction")
+                table.append("wind_direction")
             if len(temperature_col) != 0:
                 table.append("nacelle_temperture")
             if len(airdensity_col) != 0:

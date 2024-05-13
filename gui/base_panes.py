@@ -146,9 +146,9 @@ class PaneManager:
         #                  CloseButton(True).MaximizeButton(True).MinimizeButton(True))
 
         self.mgr.AddPane(loggers.logger_frame, aui.AuiPaneInfo().
-                         Name("Console").Caption("Console").PaneBorder(False).FloatingSize(wx.Size(*float_size)).
+                         Name("Console").Caption("Console").FloatingSize(wx.Size(*float_size)).
                          Bottom().Floatable(False).CloseButton(False).
-                         MaximizeButton(True).MinimizeButton(True).Icon(svg_to_bitmap(cs.console_svg, size=(20, 18))))
+                         MaximizeButton(False).MinimizeButton(True).Icon(svg_to_bitmap(cs.console_svg, size=(20, 18))))
 
         # wnd10 = text_ctrl.create_ctrl("This pane will prompt the user before hiding.")
         # self.mgr.AddPane(wnd10, aui.AuiPaneInfo().
@@ -232,7 +232,7 @@ class PaneManager:
         # for ctrl_key in content_ctrls.values():
         #     self.frame.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=self.mb_items[ctrl_key]["id"])
         self.frame.Bind(aui.EVT_AUI_PANE_CLOSE, self.OnPaneClose)
-        # self.frame.Bind(aui.EVT_AUI_PANE_MINIMIZE, self.OnPaneMin)
+        self.frame.Bind(aui.EVT_AUI_PANE_MINIMIZE, self.OnPaneMin)
         # self.frame.Bind(wx.EVT_MENU, self.OnVetoTree, id=self.mb_items["VetoTree"]["id"])
         # self.frame.Bind(wx.EVT_MENU, self.OnVetoText, id=self.mb_items["VetoText"]["id"])
         self.frame.Bind(aui.EVT_AUI_PANE_FLOATING, self.OnFloatDock)
@@ -348,23 +348,13 @@ class PaneManager:
             self.mgr.GetPane(pane_key).Show(ref_id == self.mb_items[ctrl_key]["id"])
         self.mgr.Update()
 
-    # def OnPaneMin(self, event: aui.AuiManagerEvent) -> None:
-    #     print(event.pane.name, event.GetEventType())
-    #     # if not event.pane.name == "test10":
-    #     #     return
-    #     # self.mgr.GetPane(event.GetPane().window)
-    #     # self.mgr.Update()
-    #     # if event.pane.name not in ["ProjectTree_min", "Console_min"]:
-    #     #     return
-    #
-    #     if event.pane.name == "ProjectTree":
-    #
-    #         tree = event.pane
-    #         # tree.MinimizeMode(aui.AUI_MINIMIZE_POS_TOOLBAR)
-    #         toolbar_pane = self.mgr.GetPane("toolbar_right")
-    #         tree.MinimizeTarget(toolbar_pane)
-    #         self.mgr.Update()
-    #         return
+    def OnPaneMin(self, event: aui.AuiManagerEvent) -> None:
+
+        if event.pane.name in ["ProjectTree", "Console"]:
+            event.pane.Hide()
+            self.mgr.Update()
+            event.Veto()
+            return
 
     def OnPaneClose(self, event: aui.AuiManagerEvent) -> None:
         print(event.pane.name, event.GetEventType())
