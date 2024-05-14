@@ -1,44 +1,39 @@
-import wx
+from pyecharts import options as opts
+from pyecharts.charts import Line
 
+line = Line()
+line.add_xaxis(["A", "B", "C", "D", "E", "F"])
+line.add_yaxis("示例系列", [12, 34, 56, 10, 23, 45])
 
-class ImageViewer(wx.Frame):
-    def __init__(self, parent, title):
-        super(ImageViewer, self).__init__(parent, title=title, size=(600, 450))
-        self.InitUI()
-        self.Show()
+# 自定义JavaScript来改变series_name的位置
+line.set_global_opts(
+    title_opts=opts.TitleOpts(title="Line 图表示例"),
+    # 使用JavaScript来覆盖默认的图表样式
+    init_opts=opts.InitOpts(
+        # 在这里插入自定义的JavaScript代码
+        js_codes=[
+            """
+            chart.on('updateAxisPointer', function (event) {
+                var xAxisInfo = event.axesInfo[0];
+                if (xAxisInfo) {
+                    var dimension = xAxisInfo.value + 1;
+                    chart.setOption({
+                        series: [{
+                            label: {
+                                normal: {
+                                    show: true,
+                                    position: 'inside', // 改变位置
+                                    formatter: '{c}'
+                                }
+                            },
+                            // 其他需要的配置...
+                        }]
+                    });
+                }
+            });
+            """
+        ]
+    ),
+)
 
-    def InitUI(self):
-        panel = wx.Panel(self)
-        self.image = wx.Image(r'C:\Users\EDY\Desktop\30057\wind_speed_tsr_19#.png', wx.BITMAP_TYPE_ANY)
-        self.bitmap = wx.StaticBitmap(panel, wx.ID_ANY, wx.BitmapFromImage(self.image))
-
-        # 放大按钮
-        self.button_zoom_in = wx.Button(panel, label='Zoom In')
-        self.button_zoom_in.Bind(wx.EVT_BUTTON, self.OnZoomIn)
-
-        # 缩小按钮
-        self.button_zoom_out = wx.Button(panel, label='Zoom Out')
-        self.button_zoom_out.Bind(wx.EVT_BUTTON, self.OnZoomOut)
-
-        # 布局
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.bitmap, 1, wx.EXPAND)
-        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        button_sizer.Add(self.button_zoom_in)
-        button_sizer.Add(self.button_zoom_out)
-        sizer.Add(button_sizer, 0, wx.ALIGN_CENTER | wx.TOP | wx.BOTTOM, 10)
-        panel.SetSizer(sizer)
-
-    def OnZoomIn(self, event):
-        self.image.Rescale(int(self.image.GetWidth() * 0.2) + self.image.GetWidth(), int(self.image.GetWidth() * 0.2) + self.image.GetHeight())
-        self.Refresh()
-
-    def OnZoomOut(self, event):
-        self.image.Rescale(self.image.GetWidth() * 0.8, self.image.GetHeight() * 0.8)
-        self.Refresh()
-
-
-if __name__ == '__main__':
-    app = wx.App(False)
-    frame = ImageViewer(None, 'Image Viewer')
-    app.MainLoop()
+line.render("line_custom_name_position.html")

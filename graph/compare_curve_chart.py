@@ -46,15 +46,16 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
                 range_start=0,  # 显示区域开始
                 range_end=100,  # 显示区域结束
             ),
-            # 提示
-            tooltip_opts=opts.TooltipOpts(
-                is_show=True,  # 是否显示提示框组件，包括提示框浮层和 axisPointer。
-                # 触发类型。可选：
-                # 'item': 数据项图形触发，主要在散点图，饼图等无类目轴的图表中使用。
-                # 'axis': 坐标轴触发，主要在柱状图，折线图等会使用类目轴的图表中使用。
-                # 'none': 什么都不触发
-                trigger="axis",
-            )))
+            # # 提示
+            # tooltip_opts=opts.TooltipOpts(
+            #     is_show=True,  # 是否显示提示框组件，包括提示框浮层和 axisPointer。
+            #     # 触发类型。可选：
+            #     # 'item': 数据项图形触发，主要在散点图，饼图等无类目轴的图表中使用。
+            #     # 'axis': 坐标轴触发，主要在柱状图，折线图等会使用类目轴的图表中使用。
+            #     # 'none': 什么都不触发
+            #     trigger="axis",
+            # )
+        ))
     scatter2 = (
         Scatter(init_opts=opts.InitOpts())
         .add_xaxis(normal_scatter[0].tolist())

@@ -34,6 +34,7 @@ import os
 import locale
 import pandas as pd
 
+from settings.settings import power_theoretical
 from ..data_integration import extra_data
 
 locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
@@ -107,6 +108,12 @@ def aep_main(file_path, farm_name, real_time, wind_col, dirction_col, temperatur
     all_statistics = pd.DataFrame()
     for scada_file in scada_files:
         try:
+            if not scada_file.endswith(".csv"):
+                continue
+
+            if scada_file in [power_theoretical, geolocation]:
+                continue
+
             # *** ---------- 3 数据提取 ----------
             # ** 3.1 CSV数据读取 **
             # SCADA数据文件夹

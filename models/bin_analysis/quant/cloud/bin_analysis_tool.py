@@ -54,6 +54,10 @@ import seaborn as sns
 
 #
 import matplotlib
+
+from common.common import common_cut
+from graph.bins_chart import build_html
+
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
@@ -179,7 +183,7 @@ def month_bin_curve_analysis(dataset, turbine_code, air_density_tag=None, dir_pa
 
 
 def bin_curve_analysis(dataset, turbine_code, air_density_tag=None, dir_path=None, 
-                       cp_factor=1.0, rotor_radius=None, plot_flag=False):
+                       cp_factor=1.0, rotor_radius=None, plot_flag=False, run_func_list=None):
     """
     基于SCADA数据的BIN曲线分析，返回分仓曲线数据词典
 
@@ -196,64 +200,61 @@ def bin_curve_analysis(dataset, turbine_code, air_density_tag=None, dir_path=Non
 
     :return (dict): 分仓曲线数据词典，词典名称：key名称'_'之后的进行分仓的变量，之前的是分仓后进行求平均的变量
     """
+    bin_dict = {}
 
     #? 如果rotor_radius参数存在，覆盖cp_factor参数数值
     if rotor_radius is not None:
         cp_factor = 0.5 * math.pi * pow(rotor_radius, 2) / 1000
 
-    # *** ---------- 1 风速-功率曲线 ----------
-    power_windspeed_bin_df = wind_speed_power_bin(dataset, turbine_code, dir_path, plot_flag=plot_flag)
+    if "power_windspeed" in run_func_list:
+        # *** ---------- 1 风速-功率曲线 ----------
+        path, file_name = wind_speed_power_bin(dataset, turbine_code, dir_path, plot_flag=plot_flag)
 
-    #? 分仓曲线异常数据清洗与填充
-    #TODO: 针对不同的问题需要进一步补充
-    wind_speed_power_bin_fix(power_windspeed_bin_df)
+    elif "cp_windspeed" in run_func_list:
+        # # ? 分仓曲线异常数据清洗与填充
+        # # TODO: 针对不同的问题需要进一步补充
+        # power_windspeed_bin_df = wind_speed_power_bin(dataset, turbine_code, dir_path, plot_flag=plot_flag,)
+        # wind_speed_power_bin_fix(power_windspeed_bin_df)
 
-    # *** ---------- 2 风速-风能利用系数Cp曲线 ----------
-    cp_windspeed_bin_df = wind_speed_cp_bin(dataset, turbine_code, air_density_tag, dir_path, 
+        # *** ---------- 2 风速-风能利用系数Cp曲线 ----------
+        path, file_name = wind_speed_cp_bin(dataset, turbine_code, air_density_tag, dir_path,
                                             cp_factor, hue=air_density_tag, plot_flag=plot_flag)
-    
-    # *** ---------- 3 风速-桨距角曲线 ----------
-    # speed_pitch_plot_x(dataset, turbine_code, dir_path)
-    pitch_windspeed_bin_df = wind_speed_pitch_bin(dataset, turbine_code, dir_path, plot_flag=plot_flag)
-    
-    # *** ---------- 4 桨距角-功率曲线 ----------
-    # pitch_power_plot_x(dataset, turbine_code, dir_path)
-    power_pitch_bin_df = pitch_power_bin(dataset, turbine_code, dir_path, plot_flag=plot_flag)
-    
-    
-    # *** ---------- 5 风速-转速曲线 ----------
-    gen_wind_speed_bin_df = speed_wind_gen_bin(dataset, turbine_code, dir_path, plot_flag=plot_flag)
 
-    # *** ---------- 6 转速-功率曲线 ----------
-    power_genspeed_bin_df = gen_speed_power_bin(dataset, turbine_code, dir_path, plot_flag=plot_flag)
-    
-    # *** ---------- 7 空气密度-功率曲线 ----------
-    power_airdensity_bin_df = None
-    if air_density_tag is not None:
-        power_airdensity_bin_df = air_density_power_bin(dataset, air_density_tag, turbine_code, dir_path, 
-                                                        hue=None, plot_flag=plot_flag)
-    
-    # *** ---------- 8 风向-功率曲线 ----------
-    power_winddir_bin_df = wind_direction_power_bin(dataset, turbine_code, dir_path, plot_flag=plot_flag)
+    elif "pitch_windspeed" in run_func_list:
+        # *** ---------- 3 风速-桨距角曲线 ----------
+        # speed_pitch_plot_x(dataset, turbine_code, dir_path)
+        path, file_name = wind_speed_pitch_bin(dataset, turbine_code, dir_path, plot_flag=plot_flag)
 
 
-    # *** ---------- 9 风速-叶尖速比曲线 ----------
-    tsr_windspeed_bin_df = wind_speed_tsr_bin(dataset, turbine_code, dir_path, plot_flag=plot_flag)
-
-
-
-    ''''''
-
-    # *** ---------- 10 分仓曲线数据词典 ----------
-    #? 词典名称：key名称'_'之后的进行分仓的变量，之前的是分仓后进行求平均的变量
-    #? 比如'power_windspeed'对windspeed风速进行分仓，每个分仓进行power功率数据求平均值或者方差分析
-    bin_dict = {'cp_windspeed': cp_windspeed_bin_df, 'pitch_windspeed': pitch_windspeed_bin_df,
-                'power_pitch': power_pitch_bin_df, 'gen_wind_speed': gen_wind_speed_bin_df,
-                'power_genspeed': power_genspeed_bin_df, 'power_airdensity': power_airdensity_bin_df,
-                'power_winddir': power_winddir_bin_df, 'power_windspeed': power_windspeed_bin_df,
-                'tsr_windspeed': tsr_windspeed_bin_df}
+    elif "power_pitch" in run_func_list:
+        # *** ---------- 4 桨距角-功率曲线 ----------
+        # pitch_power_plot_x(dataset, turbine_code, dir_path)
+        path, file_name = pitch_power_bin(dataset, turbine_code, dir_path, plot_flag=plot_flag)
     
-    return bin_dict
+    elif "gen_wind_speed" in run_func_list:
+        # *** ---------- 5 风速-转速曲线 ----------
+        path, file_name = speed_wind_gen_bin(dataset, turbine_code, dir_path, plot_flag=plot_flag)
+
+    elif "power_genspeed" in run_func_list:
+        # *** ---------- 6 转速-功率曲线 ----------
+        path, file_name = gen_speed_power_bin(dataset, turbine_code, dir_path, plot_flag=plot_flag)
+
+    elif "power_airdensity" in run_func_list:
+        # *** ---------- 7 空气密度-功率曲线 ----------
+
+        if air_density_tag is not None:
+            path, file_name = air_density_power_bin(dataset, air_density_tag, turbine_code, dir_path,
+                                                         hue=None, plot_flag=plot_flag)
+
+    elif "power_winddir" in run_func_list:
+        # *** ---------- 8 风向-功率曲线 ----------
+        path, file_name = wind_direction_power_bin(dataset, turbine_code, dir_path, plot_flag=plot_flag)
+
+    elif "tsr_windspeed" in run_func_list:
+        # *** ---------- 9 风速-叶尖速比曲线 ----------
+        path, file_name = wind_speed_tsr_bin(dataset, turbine_code, dir_path, plot_flag=plot_flag)
+    
+    return path, file_name
 
 
 def dict_df_merge(data_dict, new_dict, turbine_code):
@@ -420,8 +421,11 @@ def wind_speed_power_bin(dataset, turbine_code=None, file_path=None,
         bin_curve_plot(dataset, wind_speed_label, power_label, xlabel, ylabel,
                        title, full_path, power_windspeed_bin_df,
                        hue=hue, size=hue)
-    
-    return power_windspeed_bin_df
+    else:
+        file_name = None
+        full_path = None
+
+    return full_path, file_name
 
 
 def wind_speed_tsr_bin(dataset, turbine_code=None, file_path=None, hue=None, plot_flag=False):
@@ -561,8 +565,25 @@ def wind_speed_cp_bin(dataset, turbine_code=None, air_density_tag=None, dir_path
         bin_curve_plot(target_data, wind_speed_label, cp_label, xlabel, ylabel,
                        title, full_path, cp_windspeed_bin_df,
                        hue=hue, size=air_density_tag)
+    else:
+        xlabel = "风速/(m·s)"
+        ylabel = "风能利用系数Cp"
+        title = "风速-风能利用系数分析" + "   " + turbine_code
+
+        # file_name = "Speed_Cp_{}.png".format(turbine_code)
+        # full_path = os.path.join(dir_path, file_name)
+        # 空气密度分仓
+        target_data = common_cut(target_data, air_density_label, air_density_bin_label, start=0.9, step=0.025)
+
+        target_data.sort_values(by=wind_speed_label, axis=0, ascending=True, inplace=True)
+
+        full_path, file_name = build_html(target_data, wind_speed_label, cp_label, xlabel, ylabel,
+                                          title, dir_path, cp_windspeed_bin_df,
+                                          hue=air_density_bin_label,
+                                          sizes=pd.unique(target_data[air_density_bin_label]),
+                                          turbine_code=turbine_code)
     
-    return cp_windspeed_bin_df
+    return full_path, file_name
 
 
 def wind_speed_pitch_bin(dataset, turbine_code=None, file_path=None, hue=power_label, plot_flag=False):
@@ -616,8 +637,23 @@ def wind_speed_pitch_bin(dataset, turbine_code=None, file_path=None, hue=power_l
         bin_curve_plot(dataset, wind_speed_label, pitch_label, xlabel, ylabel,
                        title, full_path, pitch_windspeed_bin_df,
                        hue=hue, size=power_label)
-    
-    return pitch_windspeed_bin_df
+
+    else:
+        # ? 风速-桨距角
+        xlabel = "风速/(m·s)"
+        ylabel = "桨距角/(°)"
+        title = "风速-桨距角分析" + "   " + turbine_code
+        # 功率分仓
+        dataset = common_cut(dataset, power_label, power_bin_label, start=0, step=400)
+        dataset[power_bin_label] = dataset[power_bin_label].astype('float').fillna(0)
+
+        full_path, file_name = build_html(dataset, wind_speed_label, pitch_label, xlabel, ylabel,
+                                          title, file_path, pitch_windspeed_bin_df,
+                                          hue=power_bin_label,
+                                          sizes=pd.unique(dataset[power_bin_label]),
+                                          turbine_code=turbine_code)
+
+    return full_path, file_name
 
 
 def speed_wind_gen_bin(dataset, turbine_code=None, file_path=None, hue=power_label, plot_flag=False):
@@ -889,8 +925,21 @@ def pitch_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_speed_l
         bin_curve_plot(target_data, pitch_label, power_label, xlabel, ylabel,
                        title, full_path, power_pitch_bin_df,
                        hue=hue, size=wind_speed_label)
+    else:
+        xlabel = "桨距角/(°)"
+        ylabel = "功率/(kW)"
+        title = "桨距角-功率分析" + "   " + turbine_code
+
+        target_data = common_cut(target_data, wind_speed_label, wind_speed_bin_label, start=0, step=3)
+        target_data[wind_speed_bin_label] = target_data[wind_speed_bin_label].astype('float').fillna(0)
+
+        full_path, file_name = build_html(target_data, pitch_label, power_label, xlabel, ylabel,
+                                          title, file_path, power_pitch_bin_df,
+                                          hue=wind_speed_bin_label,
+                                          sizes=pd.unique(dataset[wind_speed_bin_label]),
+                                          turbine_code=turbine_code)
     
-    return power_pitch_bin_df
+    return full_path, file_name
 
 
 def farm_bin_curve_plot(bin_df, x_var, y_var, xlabel, ylabel, title, file_path):

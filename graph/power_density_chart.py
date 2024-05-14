@@ -24,7 +24,7 @@ def build_page(plot_power_df, name):
     # 计算概率密度
     # hist, bin_edges = np.histogram(plot_power_df["wind_speed"], bins=xticks)
     plot_power_df["wind_speed2"] = plot_power_df.apply(lambda row: pow(row["wind_speed"], 3), axis=1)
-    grouped_mean = plot_power_df[plot_power_df["groups"] >= 0].groupby("groups").agg(
+    grouped_mean = plot_power_df[plot_power_df["groups"] > 0].groupby("groups").agg(
         {"power": "mean", "wind_speed": "size", "air_density": "mean", "wind_speed2": "mean"})
     bar = (
         Bar(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))

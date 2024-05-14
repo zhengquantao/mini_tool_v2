@@ -5,6 +5,8 @@ import shutil
 import time
 from functools import wraps
 
+import numpy as np
+import pandas as pd
 import psutil
 import wx
 import wx.svg
@@ -110,3 +112,11 @@ def add_notebook_page(notebook_ctrl, html_ctrl, file_paths, file_name):
     opening_dict[pid]["records"][file_name] = file_paths
     ctrl.AddPage(html_ctrl.create_ctrl(path=file_paths), file_name, True, page_bmp)
     return ctrl
+
+
+def common_cut(target_data, label, bin_label, start=0, step=0.25):
+    bins = np.arange(start, np.ceil(target_data[label].max()), step)
+    bins_labels = [x for x in bins[1:]]
+
+    target_data[bin_label] = pd.cut(target_data[label], bins=bins, labels=bins_labels)
+    return target_data

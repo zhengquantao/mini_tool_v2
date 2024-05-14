@@ -165,7 +165,9 @@ class ToolBarManager:
 
         project_tb_id: int = wx.NewIdRef()
         tb5 = aui.AuiToolBar(frame, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
-                             agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_VERTICAL | aui.AUI_TB_VERT_TEXT)
+                             agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_VERTICAL | aui.AUI_TB_VERT_TEXT |
+                                      aui.AUI_TB_PLAIN_BACKGROUND)
+
         self.toolbar_ids[project_tb_id] = "toolbar_left"
         self.toolbars["toolbar_left"] = {"id": project_tb_id, "item": tb5}
         tb5.AddSimpleTool(project_tb_id, "Package", svg_to_bitmap(cs.tree_nav_svg, size=(13, 13)),)
@@ -181,7 +183,7 @@ class ToolBarManager:
 
         tb_id: int = wx.NewIdRef()
         tb6 = aui.AuiToolBar(frame, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
-                             agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_VERT_TEXT)
+                             agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_VERT_TEXT | aui.AUI_TB_PLAIN_BACKGROUND)
         self.toolbar_ids[tb_id] = "toolbar_right"
         self.toolbars["toolbar_right"] = {"id": tb_id, "item": tb6}
         tb6.SetToolBitmapSize(wx.Size(48, 48))
@@ -210,7 +212,7 @@ class ToolBarManager:
 
         console_tb_id: int = wx.NewIdRef()
         tb7 = aui.AuiToolBar(frame, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
-                             agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_HORZ_TEXT)
+                             agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_HORZ_TEXT | aui.AUI_TB_PLAIN_BACKGROUND)
         self.toolbar_ids[console_tb_id] = "toolbar_bottom"
         self.toolbars["toolbar_bottom"] = {"id": console_tb_id, "item": tb7}
         tb7.AddSimpleTool(console_tb_id, "Console", svg_to_bitmap(cs.console_svg, size=(12, 12)), )

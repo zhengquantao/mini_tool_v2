@@ -14,6 +14,7 @@ from aui2 import svg_to_bitmap
 
 from common.common import read_file, remove_file, rename_file, get_file_info, add_notebook_page
 from common import loggers
+from models.bin_main import bin_main
 from models.compare_curve import compare_curve, compare_curve_all
 from models.dswe_main import iec_main
 from models.geo_main import geo_main
@@ -401,29 +402,54 @@ class TreeCtrl(metaclass=Singleton):
             loggers.logger.error("风资源对比总览图，多台风机！请选择存在多台风机的文件夹")
             return
 
-        # 风资源对比总览图
         file_paths, file_name = compare_curve_all(path, select=True)
         add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
 
     def on_model_7(self, event, path):
         """风速-风能利用系数Cp曲线"""
         loggers.logger.info(f"model clicked, path: {path}")
+        if os.path.isdir(path):
+            loggers.logger.error("风速-风能利用系数Cp曲线，请选择单个文件")
+            return
+
+        file_paths, file_name = bin_main(path, img_mode=False, run_func_list=["cp_windspeed"])
+        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
 
     def on_model_8(self, event, path):
         """风速-桨距角曲线"""
-        loggers.logger.info(f"model clicked, path: {path}")
+        if os.path.isdir(path):
+            loggers.logger.error("风速-桨距角曲线，请选择单个文件")
+            return
+
+        file_paths, file_name = bin_main(path, img_mode=False, run_func_list=["pitch_windspeed"])
+        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
 
     def on_model_9(self, event, path):
         """桨距角-功率曲线"""
-        loggers.logger.info(f"model clicked, path: {path}")
+        if os.path.isdir(path):
+            loggers.logger.error("桨距角-功率曲线，请选择单个文件")
+            return
+
+        file_paths, file_name = bin_main(path, img_mode=False, run_func_list=["power_pitch"])
+        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
 
     def on_model_10(self, event, path):
         """风速-转速曲线"""
-        loggers.logger.info(f"model clicked, path: {path}")
+        if os.path.isdir(path):
+            loggers.logger.error("风速-转速曲线，请选择单个文件")
+            return
+
+        file_paths, file_name = bin_main(path, img_mode=False, run_func_list=["gen_wind_speed"])
+        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
 
     def on_model_11(self, event, path):
         """转速-功率曲线"""
-        loggers.logger.info(f"model clicked, path: {path}")
+        if os.path.isdir(path):
+            loggers.logger.error("转速-功率曲线，请选择单个文件")
+            return
+
+        file_paths, file_name = bin_main(path, img_mode=False, run_func_list=["power_genspeed"])
+        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
 
     def on_item_expanded(self, event):
         print("Item expanded!")

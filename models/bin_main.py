@@ -10,7 +10,7 @@ from scipy.optimize import minimize
 import locale
 
 from common import loggers
-from settings.settings import opening_dict
+from settings.settings import opening_dict, power_theoretical, geolocation
 
 # *** ---------- custom package ----------
 from models.bin_analysis.quant.cloud.log_util import get_mp_rotating_logger
@@ -33,7 +33,7 @@ from models.bin_analysis.quant.cloud.bin_analysis_tool import bin_curve_analysis
 locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
 
-def bin_main(file_path, select=False, img_mode=False):
+def bin_main(file_path, img_mode=False, run_func_list=[]):
     """
     主程序执行
     :return:
@@ -74,12 +74,19 @@ def bin_main(file_path, select=False, img_mode=False):
     gear_ratio = 131.58
 
     # 图片保存文件夹
-    bin_img_path = ""
+    bin_img_path = factor_path
 
     # *** ---------- 2 按SCADA文件进行分析处理 ----------
     # ? 曲线分仓分析数据词典
-    bin_dict = {}
+    res = []
     for scada_file in scada_files:
+
+        if not scada_file.endswith(".csv"):
+            continue
+
+        if scada_file in [power_theoretical, geolocation]:
+            continue
+
         # *** ---------- 3 数据提取 ----------
         # ** 3.1 CSV数据读取 **
         # SCADA数据文件夹
@@ -115,17 +122,17 @@ def bin_main(file_path, select=False, img_mode=False):
 
         # data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: x.replace('"', ''))
         # data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: x.replace('\'', ''))
-        data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: locale.atof(x))
-        # data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: x.replace(',', ''))
-        # data.loc[:, "power"] = data.loc[:, "power"].astype("float")
+        # data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: locale.atof(x))
+        data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: x.replace(',', ''))
+        data.loc[:, "power"] = data.loc[:, "power"].astype("float")
 
         # data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].astype("float")
         # data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].apply(lambda x: x.replace('"', ''))
         # data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].apply(lambda x: x.replace('\'', ''))
-        data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].apply(lambda x: locale.atof(x))
+        # data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].apply(lambda x: locale.atof(x))
 
-        # data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].apply(lambda x: x.replace(',', ''))
-        # data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].astype("float")
+        data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].apply(lambda x: x.replace(',', ''))
+        data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].astype("float")
 
         #
         data[power_label] = pd.to_numeric(data[power_label])
@@ -201,11 +208,12 @@ def bin_main(file_path, select=False, img_mode=False):
         # TODO: 根据不同的场景的进行选择
         # 是否清洗数据，对于诊断问题、曲线绘制、能效评估具有不同的意义
         # TODO: plot_flag=True 是否针对每个风机分仓曲线绘图 【单个风机】【分仓曲线】
-        new_bin_dict = bin_curve_analysis(norm_data, turbine_code, air_density_tag=air_density_label,
-                                          dir_path=bin_img_path, cp_factor=cp_factor, plot_flag=img_mode)
-
+        html_path, file_name = bin_curve_analysis(norm_data, turbine_code,  air_density_tag=air_density_label,
+                                                  dir_path=bin_img_path, cp_factor=cp_factor,
+                                                  plot_flag=img_mode, run_func_list=run_func_list)
+        res.append((html_path, file_name))
         # ? 合并分仓分析数据词典
-        bin_dict = dict_df_merge(bin_dict, new_bin_dict, turbine_code)
+        # bin_dict = dict_df_merge(bin_dict, new_bin_dict, turbine_code)
 
         ''''''
 
@@ -279,5 +287,6 @@ def bin_main(file_path, select=False, img_mode=False):
 
     # 曲线分仓binning分析结果展示【绘图】
     # ? 是否采用中文标注 【否则采用英文】 cn_label_flag
-    dict_curve_plot(bin_dict, bin_img_path, cn_label_flag=False)
+    # dict_curve_plot(bin_dict, bin_img_path, cn_label_flag=False)
+    return res[0] if res else ["", ""]
 
