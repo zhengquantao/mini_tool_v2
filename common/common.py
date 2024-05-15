@@ -11,8 +11,9 @@ import psutil
 import wx
 import wx.svg
 import wx.lib.agw.aui as aui
+from dateutil import parser
 
-from settings.settings import opening_dict
+from settings.settings import opening_dict, cols_titles
 
 
 def new_app(path):
@@ -120,3 +121,48 @@ def common_cut(target_data, label, bin_label, start=0, step=0.25):
 
     target_data[bin_label] = pd.cut(target_data[label], bins=bins, labels=bins_labels)
     return target_data
+
+
+def is_second_data(data_df):
+    """
+    判断是否是秒级数据
+    """
+    time_one, time_two = data_df[0], data_df[1]
+    time_one_obj = parser.parse(time_one)
+    time_two_obj = parser.parse(time_two)
+    timestamp = int(time_two_obj.timestamp()) - int(time_one_obj.timestamp())
+    if timestamp > 1:
+        return True
+
+    return False
+
+
+def read_file(file):
+    cols_list = cols_titles.keys()
+    data_frame = pd.read_csv(file, usecols=cols_list)
+    select_col_df = data_frame[cols_list]
+    # select_col_df.set_index(select_col_df["real_time"])
+    if is_second_data(select_col_df["real_time"].head(2)):
+        if len(select_col_df) > 60 * 60 * 24 * 30 * 3:
+            # 从秒级降为10分钟级
+            normal_data = select_col_df.set_index("real_time")
+            normal_data.index = pd.to_datetime(normal_data.index)
+            normal_data = normal_data[cols_list]
+            normal_data = normal_data.resample("10min").mean()
+
+        elif len(select_col_df) > 60 * 60 * 24 * 30:
+            # 从秒级降为1分钟级
+            normal_data = select_col_df.set_index("real_time")
+            normal_data.index = pd.to_datetime(normal_data.index)
+            normal_data = normal_data[cols_list]
+            normal_data = normal_data.resample("1min").mean()
+
+        elif len(select_col_df) > 60 * 60 * 24 * 7:
+            # 从秒级降为10秒级
+            normal_data = select_col_df.set_index("real_time")
+            normal_data.index = pd.to_datetime(normal_data.index)
+            normal_data = normal_data[cols_list]
+            normal_data = normal_data.resample("10second").mean()
+
+    return select_col_df
+

@@ -628,7 +628,7 @@ def wind_speed_pitch_bin(dataset, turbine_code=None, file_path=None, hue=power_l
         #? 风速-桨距角
         xlabel = "风速/(m·s$^{-1}$)"
         ylabel = "桨距角/($°$)"
-        title = "风速-桨距角分析" + "   " + turbine_code
+        title = "风速-桨距角分析" + " " + turbine_code
         
         # 绘图和保存文件
         file_name = "wind_speed_pitch_{}.png".format(turbine_code)
@@ -642,7 +642,7 @@ def wind_speed_pitch_bin(dataset, turbine_code=None, file_path=None, hue=power_l
         # ? 风速-桨距角
         xlabel = "风速/(m·s)"
         ylabel = "桨距角/(°)"
-        title = "风速-桨距角分析" + "   " + turbine_code
+        title = "风速-桨距角分析" + " " + turbine_code
         # 功率分仓
         dataset = common_cut(dataset, power_label, power_bin_label, start=0, step=400)
         dataset[power_bin_label] = dataset[power_bin_label].astype('float').fillna(0)
@@ -692,7 +692,7 @@ def speed_wind_gen_bin(dataset, turbine_code=None, file_path=None, hue=power_lab
         # 风速-转速
         xlabel = "风速/(m·s$^{-1}$)"
         ylabel = "转速/(r·min$^{-1}$)"
-        title = "风速-转速分析" + "   " + turbine_code
+        title = "风速-转速分析" + " " + turbine_code
         
         # 绘图和保存文件
         file_name = "speed_wind_gen_{}.png".format(turbine_code)
@@ -706,8 +706,21 @@ def speed_wind_gen_bin(dataset, turbine_code=None, file_path=None, hue=power_lab
         bin_curve_plot(dataset, wind_speed_label, gen_speed_label, xlabel, ylabel,
                        title, full_path, gen_wind_speed_bin_df,
                        hue=hue, size=power_label)
-    
-    return gen_wind_speed_bin_df
+    else:
+        xlabel = "风速/(m·s)"
+        ylabel = "转速/(r·min)"
+        title = "风速-转速分析" + " " + turbine_code
+
+        dataset = common_cut(dataset, power_label, power_bin_label, start=0, step=400)
+        dataset[power_bin_label] = dataset[power_bin_label].astype('float').fillna(0)
+
+        full_path, file_name = build_html(dataset, wind_speed_label, gen_speed_label, xlabel, ylabel,
+                                          title, file_path, gen_wind_speed_bin_df,
+                                          hue=power_bin_label,
+                                          sizes=pd.unique(dataset[power_bin_label]),
+                                          turbine_code=turbine_code)
+
+    return full_path, file_name
 
 
 def gen_speed_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_speed_label, plot_flag=False):
@@ -746,7 +759,7 @@ def gen_speed_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_spe
         # 转速-功率
         xlabel = "转速/(r·min$^{-1}$)"
         ylabel = "功率/(kW)"
-        title = "转速-功率分析" + "   " + turbine_code
+        title = "转速-功率分析" + " " + turbine_code
         
         # 绘图和保存文件
         file_name = "gen_speed_power_{}.png".format(turbine_code)
@@ -760,8 +773,21 @@ def gen_speed_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_spe
         bin_curve_plot(dataset, gen_speed_label, power_label, xlabel, ylabel,
                        title, full_path, power_genspeed_bin_df,
                        hue=hue, size=wind_speed_label)
+    else:
+        xlabel = "转速/(r·min)"
+        ylabel = "功率/(kW)"
+        title = "转速-功率分析" + " " + turbine_code
+
+        dataset = common_cut(dataset, wind_speed_label, wind_speed_bin_label, start=0, step=400)
+        dataset[wind_speed_bin_label] = dataset[wind_speed_bin_label].astype('float').fillna(0)
+
+        full_path, file_name = build_html(dataset, gen_speed_label, power_label, xlabel, ylabel,
+                                          title, file_path, power_genspeed_bin_df,
+                                          hue=wind_speed_bin_label,
+                                          sizes=pd.unique(dataset[wind_speed_bin_label]),
+                                          turbine_code=turbine_code)
     
-    return power_genspeed_bin_df
+    return full_path, file_name
 
 
 def air_density_power_bin(dataset, air_density_tag, turbine_code=None, file_path=None, hue=None, plot_flag=False):
@@ -936,7 +962,7 @@ def pitch_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_speed_l
         full_path, file_name = build_html(target_data, pitch_label, power_label, xlabel, ylabel,
                                           title, file_path, power_pitch_bin_df,
                                           hue=wind_speed_bin_label,
-                                          sizes=pd.unique(dataset[wind_speed_bin_label]),
+                                          sizes=pd.unique(target_data[wind_speed_bin_label]),
                                           turbine_code=turbine_code)
     
     return full_path, file_name

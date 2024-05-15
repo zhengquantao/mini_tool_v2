@@ -22,21 +22,19 @@ IEC计算最后返回一个标杆风机
 # #IEC代码
 
 
-def iec_main(file_path, sort_only=False):
-
-    factor_path = opening_dict[os.getpid()]["path"]
-    factor_name = factor_path.split(os.sep)[-1]
-    curve_line_path = os.path.join(factor_path, power_theoretical)
+def iec_main(file_path, project_path, sort_only=False):
+    factor_name = project_path.split(os.sep)[-1]
+    curve_line_path = os.path.join(project_path, power_theoretical)
     turbine_code = file_path.split(os.sep)[-1].split(".")[0]
 
     _, all_statistics = aep_analysis.aep_main(file_path, factor_name, ["real_time"], ["wind_speed"], ["wind_direction"],
                                               ["nacelle_temperture"], [], ["power"], curve_line_path,  # ["air_density"]
                                               confidence_num=0.8, logger=loggers.logger)
     if sort_only:
-        file_paths, file_name = power_sort_chart.build_html(factor_path, turbine_code, all_statistics)
+        file_paths, file_name = power_sort_chart.build_html(project_path, turbine_code, all_statistics)
         return file_paths, file_name
 
-    file_paths, file_name = dswe_chart.build_html(factor_path, turbine_code, all_statistics)
+    file_paths, file_name = dswe_chart.build_html(project_path, turbine_code, all_statistics)
 
     return file_paths, file_name
 

@@ -28,46 +28,13 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
 
     :return:
     """
-
-    # scatter = (
-    #     Scatter()
-    #     .add_xaxis(data[col_x].tolist())
-    #     .add_yaxis(
-    #         "scatter",
-    #         data[col_y].tolist(),
-    #         label_opts=opts.LabelOpts(is_show=False),
-    #     )
-    #     .set_global_opts(
-    #         title_opts=opts.TitleOpts(title=title),
-    #         xaxis_opts=opts.AxisOpts(
-    #             name=xlabel,
-    #             type_="value",
-    #             splitline_opts=opts.SplitLineOpts(is_show=True),),
-    #         yaxis_opts=opts.AxisOpts(
-    #             name=ylabel,
-    #             type_="value",
-    #             splitline_opts=opts.SplitLineOpts(is_show=True)),
-    #     )
-    # )
-    #
-    # line = (
-    #     Line()
-    #     .add_xaxis(bin_df[col_x].tolist())
-    #     .add_yaxis(
-    #         "line",
-    #         bin_df[col_y].tolist(),
-    #         linestyle_opts=opts.LineStyleOpts(width=2),
-    #         label_opts=opts.LabelOpts(is_show=False),
-    #         is_symbol_show=False,
-    #         z=10, z_level=10,
-    #     )
-    # )
-
+    colors = ["#EBDEF0", "#D7BDE2", "#C39BD3", "#AF7AC5", "#9B59B6", "#884EA0", "#76448A"]
+    colors_size = len(colors)
     scatter = (
         Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
         .set_global_opts(
             title_opts=opts.TitleOpts(title=title),
-            legend_opts=opts.LegendOpts(pos_right="right"),  # 将图例放在右边
+            legend_opts=opts.LegendOpts(pos_right="right", pos_top="50%"),  # 将图例放在右边
             xaxis_opts=opts.AxisOpts(
                 name=xlabel,
                 type_="value",
@@ -76,11 +43,25 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
                 name=ylabel,
                 type_="value",
                 splitline_opts=opts.SplitLineOpts(is_show=True)),
+            toolbox_opts=opts.ToolboxOpts(
+                is_show=True,  # 是否显示该工具
+                orient="vertical",  # 工具栏 icon 的布局朝向
+                pos_left="right"  # 工具栏组件离容器左侧的距离
+            ),
+            # # 区域缩放
+            # datazoom_opts=opts.DataZoomOpts(
+            #     is_show=True,  # 是否显示 组件。如果设置为 false，不会显示，但是数据过滤的功能还存在
+            #     type_="slider",  # 组件类型，可选 "slider", "inside"
+            #     orient="horizontal",  # 可选值为：'horizontal', 'vertical'
+            #     range_start=0,  # 显示区域开始
+            #     range_end=100,  # 显示区域结束
+            # ),
+
         )
     )
-    for size in sizes:
+    for idx, size in enumerate(sizes):
         size_data = data[data[hue] == size]
-        add_scatter(scatter, size_data, size, col_x, col_y, color=None)
+        add_scatter(scatter, size_data, size, col_x, col_y, color=colors[idx % colors_size])
     line = (
         Line()
         .add_xaxis(bin_df[col_x].tolist())

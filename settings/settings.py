@@ -44,7 +44,7 @@ power_theoretical = "power_theoretical.csv"
 
 geolocation = "geolocation.csv"
 
-turbine_title = {
+cols_titles = {
     "turbine_code": "风机号",
     "real_time": "时间",
     "wind_direction": "风向",

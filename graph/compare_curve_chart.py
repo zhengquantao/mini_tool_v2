@@ -12,7 +12,7 @@ from pyecharts.charts import Scatter, Line
 
 
 def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scatter,
-               power_line, xticks, *args, **kwargs):
+               power_line, *args, **kwargs):
 
     scatter1 = (
         Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
@@ -24,8 +24,6 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
                 type_="value",
                 name="风速(m/s)",
                 splitline_opts=opts.SplitLineOpts(is_show=True),
-                min_=min(xticks),
-                max_=max(xticks),
             ),
             yaxis_opts=opts.AxisOpts(
                 type_="value",

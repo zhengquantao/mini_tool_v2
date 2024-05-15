@@ -34,7 +34,7 @@ import os
 import locale
 import pandas as pd
 
-from settings.settings import power_theoretical
+from settings.settings import power_theoretical, geolocation
 from ..data_integration import extra_data
 
 locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')

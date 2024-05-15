@@ -21,7 +21,7 @@ class LayoutManager:
         self.layouts = {}
         self.layout_ids = wx.NewIdRef(PERSPECTIVE_BUFFER_SIZE)
 
-        frame.Bind(wx.EVT_MENU, self.OnCreate, id=mb_items["CreatePerspective"]["id"])
+        frame.Bind(wx.EVT_MENU, self.on_create, id=mb_items["CreatePerspective"]["id"])
         frame.Bind(wx.EVT_MENU, self.OnCopy, id=mb_items["CopyPerspectiveCode"]["id"])
         frame.Bind(wx.EVT_MENU, self.OnRestore, id=self.layout_ids[0], id2=self.layout_ids[-1])
 
@@ -67,7 +67,7 @@ class LayoutManager:
             raise ValueError("Bad perspective ID.")
         self.mgr.LoadPerspective(self.layouts[ref_id]["data"])
 
-    def OnCreate(self, event: wx.CommandEvent) -> None:
+    def on_create(self, event: wx.CommandEvent) -> None:
         dlg = wx.TextEntryDialog(self.frame, "Enter a name for the new perspective:", "AUI Test")
         dlg.SetValue(f"Perspective {len(self.layouts) + 1}")
         if dlg.ShowModal() != wx.ID_OK:

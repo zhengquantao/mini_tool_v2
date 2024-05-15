@@ -7,12 +7,11 @@ from graph import compare_curve_chart, power_density_chart, power_density_all_ch
 from models.utils.data_cleansing import curve_sigmod, sigmoid
 from models.utils.data_integration import curve_line_extra
 from models.utils.wind_base_tool import cut_speed
-from settings.settings import opening_dict, power_theoretical, geolocation
+from settings.settings import power_theoretical, geolocation
 
 
-def compare_curve(file_path, num=1, select=False):
-    factor_path = opening_dict[os.getpid()]["path"]
-    factor_name = factor_path.split(os.sep)[-1]
+def compare_curve(file_path, project_path, num=1, select=False):
+    factor_name = project_path.split(os.sep)[-1]
     turbine_code = file_path.split(os.sep)[-1].split(".")[0]
 
     plna = str(turbine_code) + "号风机"
@@ -26,29 +25,28 @@ def compare_curve(file_path, num=1, select=False):
     curve_line, plot_power_distplot, abnormal_scatter, fitting_line, normal_scatter = plot_confidence_interval(
         df1, 0.8, ["wind_speed"], ["power"], plot_name=plna, num=num)
 
-    xticks = np.arange(0, 20.5, 0.5)
+    # xticks = np.arange(0, 20.5, 0.5)
 
     if select:
-        plot_power_df, _ = cut_speed(pd.DataFrame({"wind_speed": plot_power_distplot[0],
-                                                   "power": plot_power_distplot[1],
-                                                   "air_density": df1["air_density"]}))
-        file_paths, file_name = power_density_chart.build_html(factor_path, turbine_code, plot_power_df, xticks,
+        plot_power_df = pd.DataFrame({"wind_speed": plot_power_distplot[0],
+                                      "power": plot_power_distplot[1],
+                                      "air_density": df1["air_density"]})
+        file_paths, file_name = power_density_chart.build_html(project_path, turbine_code, plot_power_df,
                                                                plot_power_distplot[2])
         return file_paths, file_name
 
     # 理论功率曲线
-    power_line = curve_line_extra(os.path.join(factor_path, power_theoretical), factor_name)
+    power_line = curve_line_extra(os.path.join(project_path, power_theoretical), factor_name)
     power_line = (power_line.iloc[:, 0], power_line.iloc[:, 1], "理论功率曲线")
 
-    file_paths, file_name = compare_curve_chart.build_html(factor_path, turbine_code, abnormal_scatter, fitting_line,
-                                                           normal_scatter, power_line, xticks)
+    file_paths, file_name = compare_curve_chart.build_html(project_path, turbine_code, abnormal_scatter, fitting_line,
+                                                           normal_scatter, power_line)
 
     return file_paths, file_name
 
 
-def compare_curve_all(file_path, num=1, select=False):
-    factor_path = opening_dict[os.getpid()]["path"]
-    factor_name = factor_path.split(os.sep)[-1]
+def compare_curve_all(file_path, project_path, num=1, select=False):
+    factor_name = project_path.split(os.sep)[-1]
 
     res_list = []
     for file in os.listdir(file_path):
@@ -72,9 +70,9 @@ def compare_curve_all(file_path, num=1, select=False):
             df1, 0.8, ["wind_speed"], ["power"], plot_name=plna, num=num)
         xticks = np.arange(0, 20.5, 0.5)
 
-        plot_power_df, _ = cut_speed(pd.DataFrame({"wind_speed": plot_power_distplot[0],
-                                                   "power": plot_power_distplot[1],
-                                                   "air_density": df1["air_density"]}))
+        plot_power_df = pd.DataFrame({"wind_speed": plot_power_distplot[0],
+                                      "power": plot_power_distplot[1],
+                                      "air_density": df1["air_density"]})
         plot_power_distplot = (plot_power_df, plot_power_distplot[2])
 
         res_list.append(
@@ -83,7 +81,7 @@ def compare_curve_all(file_path, num=1, select=False):
 
     if select:
 
-        file_paths, file_name = power_density_all_chart.build_html(factor_path, res_list, factor_name)
+        file_paths, file_name = power_density_all_chart.build_html(project_path, res_list, factor_name)
         return file_paths, file_name
 
     # # 理论功率曲线

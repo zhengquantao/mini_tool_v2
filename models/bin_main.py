@@ -10,12 +10,12 @@ from scipy.optimize import minimize
 import locale
 
 from common import loggers
-from settings.settings import opening_dict, power_theoretical, geolocation
+from settings.settings import power_theoretical, geolocation
 
 # *** ---------- custom package ----------
-from models.bin_analysis.quant.cloud.log_util import get_mp_rotating_logger
+# from models.bin_analysis.quant.cloud.log_util import get_mp_rotating_logger
 
-from models.bin_analysis.quant.cloud.file_dir_tool import create_proj_dir, create_dir
+# from models.bin_analysis.quant.cloud.file_dir_tool import create_proj_dir, create_dir
 
 from models.bin_analysis.quant.cloud.plot_tool import draw_time_violinplot, plot_heatmap
 
@@ -33,13 +33,12 @@ from models.bin_analysis.quant.cloud.bin_analysis_tool import bin_curve_analysis
 locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
 
-def bin_main(file_path, img_mode=False, run_func_list=[]):
+def bin_main(file_path, project_path, img_mode=False, run_func_list=None):
     """
     主程序执行
     :return:
     """
-    factor_path = opening_dict[os.getpid()]["path"]
-    factor_name = factor_path.split(os.sep)[-1]
+    factor_name = project_path.split(os.sep)[-1]
     turbine_code = file_path.split(os.sep)[-1].split(".")[0]
 
     # *** ---------- 1 基础设置和参数初始化 ----------
@@ -72,9 +71,6 @@ def bin_main(file_path, img_mode=False, run_func_list=[]):
 
     # 传动比：gear ratio，transmission ratio，drive ratio
     gear_ratio = 131.58
-
-    # 图片保存文件夹
-    bin_img_path = factor_path
 
     # *** ---------- 2 按SCADA文件进行分析处理 ----------
     # ? 曲线分仓分析数据词典
@@ -208,8 +204,8 @@ def bin_main(file_path, img_mode=False, run_func_list=[]):
         # TODO: 根据不同的场景的进行选择
         # 是否清洗数据，对于诊断问题、曲线绘制、能效评估具有不同的意义
         # TODO: plot_flag=True 是否针对每个风机分仓曲线绘图 【单个风机】【分仓曲线】
-        html_path, file_name = bin_curve_analysis(norm_data, turbine_code,  air_density_tag=air_density_label,
-                                                  dir_path=bin_img_path, cp_factor=cp_factor,
+        html_path, file_name = bin_curve_analysis(norm_data, turbine_code, air_density_tag=air_density_label,
+                                                  dir_path=project_path, cp_factor=cp_factor,
                                                   plot_flag=img_mode, run_func_list=run_func_list)
         res.append((html_path, file_name))
         # ? 合并分仓分析数据词典
@@ -288,5 +284,5 @@ def bin_main(file_path, img_mode=False, run_func_list=[]):
     # 曲线分仓binning分析结果展示【绘图】
     # ? 是否采用中文标注 【否则采用英文】 cn_label_flag
     # dict_curve_plot(bin_dict, bin_img_path, cn_label_flag=False)
-    return res[0] if res else ["", ""]
+    return res[0]
 

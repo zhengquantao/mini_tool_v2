@@ -54,7 +54,7 @@ class Notebook:
         self.html_ctrl = html_ctrl
         self.create_menu_id = create_menu_id
         self.notebook_object = None
-        frame.Bind(wx.EVT_MENU, self.OnCreate, id=self.create_menu_id)
+        frame.Bind(wx.EVT_MENU, self.on_create, id=self.create_menu_id)
 
     def start_position(self) -> wx.Point:
         return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
@@ -141,7 +141,7 @@ class Notebook:
         self.notebook_object = ctrl
         return ctrl
 
-    def OnCreate(self, _event: wx.CommandEvent) -> None:
+    def on_create(self, _event: wx.CommandEvent) -> None:
         ctrl: aui.AuiNotebook = self.create_ctrl()
         caption = "Notebook"
         self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).

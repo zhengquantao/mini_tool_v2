@@ -1,10 +1,12 @@
 import os
+from threading import Thread
 
 import pandas as pd
 import wx
 import wx.grid
 import wx.html2
 import wx.lib.agw.aui as aui
+from wx.lib.pubsub import pub as publisher
 
 # If MainFrame subclasses wx.Frame, uncomment the following lines
 # from typing import TYPE_CHECKING
@@ -52,7 +54,7 @@ class GridCtrl(metaclass=Singleton):
         self.frame = frame
         self.mgr = mgr
         self.create_menu_id = create_menu_id
-        frame.Bind(wx.EVT_MENU, self.OnCreate, id=self.create_menu_id)
+        frame.Bind(wx.EVT_MENU, self.on_create, id=self.create_menu_id)
 
     def start_position(self) -> wx.Point:
         return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
@@ -103,7 +105,7 @@ class GridCtrl(metaclass=Singleton):
                 grid.SetCellAlignment(row, col, wx.ALIGN_CENTER, wx.ALIGN_CENTER)
         grid.EndBatch()
 
-    def OnCreate(self, _event: wx.CommandEvent) -> None:
+    def on_create(self, _event: wx.CommandEvent) -> None:
         ctrl: wx.grid.Grid = self.create_ctrl()
         caption = "Grid"
         self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).Float().
@@ -132,7 +134,7 @@ class TextCtrl(metaclass=Singleton):
         self.frame = frame
         self.mgr = mgr
         self.create_menu_id = create_menu_id
-        frame.Bind(wx.EVT_MENU, self.OnCreate, id=self.create_menu_id)
+        frame.Bind(wx.EVT_MENU, self.on_create, id=self.create_menu_id)
 
     def start_position(self) -> wx.Point:
         return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
@@ -148,7 +150,7 @@ class TextCtrl(metaclass=Singleton):
         ctrl.SetFont(font)
         return ctrl
 
-    def OnCreate(self, _event: wx.CommandEvent) -> None:
+    def on_create(self, _event: wx.CommandEvent) -> None:
         ctrl: wx.TextCtrl = self.create_ctrl()
         caption = "Text Control"
         self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).Float().
@@ -182,10 +184,18 @@ class TreeCtrl(metaclass=Singleton):
         self.html_ctrl = html_ctrl
         self.grid_ctrl = grid_ctrl
         self.now_file_list = []
-        frame.Bind(wx.EVT_MENU, self.OnCreate, id=self.create_menu_id)
-        frame.Bind(wx.EVT_ACTIVATE, self.on_update)
+        frame.Bind(wx.EVT_MENU, self.on_create, id=self.create_menu_id)
+        publisher.subscribe(self.add_page, "add_page")
 
-    def on_update(self, event):
+        self.timer = wx.Timer(frame)
+        frame.Bind(wx.EVT_TIMER, self.update_file_tree)
+        self.timer.Start(3000)
+
+    def add_page(self, msg):
+        file_paths, file_name = msg
+        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
+
+    def update_file_tree(self, event):
         project_path = opening_dict[os.getpid()]["path"]
         new_file_list = get_file_info(project_path)
         if new_file_list == self.now_file_list:
@@ -229,7 +239,7 @@ class TreeCtrl(metaclass=Singleton):
 
         return self.tree
 
-    def OnCreate(self, _event: wx.CommandEvent) -> None:
+    def on_create(self, _event: wx.CommandEvent) -> None:
         ctrl: wx.TreeCtrl = self.create_ctrl()
         caption = "Tree Control"
         self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).
@@ -353,25 +363,27 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_1(self, event, path):
         """能效等级总览"""
-        file_paths, file_name = geo_main(path)
-
-        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
+        project_path = opening_dict[os.getpid()]["path"]
+        thread = Thread(target=self.async_model, args=(geo_main, path, project_path))
+        thread.start()
 
     def on_model_2(self, event, path):
         """能效评估结果总览"""
         loggers.logger.info(f"model clicked, path: {path}")
 
         # 能效评估结果总览
-        file_paths, file_name = iec_main(path)
-        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
+        project_path = opening_dict[os.getpid()]["path"]
+        thread = Thread(target=self.async_model, args=(iec_main, path, project_path))
+        thread.start()
 
     def on_model_3(self, event, path):
         """能效排行"""
         loggers.logger.info(f"model clicked, path: {path}")
 
         # 能效评估结果总览
-        file_paths, file_name = iec_main(path, sort_only=True)
-        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
+        project_path = opening_dict[os.getpid()]["path"]
+        thread = Thread(target=self.async_model, args=(iec_main, path, project_path, True))
+        thread.start()
 
     def on_model_4(self, event, path):
         """理论与实际功率对比分析"""
@@ -380,8 +392,9 @@ class TreeCtrl(metaclass=Singleton):
             return
 
         # 理论和实际功率曲线对比
-        file_paths, file_name = compare_curve(path)
-        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
+        project_path = opening_dict[os.getpid()]["path"]
+        thread = Thread(target=self.async_model, args=(compare_curve, path, project_path))
+        thread.start()
 
     def on_model_5(self, event, path):
         """风资源对比图"""
@@ -391,8 +404,9 @@ class TreeCtrl(metaclass=Singleton):
             return
 
         # 理论和实际功率曲线对比
-        file_paths, file_name = compare_curve(path, select=True)
-        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
+        project_path = opening_dict[os.getpid()]["path"]
+        thread = Thread(target=self.async_model, args=(compare_curve, path, project_path, 1, True))
+        thread.start()
 
     def on_model_6(self, event, path):
         """风资源对比总览图"""
@@ -402,54 +416,39 @@ class TreeCtrl(metaclass=Singleton):
             loggers.logger.error("风资源对比总览图，多台风机！请选择存在多台风机的文件夹")
             return
 
-        file_paths, file_name = compare_curve_all(path, select=True)
-        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
+        project_path = opening_dict[os.getpid()]["path"]
+        thread = Thread(target=self.async_model, args=(compare_curve_all, path, project_path))
+        thread.start()
 
     def on_model_7(self, event, path):
         """风速-风能利用系数Cp曲线"""
-        loggers.logger.info(f"model clicked, path: {path}")
-        if os.path.isdir(path):
-            loggers.logger.error("风速-风能利用系数Cp曲线，请选择单个文件")
-            return
-
-        file_paths, file_name = bin_main(path, img_mode=False, run_func_list=["cp_windspeed"])
-        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
+        project_path = opening_dict[os.getpid()]["path"]
+        thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["cp_windspeed"]))
+        thread.start()
 
     def on_model_8(self, event, path):
         """风速-桨距角曲线"""
-        if os.path.isdir(path):
-            loggers.logger.error("风速-桨距角曲线，请选择单个文件")
-            return
-
-        file_paths, file_name = bin_main(path, img_mode=False, run_func_list=["pitch_windspeed"])
-        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
+        project_path = opening_dict[os.getpid()]["path"]
+        thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["pitch_windspeed"]))
+        thread.start()
 
     def on_model_9(self, event, path):
         """桨距角-功率曲线"""
-        if os.path.isdir(path):
-            loggers.logger.error("桨距角-功率曲线，请选择单个文件")
-            return
-
-        file_paths, file_name = bin_main(path, img_mode=False, run_func_list=["power_pitch"])
-        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
+        project_path = opening_dict[os.getpid()]["path"]
+        thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["power_pitch"]))
+        thread.start()
 
     def on_model_10(self, event, path):
         """风速-转速曲线"""
-        if os.path.isdir(path):
-            loggers.logger.error("风速-转速曲线，请选择单个文件")
-            return
-
-        file_paths, file_name = bin_main(path, img_mode=False, run_func_list=["gen_wind_speed"])
-        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
+        project_path = opening_dict[os.getpid()]["path"]
+        thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["gen_wind_speed"]))
+        thread.start()
 
     def on_model_11(self, event, path):
         """转速-功率曲线"""
-        if os.path.isdir(path):
-            loggers.logger.error("转速-功率曲线，请选择单个文件")
-            return
-
-        file_paths, file_name = bin_main(path, img_mode=False, run_func_list=["power_genspeed"])
-        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
+        project_path = opening_dict[os.getpid()]["path"]
+        thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["power_genspeed"]))
+        thread.start()
 
     def on_item_expanded(self, event):
         print("Item expanded!")
@@ -462,6 +461,11 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_sel_changing(self, event):
         print("Selection changing")
+
+    def async_model(self, callable_func, *args):
+        file_paths, file_name = callable_func(*args)
+        # 防止多线程操作主进程页面导致异常崩溃
+        wx.CallAfter(publisher.sendMessage, "add_page", msg=(file_paths, file_name))
 
 
 class HTMLCtrl(metaclass=Singleton):
@@ -483,7 +487,7 @@ class HTMLCtrl(metaclass=Singleton):
         self.frame = frame
         self.mgr = mgr
         self.create_menu_id = create_menu_id
-        frame.Bind(wx.EVT_MENU, self.OnCreate, id=self.create_menu_id)
+        frame.Bind(wx.EVT_MENU, self.on_create, id=self.create_menu_id)
 
     def start_position(self) -> wx.Point:
         return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
@@ -496,7 +500,7 @@ class HTMLCtrl(metaclass=Singleton):
         ctrl.LoadURL(f"file:///{path}")
         return ctrl
 
-    def OnCreate(self, _event: wx.CommandEvent, caption="HTML Control", path=overview, width=700, height=400) -> None:
+    def on_create(self, _event: wx.CommandEvent, caption="HTML Control", path=overview, width=700, height=400) -> None:
         ctrl: wx.html2.WebView = self.create_ctrl(path=path)
         self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).Float().Name("html_content").
                          FloatingPosition(self.start_position()).BestSize(wx.Size(width, height)).
@@ -526,7 +530,7 @@ class SizeReportCtrl(metaclass=Singleton):
         self.frame = frame
         self.mgr = mgr
         self.create_menu_id = create_menu_id
-        frame.Bind(wx.EVT_MENU, self.OnCreate, id=self.create_menu_id)
+        frame.Bind(wx.EVT_MENU, self.on_create, id=self.create_menu_id)
 
     def create_ctrl(self, width: int = 80, height: int = 80) -> wx.Control:
         self.__class__.counter += 1
@@ -540,7 +544,7 @@ class SizeReportCtrl(metaclass=Singleton):
     def start_position(self) -> wx.Point:
         return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
 
-    def OnCreate(self, _event: wx.CommandEvent) -> None:
+    def on_create(self, _event: wx.CommandEvent) -> None:
         ctrl: wx.Control = self.create_ctrl()
         caption = "Client Size Reporter"
         self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).Float().
