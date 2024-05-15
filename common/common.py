@@ -141,28 +141,27 @@ def read_file(file):
     cols_list = cols_titles.keys()
     data_frame = pd.read_csv(file, usecols=cols_list)
     select_col_df = data_frame[cols_list]
-    # select_col_df.set_index(select_col_df["real_time"])
+
+    for col in select_col_df.columns:
+        if np.issubdtype(select_col_df[col], np.float16) or np.issubdtype(select_col_df[col], np.int16):
+            select_col_df.loc[:, col] = select_col_df.loc[:, col].astype("float")
+
     if is_second_data(select_col_df["real_time"].head(2)):
+        normal_data = select_col_df.set_index("real_time")
+        normal_data.index = pd.to_datetime(normal_data.index)
         if len(select_col_df) > 60 * 60 * 24 * 30 * 3:
             # 从秒级降为10分钟级
-            normal_data = select_col_df.set_index("real_time")
-            normal_data.index = pd.to_datetime(normal_data.index)
-            normal_data = normal_data[cols_list]
             normal_data = normal_data.resample("10min").mean()
 
         elif len(select_col_df) > 60 * 60 * 24 * 30:
             # 从秒级降为1分钟级
-            normal_data = select_col_df.set_index("real_time")
-            normal_data.index = pd.to_datetime(normal_data.index)
-            normal_data = normal_data[cols_list]
             normal_data = normal_data.resample("1min").mean()
 
         elif len(select_col_df) > 60 * 60 * 24 * 7:
-            # 从秒级降为10秒级
-            normal_data = select_col_df.set_index("real_time")
-            normal_data.index = pd.to_datetime(normal_data.index)
-            normal_data = normal_data[cols_list]
-            normal_data = normal_data.resample("10second").mean()
+            # 从秒级降为30秒级
+            normal_data = normal_data.resample("30S").mean()
+
+        return normal_data
 
     return select_col_df
 
