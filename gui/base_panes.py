@@ -275,7 +275,7 @@ class PaneManager:
         # self.mgr.GetPane("test8").Show().Left().Layer(0).Row(0).Position(0)
         # self.mgr.GetPane(f"__notebook_{self.mgr.GetPane('test10').notebook_id}"
         #                  ).Show().Bottom().Layer(0).Row(0).Position(0)
-        self.mgr.GetPane("Console").Show()
+        self.mgr.GetPane("Console").Hide()
         # self.mgr.GetPane("thirdauto").Show()
         # self.mgr.GetPane("test10").Show()
         self.mgr.GetPane("notebook_content").Show()

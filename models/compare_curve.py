@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 
+from common.common import read_csv_file
 from graph import compare_curve_chart, power_density_chart, power_density_all_chart
 from models.utils.data_cleansing import curve_sigmod, sigmoid
 from models.utils.data_integration import curve_line_extra
@@ -17,7 +18,8 @@ def compare_curve(file_path, project_path, num=1, select=False):
     plna = str(turbine_code) + "号风机"
 
     # data = pd.read_csv(file_path).dropna(axis=0)
-    data = pd.read_csv(file_path)
+    # data = pd.read_csv(file_path)
+    data = read_csv_file(file_path)
 
     df1, speed_list = cut_speed(data)
 
@@ -61,7 +63,7 @@ def compare_curve_all(file_path, project_path, num=1, select=False):
         plna = str(turbine_code) + "号风机"
 
         # data = pd.read_csv(file_path).dropna(axis=0)
-        data = pd.read_csv(os.path.join(file_path, file))
+        data = read_csv_file(os.path.join(file_path, file))
 
         df1, speed_list = cut_speed(data)
 
@@ -137,19 +139,3 @@ def plot_confidence_interval(data, confidence_interval=0.8, use_column=None, tar
     normal_scatter = (outliers[use_column[0]], outliers[target_column[0]], '清洗后的点')
 
     return (curve_line, plot_power_distplot, abnormal_scatter, fitting_line, normal_scatter)
-
-
-def cut_speeds(data, lable):
-    """
-    对风速进行划分和分组
-    :param data:
-    :return:
-    """
-    data = data[(data[lable] < 18) & (data[lable] >= 0)]
-    speed = list(np.linspace(2, 20, 37))
-    for i in range(len(speed)):
-        subspeed = speed[i]
-        data.loc[(data[lable] >= subspeed - 0.25) & (data[lable] < subspeed + 0.25), "groups"] = subspeed
-    data.loc[data[lable] < 2.25, "groups"] = -1
-    data.loc[data[lable] > 20, "groups"] = len(speed)
-    return data, speed

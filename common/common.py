@@ -4,6 +4,7 @@ import os
 import shutil
 import time
 from functools import wraps
+import chardet
 
 import numpy as np
 import pandas as pd
@@ -11,7 +12,6 @@ import psutil
 import wx
 import wx.svg
 import wx.lib.agw.aui as aui
-from dateutil import parser
 
 from settings.settings import opening_dict, cols_titles
 
@@ -97,12 +97,11 @@ def save_mini_file(mgr):
 
 def get_file_info(directory='.'):
     res = []
-    for root, dirs, files in os.walk(directory):
-        for file in files:
-            file_path = os.path.join(root, file)
-            # file_size = os.path.getsize(file_path)
-            # print(f'文件名: {file}, 路径: {file_path}, 大小: {file_size} bytes')
-            res.append(file_path)
+    for files in os.listdir(directory):
+        file_path = os.path.join(directory, files)
+        # file_size = os.path.getsize(file_path)
+        # print(f'文件名: {file}, 路径: {file_path}, 大小: {file_size} bytes')
+        res.append(file_path)
     return res
 
 
@@ -123,45 +122,81 @@ def common_cut(target_data, label, bin_label, start=0, step=0.25):
     return target_data
 
 
+def detect_encoding(filename):
+    with open(filename, 'rb') as file:
+        rawdata = file.read(1000)
+        encoding = chardet.detect(rawdata)['encoding']
+        return encoding
+
+
 def is_second_data(data_df):
     """
     判断是否是秒级数据
     """
     time_one, time_two = data_df[0], data_df[1]
-    time_one_obj = parser.parse(time_one)
-    time_two_obj = parser.parse(time_two)
-    timestamp = int(time_two_obj.timestamp()) - int(time_one_obj.timestamp())
+    timestamp = int(time_two.timestamp()) - int(time_one.timestamp())
     if timestamp > 1:
-        return True
+        return False
 
-    return False
+    return True
 
 
-def read_file(file):
+def field_type_transform(data):
+    # ** 3.4 数值类型转换 **
+    data = data.set_index("real_time")
+    data.index = pd.to_datetime(data.index)
+    data.loc[:, "wind_speed"] = data.loc[:, "wind_speed"].astype("float")
+    data.loc[:, "wind_direction"] = data.loc[:, "wind_direction"].astype("float")
+
+    data.loc[:, "air_density"] = data.loc[:, "air_density"].astype("float")
+    data.loc[:, "pitch_angle"] = data.loc[:, "pitch_angle"].astype("float")
+
+    data.loc[:, "nacelle_temperature"] = data.loc[:, "nacelle_temperature"].apply(lambda x: str(x).replace(",", ""))
+    data.loc[:, "nacelle_temperature"] = data.loc[:, "nacelle_temperature"].astype("float")
+
+    data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: str(x).replace(",", ""))
+    data.loc[:, "power"] = data.loc[:, "power"].astype("float")
+
+    data.loc[:, "generator_speed"] = data.loc[:, "generator_speed"].apply(lambda x: str(x).replace(",", ""))
+    data.loc[:, "generator_speed"] = data.loc[:, "generator_speed"].astype("float")
+
+    data["power"] = pd.to_numeric(data["power"])
+    data["generator_speed"] = pd.to_numeric(data["generator_speed"])
+    data["nacelle_temperature"] = pd.to_numeric(data["nacelle_temperature"])
+
+    return data
+
+
+def read_csv_file(file):
     cols_list = cols_titles.keys()
-    data_frame = pd.read_csv(file, usecols=cols_list)
+    data_frame = pd.read_csv(file, usecols=cols_list, encoding=detect_encoding(file))
     select_col_df = data_frame[cols_list]
 
-    for col in select_col_df.columns:
-        if np.issubdtype(select_col_df[col], np.float16) or np.issubdtype(select_col_df[col], np.int16):
-            select_col_df.loc[:, col] = select_col_df.loc[:, col].astype("float")
+    select_col_df = field_type_transform(select_col_df)
 
-    if is_second_data(select_col_df["real_time"].head(2)):
-        normal_data = select_col_df.set_index("real_time")
-        normal_data.index = pd.to_datetime(normal_data.index)
+    # turbine_code是字符串，需要去掉turbine_code列，才能resample
+    turbine_code = select_col_df["turbine_code"][0]
+    select_col_df = select_col_df.iloc[:, 1:]
+
+    if is_second_data(select_col_df.index):
+
         if len(select_col_df) > 60 * 60 * 24 * 30 * 3:
-            # 从秒级降为10分钟级
-            normal_data = normal_data.resample("10min").mean()
+            # 从3个月秒级降为10分钟级
+            select_col_df = select_col_df.resample("10min").mean()
 
         elif len(select_col_df) > 60 * 60 * 24 * 30:
-            # 从秒级降为1分钟级
-            normal_data = normal_data.resample("1min").mean()
+            # 从30天秒级降为1分钟级
+            select_col_df = select_col_df.resample("1min").mean()
 
         elif len(select_col_df) > 60 * 60 * 24 * 7:
-            # 从秒级降为30秒级
-            normal_data = normal_data.resample("30S").mean()
+            # 从7天秒级降为30秒级
+            select_col_df = select_col_df.resample("30S").mean()
 
-        return normal_data
-
+    else:
+        if len(select_col_df) > 60 * 24 * 365:
+            # 一年分钟级将为10分钟级
+            select_col_df = select_col_df.resample("10min").mean()
+    # 加上turbine_code列
+    select_col_df.insert(loc=0, column='turbine_code', value=turbine_code)
     return select_col_df
 

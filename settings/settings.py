@@ -45,17 +45,15 @@ power_theoretical = "power_theoretical.csv"
 geolocation = "geolocation.csv"
 
 cols_titles = {
-    "turbine_code": "风机号",
     "real_time": "时间",
-    "wind_direction": "风向",
+    "turbine_code": "风机号",
     "wind_speed": "风速",
-    "power": "功率",
-    "air_density": "空气密度",
     "generator_speed": "发电机转速",
-    "pitch1_angle": "变桨角度1",
-    "pitch2_angle": "变桨角度2",
-    "pitch3_angle": "变桨角度3",
-    "nacelle_temperture": "机舱温度",
-    "nacelle_direction": "机舱风向"
+    "pitch_angle": "变桨角度",
+    "nacelle_direction": "机舱风向",
+    "wind_direction": "风向",
+    "air_density": "空气密度",
+    "nacelle_temperature": "机舱温度",
+    "power": "功率",
 
 }

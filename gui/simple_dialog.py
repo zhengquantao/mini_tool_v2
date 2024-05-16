@@ -1,3 +1,5 @@
+from json import detect_encoding
+
 import pandas as pd
 import wx
 
@@ -87,7 +89,7 @@ class SimpleDialog(wx.Dialog):
         print(f"Chosen directory: {path}")
         self.t_input.SetValue(path)
         self.t_input.SetEditable(False)
-        self.data_df = pd.read_csv(path)
+        self.data_df = pd.read_csv(path, encoding=detect_encoding(path))
         self.ylist.SetItems(self.data_df.columns)
         self.xlist.SetItems(self.data_df.columns)
         self.xlist.AutoComplete(self.data_df.columns)

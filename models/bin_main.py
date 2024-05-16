@@ -5,32 +5,23 @@ import pandas as pd
 
 from scipy.optimize import minimize
 
-# !尖峰项目特有，CSV文件数值中存在千分符
-# ? 为了处理读入的CSV数据当中，发电机转速"1,147.00"转为浮点数类型
-import locale
 
 from common import loggers
+from common.common import read_csv_file
 from settings.settings import power_theoretical, geolocation
 
 # *** ---------- custom package ----------
-# from models.bin_analysis.quant.cloud.log_util import get_mp_rotating_logger
-
-# from models.bin_analysis.quant.cloud.file_dir_tool import create_proj_dir, create_dir
-
-from models.bin_analysis.quant.cloud.plot_tool import draw_time_violinplot, plot_heatmap
 
 from models.bin_analysis.quant.cloud.wind_base_tool import rule_removal, wind_speed_binning, windspeed_binning_proc
 from models.bin_analysis.quant.cloud.wind_base_tool import wind_speed_label, power_label, gen_speed_label, \
     air_density_label
 
-from models.bin_analysis.quant.cloud.pitch_analysis import pitch1_label, pitch2_label, pitch3_label
+from models.bin_analysis.quant.cloud.pitch_analysis import pitch_label
 from models.bin_analysis.quant.cloud.tsr_tool import tsr_calc, tsr_label
 
 from models.bin_analysis.quant.cloud.bin_analysis_tool import dict_df_merge, dict_curve_plot
 from models.bin_analysis.quant.cloud.bin_analysis_tool import bin_curve_analysis, month_bin_curve_analysis, \
     power_curve_bin
-
-locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
 
 def bin_main(file_path, project_path, img_mode=False, run_func_list=None):
@@ -86,8 +77,8 @@ def bin_main(file_path, project_path, img_mode=False, run_func_list=None):
         # *** ---------- 3 数据提取 ----------
         # ** 3.1 CSV数据读取 **
         # SCADA数据文件夹
-        data = pd.read_csv(scada_file)  # , encoding="GB2312"
-
+        # data = pd.read_csv(scada_file)  # , encoding="GB2312"
+        data = read_csv_file(scada_file)
         # 当前SCADA数据机组编号
         # turbine_code = data.loc[0, "风机"]
 
@@ -98,42 +89,45 @@ def bin_main(file_path, project_path, img_mode=False, run_func_list=None):
         # data = data[data["平均机组运行模式"] == 20].reset_index(drop=True)
 
         # ** 3.3 字段名称转换 **
-        data = data[["时间", "风机", "平均风速(m/s)", "平均发电机转速",
-                     "平均桨叶1角度", "平均桨叶2角度", "平均桨叶3角度",
-                     "平均风向（机舱）", "平均风角度（对北）", "平均空气密度", "平均机舱温度", "平均功率"]]
+        # data = data[["时间", "风机", "平均风速(m/s)", "平均发电机转速",
+        #              "平均桨叶1角度", "平均桨叶2角度", "平均桨叶3角度",
+        #              "平均风向（机舱）", "平均风角度（对北）", "平均空气密度", "平均机舱温度", "平均功率"]]
         # "power",
-        data.columns = ["real_time", "turbine_code", wind_speed_label, gen_speed_label,
-                        pitch1_label, pitch2_label, pitch3_label,
-                        "nacelle_direction", "wind_direction", air_density_label, "nacelle_temp", power_label]
+        # data.columns = ["real_time", "turbine_code", wind_speed_label, gen_speed_label,
+        #                 pitch1_label, pitch2_label, pitch3_label,
+        #                 "nacelle_direction", "wind_direction", air_density_label, "nacelle_temp", power_label]
+        data.columns = ["turbine_code", wind_speed_label, gen_speed_label,
+                        pitch_label, "nacelle_direction", "wind_direction", air_density_label, "nacelle_temp",
+                        power_label]
 
-        # ** 3.4 数值类型转换 **
-        data.loc[:, "wind_speed"] = data.loc[:, "wind_speed"].astype("float")
-        data.loc[:, "wind_direction"] = data.loc[:, "wind_direction"].astype("float")
-
-        data.loc[:, "air_density"] = data.loc[:, "air_density"].astype("float")
-        data.loc[:, pitch1_label] = data.loc[:, pitch1_label].astype("float")
-
-        data.loc[:, "nacelle_temp"] = data.loc[:, "nacelle_temp"].apply(lambda x: locale.atof(str(x)))
-        # data.loc[:, "nacelle_temp"] = data.loc[:, "nacelle_temp"].astype("float")
-
-        # data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: x.replace('"', ''))
-        # data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: x.replace('\'', ''))
-        # data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: locale.atof(x))
-        data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: x.replace(',', ''))
-        data.loc[:, "power"] = data.loc[:, "power"].astype("float")
-
-        # data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].astype("float")
-        # data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].apply(lambda x: x.replace('"', ''))
-        # data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].apply(lambda x: x.replace('\'', ''))
-        # data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].apply(lambda x: locale.atof(x))
-
-        data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].apply(lambda x: x.replace(',', ''))
-        data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].astype("float")
-
+        # # ** 3.4 数值类型转换 **
+        # data.loc[:, "wind_speed"] = data.loc[:, "wind_speed"].astype("float")
+        # data.loc[:, "wind_direction"] = data.loc[:, "wind_direction"].astype("float")
         #
-        data[power_label] = pd.to_numeric(data[power_label])
-        data[gen_speed_label] = pd.to_numeric(data[gen_speed_label])
-        data["nacelle_temp"] = pd.to_numeric(data["nacelle_temp"])
+        # data.loc[:, "air_density"] = data.loc[:, "air_density"].astype("float")
+        # data.loc[:, pitch_label] = data.loc[:, pitch_label].astype("float")
+        #
+        # data.loc[:, "nacelle_temp"] = data.loc[:, "nacelle_temp"].apply(lambda x: locale.atof(str(x)))
+        # # data.loc[:, "nacelle_temp"] = data.loc[:, "nacelle_temp"].astype("float")
+        #
+        # # data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: x.replace('"', ''))
+        # # data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: x.replace('\'', ''))
+        # # data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: locale.atof(x))
+        # data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: x.replace(',', ''))
+        # data.loc[:, "power"] = data.loc[:, "power"].astype("float")
+        #
+        # # data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].astype("float")
+        # # data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].apply(lambda x: x.replace('"', ''))
+        # # data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].apply(lambda x: x.replace('\'', ''))
+        # # data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].apply(lambda x: locale.atof(x))
+        #
+        # data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].apply(lambda x: x.replace(',', ''))
+        # data.loc[:, gen_speed_label] = data.loc[:, gen_speed_label].astype("float")
+        #
+        # #
+        # data[power_label] = pd.to_numeric(data[power_label])
+        # data[gen_speed_label] = pd.to_numeric(data[gen_speed_label])
+        # data["nacelle_temp"] = pd.to_numeric(data["nacelle_temp"])
 
         # ** 3.5 空气密度分类：用于叶尖速比和空气密度关系分析 **
         air_density_list = data.loc[:, "air_density"].apply(lambda x: round(x, 4))

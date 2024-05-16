@@ -93,9 +93,9 @@ def aep_calc(data, power_curve, turbine_code, clean_percentage=None):
 
     # *** ---------- 1 取正常运行的数据，并对数据进行降采样，然后统计其风速的平均值 ----------
     # 从10min降为1H
-    normal_data = data.set_index("real_time")
-    normal_data.index = pd.to_datetime(normal_data.index)
-    normal_data = normal_data[[wind_speed_label, power_label]]
+    # normal_data = data.set_index("real_time")
+    # normal_data.index = pd.to_datetime(normal_data.index)
+    normal_data = data[[wind_speed_label, power_label]]
     normal_data = normal_data.resample("1H").mean()
 
     # *** ---------- 2 提取基本信息和计算对应的数据缺失量 ----------

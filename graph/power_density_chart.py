@@ -98,7 +98,7 @@ def build_page(plot_power_df, name):
     )
     grouped_mean = grouped_mean.fillna(0)
     grouped_mean["wind_power_density"] = grouped_mean.apply(
-        lambda row: row["air_density"] * row["wind_speed"] * pow(row["wind_speed2"], 3) / 2, axis=1)
+        lambda row: row["air_density"] * row["wind_speed2"] / 2, axis=1)
     line2 = (
         Line()
         .add_xaxis(grouped_mean.index.tolist())

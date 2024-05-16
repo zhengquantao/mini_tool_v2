@@ -34,6 +34,7 @@ import os
 import locale
 import pandas as pd
 
+from common.common import read_csv_file
 from settings.settings import power_theoretical, geolocation
 from ..data_integration import extra_data
 
@@ -119,7 +120,8 @@ def aep_main(file_path, farm_name, real_time, wind_col, dirction_col, temperatur
             # SCADA数据文件夹
             # turbine_code = scada_file.split(".csv")[0]
             turbine_code = scada_file.split(os.sep)[-1].split(".")[0]
-            data = pd.read_csv(scada_file).fillna(1)  # , encoding="GB2312"
+            # data = pd.read_csv(scada_file).fillna(1)  # , encoding="GB2312"
+            data = read_csv_file(scada_file)
 
             # 当前SCADA数据机组编号           # turbine_code = data.loc[0, "风机"]
 
@@ -131,42 +133,42 @@ def aep_main(file_path, farm_name, real_time, wind_col, dirction_col, temperatur
 
             # ** 3.3 字段名称转换 **
             # ! 没有发电机功率： "平均发电机功率实时值(kW)",
-            table = []
-            data = data[real_time + wind_col + dirction_col + temperature_col + airdensity_col + target_columns]
-            # "power",
-            if len(real_time) != 0:
-                table.append("real_time")
-            if len(wind_col) != 0:
-                table.append("wind_speed")
-            if len(dirction_col) != 0:
-                table.append("wind_direction")
-            if len(temperature_col) != 0:
-                table.append("nacelle_temperture")
-            if len(airdensity_col) != 0:
-                table.append("air_density")
-            if len(target_columns) != 0:
-                table.append("power")
-
-            data.columns = table
-            data["real_time"] = pd.to_datetime(data["real_time"])
-            data = data.sort_values(by="real_time")
+            # table = []
+            # data = data[real_time + wind_col + dirction_col + temperature_col + airdensity_col + target_columns]
+            # # "power",
+            # if len(real_time) != 0:
+            #     table.append("real_time")
+            # if len(wind_col) != 0:
+            #     table.append("wind_speed")
+            # if len(dirction_col) != 0:
+            #     table.append("wind_direction")
+            # if len(temperature_col) != 0:
+            #     table.append("nacelle_temperature")
+            # if len(airdensity_col) != 0:
+            #     table.append("air_density")
+            # if len(target_columns) != 0:
+            #     table.append("power")
+            #
+            # data.columns = table
+            # data["real_time"] = pd.to_datetime(data["real_time"])
+            # data = data.sort_values(by="real_time")
             # ** 3.4 数值类型转换 **
             ### np.issubdtype  or pandas.api.types.****
-            for col in data.columns:
-                if np.issubdtype(data[col], np.float16) or np.issubdtype(data[col], np.int16):
-                    data.loc[:, col] = data.loc[:, col].astype("float")
+            # for col in data.columns:
+            #     if np.issubdtype(data[col], np.float16) or np.issubdtype(data[col], np.int16):
+            #         data.loc[:, col] = data.loc[:, col].astype("float")
 
             # data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: locale.atof(x))
             # data.loc[:, "generator_speed"] = data.loc[:, "generator_speed"].astype("float")
             # data.loc[:, "generator_speed"] = data.loc[:, "generator_speed"].apply(lambda x: locale.atof(x))
 
             if len(airdensity_col) != 0:
-                if airdensity_col[0] in data.columns:
+                if airdensity_col[0] not in data.columns:
                     # ** 3.5 风速换算：当地实际空气密度 到 标密 **
                     data = data[data[airdensity_col] >= 0.7]
                     # ? 根据实时的空气密度进行标准空气密度风速换算
-                    data[wind_col] = data.apply(lambda row: row[wind_col] /
-                                                            pow((row[airdensity_col] / 1.225), 1 / 3), axis=1)
+                    data[wind_col] = data.apply(lambda row: row[wind_col] / pow((row[airdensity_col] / 1.225), 1 / 3),
+                                                axis=1)
 
                     # ** 3.6 空气密度分类：用于叶尖速比和空气密度关系分析 **
                     air_density_list = data.loc[:, "air_density"].apply(lambda x: round(x, 2))
@@ -205,6 +207,8 @@ def aep_main(file_path, farm_name, real_time, wind_col, dirction_col, temperatur
             # *** ---------- 5 理论和实际功率曲线对比 ----------
             # 结合理论功率进行计算对比
             # data_dir = "C:/Users/QC/Desktop/产品/D-发电量提升/交付项目/福建尖峰项目/"
+            if not os.path.exists(curve_line_path):
+                raise FileNotFoundError("缺少power_theoretical.csv的理论功率虚线文件")
             if "csv" in curve_line_path:
                 theory_curve = pd.read_csv(curve_line_path)
             elif "xls" in curve_line_path or "xlsx" in curve_line_path:
@@ -238,7 +242,7 @@ def aep_main(file_path, farm_name, real_time, wind_col, dirction_col, temperatur
             logger.error(traceback.format_exc())
     # *** ---------- 7 结果数据导出 ----------
 
-    all_statistics.index = all_statistics["turbine_code"].apply(lambda x: int(x[-3:]))
+    # all_statistics.index = all_statistics["turbine_code"].apply(lambda x: int(x[-3:]))
     # all_statistics.to_excel(os.path.join(result_path, farm_name + "_aep_result.xlsx"))
     performance_ratio = all_statistics[["turbine_code", "performance_ratio"]]
     base_turbine = performance_ratio.sort_values(by="performance_ratio").iloc[int(len(performance_ratio) / 2), :][

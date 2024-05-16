@@ -9,7 +9,7 @@ import os
 
 from graph import dswe_chart, power_sort_chart
 from models.utils.AEP import aep_analysis
-from settings.settings import opening_dict, power_theoretical
+from settings.settings import power_theoretical
 from common import loggers
 """
 
@@ -28,7 +28,7 @@ def iec_main(file_path, project_path, sort_only=False):
     turbine_code = file_path.split(os.sep)[-1].split(".")[0]
 
     _, all_statistics = aep_analysis.aep_main(file_path, factor_name, ["real_time"], ["wind_speed"], ["wind_direction"],
-                                              ["nacelle_temperture"], [], ["power"], curve_line_path,  # ["air_density"]
+                                              ["nacelle_temperature"], ["air_density"], ["power"], curve_line_path,  # ["air_density"]
                                               confidence_num=0.8, logger=loggers.logger)
     if sort_only:
         file_paths, file_name = power_sort_chart.build_html(project_path, turbine_code, all_statistics)

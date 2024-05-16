@@ -14,7 +14,7 @@ from wx.lib.pubsub import pub as publisher
 #     from gui.main_frame import MainFrame
 from aui2 import svg_to_bitmap
 
-from common.common import read_file, remove_file, rename_file, get_file_info, add_notebook_page
+from common.common import read_file, remove_file, rename_file, get_file_info, add_notebook_page, detect_encoding
 from common import loggers
 from models.bin_main import bin_main
 from models.compare_curve import compare_curve, compare_curve_all
@@ -269,6 +269,7 @@ class TreeCtrl(metaclass=Singleton):
         menu = wx.Menu()
         sub_model_menu = wx.Menu()
         open_item = menu.Append(wx.ID_ANY, '打开')
+        dir_item = menu.Append(wx.ID_ANY, '新建文件夹')
         delete_item = menu.Append(wx.ID_ANY, '删除')
         rename_item = menu.Append(wx.ID_ANY, '重命名')
 
@@ -289,6 +290,7 @@ class TreeCtrl(metaclass=Singleton):
         model_menu_item = menu.AppendSubMenu(sub_model_menu, '模型图')
         model_menu_item.SetBitmap(svg_to_bitmap(model_svg, size=(13, 13)))
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_open(event, path), open_item)
+        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_new_dir(event, path), dir_item)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_delete(event, path), delete_item)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_rename(event, path), rename_item)
 
@@ -332,7 +334,7 @@ class TreeCtrl(metaclass=Singleton):
             ctrl.AddPage(self.html_ctrl.create_ctrl(path=path), file_name, True, page_bmp)
 
         elif any([path.endswith(".csv"), path.endswith(".xlsx"), path.endswith(".xls")]):
-            data_df = pd.read_csv(path)
+            data_df = pd.read_csv(path, encoding=detect_encoding(path))
             ctrl.AddPage(self.grid_ctrl.create_ctrl(data_df), file_name, True, page_bmp)
 
         elif any([path.endswith(".png"), path.endswith(".jpg"), path.endswith(".jpeg")]):
@@ -350,6 +352,17 @@ class TreeCtrl(metaclass=Singleton):
             page.SetFont(font)
             ctrl.AddPage(page, file_name, True, page_bmp)
 
+    def on_new_dir(self, event, path):
+        dlg = wx.TextEntryDialog(self.frame, "请输入文件夹名称:", "新建文件夹")
+        if dlg.ShowModal() != wx.ID_OK:
+            return
+
+        directory_name: str = dlg.GetValue()
+        if os.path.isfile(path):
+            path = os.path.dirname(path)
+
+        os.makedirs(os.path.join(path, directory_name), exist_ok=True)
+
     def on_rename(self, event, path):
         loggers.logger.info(f"Rename clicked, file path: {path}")
         dlg = wx.TextEntryDialog(self.frame, "请输入新文件名:", "文件重命名")
@@ -363,13 +376,14 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_1(self, event, path):
         """能效等级总览"""
+        loggers.logger.info(f"能效等级总览 clicked, path: {path}")
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(geo_main, path, project_path))
         thread.start()
 
     def on_model_2(self, event, path):
         """能效评估结果总览"""
-        loggers.logger.info(f"model clicked, path: {path}")
+        loggers.logger.info(f"能效评估结果总览 clicked, path: {path}")
 
         # 能效评估结果总览
         project_path = opening_dict[os.getpid()]["path"]
@@ -378,8 +392,7 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_3(self, event, path):
         """能效排行"""
-        loggers.logger.info(f"model clicked, path: {path}")
-
+        loggers.logger.info(f"能效排行 clicked, path: {path}")
         # 能效评估结果总览
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(iec_main, path, project_path, True))
@@ -387,8 +400,10 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_4(self, event, path):
         """理论与实际功率对比分析"""
-        loggers.logger.info(f"model clicked, path: {path}")
+        loggers.logger.info(f"理论与实际功率对比分析 clicked, path: {path}")
         if os.path.isdir(path):
+            dlg = wx.MessageDialog(self.frame, f"理论与实际功率对比分析不支持选择文件夹", "警告", wx.OK | wx.ICON_WARNING)
+            dlg.ShowModal()
             return
 
         # 理论和实际功率曲线对比
@@ -398,9 +413,11 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_5(self, event, path):
         """风资源对比图"""
-        loggers.logger.info(f"model clicked, path: {path}")
+        loggers.logger.info(f"风资源对比图 clicked, path: {path}")
         if os.path.isdir(path):
-            loggers.logger.error("请选择不要选择文件夹")
+            dlg = wx.MessageDialog(self.frame, f"理论与实际功率对比分析不支持选择文件夹", "警告", wx.OK | wx.ICON_WARNING)
+            dlg.ShowModal()
+            loggers.logger.error("理论与实际功率对比分析不支持选择文件夹")
             return
 
         # 理论和实际功率曲线对比
@@ -410,42 +427,76 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_6(self, event, path):
         """风资源对比总览图"""
-        loggers.logger.info(f"model clicked, path: {path}")
+        loggers.logger.info(f"风资源对比总览图 clicked, path: {path}")
 
-        if not os.path.isdir(path):
-            loggers.logger.error("风资源对比总览图，多台风机！请选择存在多台风机的文件夹")
+        if not os.path.isfile(path):
+            loggers.logger.error("风资源对比总览图不支持选择单个文件")
+            dlg = wx.MessageDialog(self.frame, f"风资源对比总览图不支持选择单个文件", "警告", wx.OK | wx.ICON_WARNING)
+            dlg.ShowModal()
             return
 
         project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(compare_curve_all, path, project_path))
+        thread = Thread(target=self.async_model, args=(compare_curve_all, path, project_path, 1, True))
         thread.start()
 
     def on_model_7(self, event, path):
         """风速-风能利用系数Cp曲线"""
+
+        if os.path.isdir(path):
+            dlg = wx.MessageDialog(self.frame, f"风速-风能利用系数Cp曲线不支持选择文件夹", "警告", wx.OK | wx.ICON_WARNING)
+            dlg.ShowModal()
+            loggers.logger.error("风速-风能利用系数Cp曲线不支持选择文件夹")
+            return
+
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["cp_windspeed"]))
         thread.start()
 
     def on_model_8(self, event, path):
         """风速-桨距角曲线"""
+
+        if os.path.isdir(path):
+            dlg = wx.MessageDialog(self.frame, f"风速-桨距角曲线不支持选择文件夹", "警告", wx.OK | wx.ICON_WARNING)
+            dlg.ShowModal()
+            loggers.logger.error("风速-桨距角曲线不支持选择文件夹")
+            return
+
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["pitch_windspeed"]))
         thread.start()
 
     def on_model_9(self, event, path):
         """桨距角-功率曲线"""
+        if os.path.isdir(path):
+            dlg = wx.MessageDialog(self.frame, f"桨距角-功率曲线不支持选择文件夹", "警告", wx.OK | wx.ICON_WARNING)
+            dlg.ShowModal()
+            loggers.logger.error("桨距角-功率曲线不支持选择文件夹")
+            return
+
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["power_pitch"]))
         thread.start()
 
     def on_model_10(self, event, path):
         """风速-转速曲线"""
+        if os.path.isdir(path):
+            dlg = wx.MessageDialog(self.frame, f"风速-转速曲线不支持选择文件夹", "警告", wx.OK | wx.ICON_WARNING)
+            dlg.ShowModal()
+            loggers.logger.error("风速-转速曲线不支持选择文件夹")
+            return
+
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["gen_wind_speed"]))
         thread.start()
 
     def on_model_11(self, event, path):
         """转速-功率曲线"""
+        if os.path.isdir(path):
+            dlg = wx.MessageDialog(self.frame, f"转速-功率曲线不支持选择文件夹", "警告", wx.OK | wx.ICON_WARNING)
+            dlg.ShowModal()
+            loggers.logger.error("转速-功率曲线不支持选择文件夹")
+            return
+
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["power_genspeed"]))
         thread.start()

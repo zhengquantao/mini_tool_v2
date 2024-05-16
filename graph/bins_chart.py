@@ -38,7 +38,8 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
             xaxis_opts=opts.AxisOpts(
                 name=xlabel,
                 type_="value",
-                splitline_opts=opts.SplitLineOpts(is_show=True),),
+                splitline_opts=opts.SplitLineOpts(is_show=True),
+            ),
             yaxis_opts=opts.AxisOpts(
                 name=ylabel,
                 type_="value",
@@ -70,6 +71,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
             bin_df[col_y].tolist(),
             linestyle_opts=opts.LineStyleOpts(width=2),
             label_opts=opts.LabelOpts(is_show=False),
+            is_smooth=True,
             is_symbol_show=False,
             z=10, z_level=10,
         )

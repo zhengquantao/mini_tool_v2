@@ -601,7 +601,7 @@ def wind_speed_pitch_bin(dataset, turbine_code=None, file_path=None, hue=power_l
 
     #! 对变桨角度数据进行处理
     # TODO: 
-    dataset[pitch_label] = dataset[pitch1_label]
+    dataset[pitch_label] = dataset[pitch_label]
 
     
     # *** ---------- 1. wind speed分仓binning ----------
@@ -914,7 +914,7 @@ def pitch_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_speed_l
 
     #! 对变桨角度数据进行处理
     # TODO
-    dataset[pitch_label] = dataset[pitch1_label]
+    dataset[pitch_label] = dataset[pitch_label]
 
     # TODO: 对桨距角进行清洗分析
     target_data = dataset[(dataset[pitch_label] <= 25) & (dataset[pitch_label] >= -5)]
