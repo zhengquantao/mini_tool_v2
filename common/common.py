@@ -13,7 +13,7 @@ import wx
 import wx.svg
 import wx.lib.agw.aui as aui
 
-from settings.settings import opening_dict, cols_titles
+from settings.settings import opening_dict, cols_titles, result_dir
 
 
 def new_app(path):
@@ -57,6 +57,12 @@ def read_file(file_path) -> str:
         return ""
 
 
+def create_dir(factor_path):
+    ret = os.path.join(factor_path, result_dir)
+    os.makedirs(ret, exist_ok=True)
+    return ret
+
+
 def write_file(file_path, data, file_name='.mini'):
     with open(f"{os.path.join(file_path, file_name)}", 'w', encoding='utf-8', errors="ignore") as file:
         if not isinstance(data, (str, bytes)):
@@ -95,13 +101,13 @@ def save_mini_file(mgr):
     write_file(opening_dicts["path"], {"file_path": opening_list})
 
 
-def get_file_info(directory='.'):
+def get_file_info(directory="."):
     res = []
-    for files in os.listdir(directory):
-        file_path = os.path.join(directory, files)
-        # file_size = os.path.getsize(file_path)
-        # print(f'文件名: {file}, 路径: {file_path}, 大小: {file_size} bytes')
-        res.append(file_path)
+    for root, dirs, files in os.walk(directory):
+        for name in files:
+            res.append(os.path.join(root, name))
+        for name in dirs:
+            res.append(os.path.join(root, name))
     return res
 
 

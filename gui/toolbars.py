@@ -75,7 +75,7 @@ class ToolBarManager:
         self.item_ids[item_id] = "DropDownToolbarItem"
         self.items["DropDownToolbarItem"] = {"id": item_id, "item": None}
         # noinspection PyPep8Naming
-        ID_DropDownToolbarItem: int = item_id
+        # ID_DropDownToolbarItem: int = item_id
 
         # # create some toolbars
         # tb_id: int = wx.NewIdRef()
@@ -186,9 +186,10 @@ class ToolBarManager:
                              agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_VERT_TEXT | aui.AUI_TB_PLAIN_BACKGROUND)
         self.toolbar_ids[tb_id] = "toolbar_right"
         self.toolbars["toolbar_right"] = {"id": tb_id, "item": tb6}
-        tb6.SetToolBitmapSize(wx.Size(48, 48))
-        tb6.AddSimpleTool(wx.NewIdRef(), "Clockwise",
-                          wx.ArtProvider.GetBitmap(wx.ART_ERROR, wx.ART_OTHER, wx.Size(16, 16)))
+        tb6.SetToolBitmapSize(wx.Size(16, 16))
+        database: int = wx.NewIdRef()
+        tb6.AddSimpleTool(database, "Database", wx.Bitmap(aui2.svg_to_bitmap(cs.database_svg, size=(13, 13))))
+        # tb6.EnableTool(database, False)
         # tb6.AddSeparator()
         # tb6.AddSimpleTool(wx.NewIdRef(), "Clockwise 2",
         #                   wx.ArtProvider.GetBitmap(wx.ART_QUESTION, wx.ART_OTHER, wx.Size(16, 16)))
@@ -197,7 +198,7 @@ class ToolBarManager:
         # tb6.SetCustomOverflowItems([], append_items)
         # tb6.SetToolDropDown(ID_DropDownToolbarItem, True)
         tb6.Realize()
-        mgr.AddPane(tb6, aui.AuiPaneInfo().Name("toolbar_right").Caption("Vertical Clockwise Rotated Toolbar").
+        mgr.AddPane(tb6, aui.AuiPaneInfo().Name("toolbar_right").Caption("右边栏").
                     ToolbarPane().Right().GripperTop().TopDockable(False).BottomDockable(False).Dockable(False))
 
         # mgr.AddPane(wx.Button(frame, wx.ID_ANY, "Test Button"),

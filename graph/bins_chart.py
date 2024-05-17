@@ -6,7 +6,7 @@ CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/static/"
 
 from pyecharts import options as opts
 from pyecharts.charts import Scatter, Line
-from common.common import random_name
+from common.common import random_name, create_dir
 from settings.settings import float_size
 
 
@@ -37,7 +37,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
             legend_opts=opts.LegendOpts(pos_right="right", pos_top="50%"),  # 将图例放在右边
             xaxis_opts=opts.AxisOpts(
                 name=xlabel,
-                type_="value",
+                # type_="value",
                 splitline_opts=opts.SplitLineOpts(is_show=True),
             ),
             yaxis_opts=opts.AxisOpts(
@@ -78,6 +78,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
     )
     page = scatter.overlap(line)
     file_name = random_name(turbine_code, title)
+    file_path = create_dir(file_path)
     html_path = page.render(os.path.join(file_path, file_name))
 
     return html_path, file_name

@@ -1,9 +1,8 @@
 import os
 
-import numpy as np
 from pyecharts.globals import CurrentConfig
 
-from common.common import random_name, common_cut
+from common.common import random_name, common_cut, create_dir
 from models.utils.wind_base_tool import wind_speed_label, wind_speed_bin_label
 from settings.settings import float_size
 
@@ -16,6 +15,7 @@ from pyecharts.charts import Bar, Line
 def build_html(factor_path, turbine, plot_power_df, name, *args, **kwargs):
     page = build_page(plot_power_df, name)
     file_name = random_name(turbine, "风资源对比图")
+    factor_path = create_dir(factor_path)
     html_path = page.render(os.path.join(factor_path, file_name))
 
     return html_path, file_name
@@ -93,7 +93,7 @@ def build_page(plot_power_df, name):
         .add_xaxis(grouped_mean.index.tolist())
         .add_yaxis("功率曲线", grouped_mean["power"].tolist(),
                    label_opts=opts.LabelOpts(is_show=False), linestyle_opts=opts.LineStyleOpts(width=2),
-                   is_symbol_show=False, color="#1f77b4", is_smooth=True,
+                   is_symbol_show=False, color="#1f77b4", is_smooth=True, is_step=False,
                    z=1, z_level=1, yaxis_index=0)
     )
     grouped_mean = grouped_mean.fillna(0)
@@ -104,7 +104,7 @@ def build_page(plot_power_df, name):
         .add_xaxis(grouped_mean.index.tolist())
         .add_yaxis("风功率密度", grouped_mean["wind_power_density"].tolist(),
                    label_opts=opts.LabelOpts(is_show=False), linestyle_opts=opts.LineStyleOpts(width=2),
-                   is_symbol_show=False, color="#bf8232", is_smooth=True,
+                   is_symbol_show=False, color="#239B56", is_smooth=True, is_step=False,
                    z=1, z_level=1, yaxis_index=0)
     )
 

@@ -2,7 +2,7 @@ import os
 
 from pyecharts.globals import CurrentConfig
 
-from common.common import random_name
+from common.common import random_name, create_dir
 from graph.power_sort_chart import sort_chart
 from settings.settings import float_size
 
@@ -16,6 +16,7 @@ def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
 
     page = page_simple_layout(plot_power_df)
     file_name = random_name(turbine, "发电量与能效对比分析")
+    factor_path = create_dir(factor_path)
     html_path = page.render(os.path.join(factor_path, file_name))
 
     return html_path, file_name

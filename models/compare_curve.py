@@ -58,7 +58,7 @@ def compare_curve_all(file_path, project_path, num=1, select=False):
         if file in [power_theoretical, geolocation]:
             continue
 
-        turbine_code = file_path.split(os.sep)[-1].split(".")[0]
+        turbine_code = file.split(os.sep)[-1].split(".")[0]
 
         plna = str(turbine_code) + "号风机"
 

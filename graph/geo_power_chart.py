@@ -2,7 +2,7 @@ import os
 
 from pyecharts.globals import CurrentConfig
 
-from common.common import random_name
+from common.common import random_name, create_dir
 from settings.settings import float_size
 
 CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/static/"
@@ -63,6 +63,7 @@ def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
     add_scatter(scatter, tmp_data["能效四级"], "能效四级", color="#00b3f0")
 
     file_name = random_name(turbine, "能效等级总览")
+    factor_path = create_dir(factor_path)
     html_path = scatter.render(os.path.join(factor_path, file_name))
 
     return html_path, file_name

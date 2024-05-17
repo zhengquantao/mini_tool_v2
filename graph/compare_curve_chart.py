@@ -2,7 +2,7 @@ import os
 
 from pyecharts.globals import CurrentConfig
 
-from common.common import random_name
+from common.common import random_name, create_dir
 from settings.settings import float_size
 
 CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/static/"
@@ -17,7 +17,8 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
     scatter1 = (
         Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
         .add_xaxis(abnormal_scatter[0].tolist())
-        .add_yaxis(abnormal_scatter[2], abnormal_scatter[1].tolist(), label_opts=opts.LabelOpts(is_show=False))
+        .add_yaxis(abnormal_scatter[2], abnormal_scatter[1].tolist(), label_opts=opts.LabelOpts(is_show=False),
+                   color="#ffb48d")
         .set_global_opts(
             title_opts=opts.TitleOpts(title="理论与实际功率对比分析"),
             xaxis_opts=opts.AxisOpts(
@@ -57,7 +58,8 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
     scatter2 = (
         Scatter(init_opts=opts.InitOpts())
         .add_xaxis(normal_scatter[0].tolist())
-        .add_yaxis(normal_scatter[2], normal_scatter[1].tolist(), label_opts=opts.LabelOpts(is_show=False))
+        .add_yaxis(normal_scatter[2], normal_scatter[1].tolist(), label_opts=opts.LabelOpts(is_show=False),
+                   color="#81bac4")
         .set_global_opts(title_opts=opts.TitleOpts(title=normal_scatter[2]),))
 
     # 创建Line图
@@ -67,7 +69,7 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
         .add_yaxis(fitting_line[2], fitting_line[1],
                    label_opts=opts.LabelOpts(is_show=False),
                    is_symbol_show=False,
-                   z=10, z_level=10, color="red")
+                   z=10, z_level=10, color="#ff0000")
         .set_global_opts(title_opts=opts.TitleOpts(title=fitting_line[2]))
     )
     line2 = (
@@ -78,12 +80,13 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
                    # 隐藏标签点
                    is_symbol_show=False,
                    # 控制页面层级
-                   z=10, z_level=10, color="blue")
+                   z=10, z_level=10, color="#2078bc")
         .set_global_opts(title_opts=opts.TitleOpts(title=power_line[2]),)
     )
 
     page = scatter1.overlap(scatter2).overlap(line1).overlap(line2)
     file_name = random_name(turbine, "理论与实际功率对比分析")
+    factor_path = create_dir(factor_path)
     html_path = page.render(os.path.join(factor_path, file_name))
 
     return html_path, file_name

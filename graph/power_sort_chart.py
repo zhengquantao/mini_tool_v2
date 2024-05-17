@@ -3,7 +3,7 @@ import os
 # import numpy as np
 from pyecharts.globals import CurrentConfig
 
-from common.common import random_name
+from common.common import random_name, create_dir
 from settings.settings import float_size
 
 CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/static/"
@@ -15,6 +15,7 @@ from pyecharts.charts import Bar
 def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
 
     file_name = random_name(turbine, "风机能效排行")
+    factor_path = create_dir(factor_path)
     html_path = sort_chart(plot_power_df).render(os.path.join(factor_path, file_name))
 
     return html_path, file_name

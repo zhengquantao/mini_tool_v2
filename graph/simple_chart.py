@@ -2,7 +2,7 @@ import os
 
 from pyecharts.globals import CurrentConfig
 
-from common.common import random_name
+from common.common import random_name, create_dir
 from settings.settings import float_size, opening_dict
 
 CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/static/"
@@ -20,10 +20,10 @@ Echarts_Type = {
 
 def build_html(x, y, title, echart_type="bar", save_path=None):
     echarts = Echarts_Type.get(echart_type, Bar)
-    e = echarts(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
-    e.add_xaxis(x.to_list())
-    add_yaxis(e, y)
-    e.set_global_opts(
+    obj = echarts(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
+    obj.add_xaxis(x.to_list())
+    add_yaxis(obj, y)
+    obj.set_global_opts(
         title_opts=opts.TitleOpts(title=title),
         toolbox_opts=opts.ToolboxOpts(
             is_show=True,  # 是否显示该工具
@@ -48,7 +48,8 @@ def build_html(x, y, title, echart_type="bar", save_path=None):
     )
     file_name = random_name("00", echart_type)
     save_path = save_path or opening_dict[os.getpid()]["path"]
-    html_path = e.render(os.path.join(save_path, file_name))
+    save_path = create_dir(save_path)
+    html_path = obj.render(os.path.join(save_path, file_name))
     return html_path, file_name
 
 

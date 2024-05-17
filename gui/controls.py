@@ -21,7 +21,7 @@ from models.compare_curve import compare_curve, compare_curve_all
 from models.dswe_main import iec_main
 from models.geo_main import geo_main
 from settings.resources import overview
-from settings.settings import opening_dict, float_size, display_grid_count, model_svg
+from settings.settings import opening_dict, float_size, display_grid_count, model2_svg, model1_svg
 
 
 class Singleton(type):
@@ -267,47 +267,66 @@ class TreeCtrl(metaclass=Singleton):
         print(f"right clicked, path: {path}")
 
         menu = wx.Menu()
-        sub_model_menu = wx.Menu()
         open_item = menu.Append(wx.ID_ANY, '打开')
         dir_item = menu.Append(wx.ID_ANY, '新建文件夹')
         delete_item = menu.Append(wx.ID_ANY, '删除')
         rename_item = menu.Append(wx.ID_ANY, '重命名')
 
-        # models
-        menu.AppendSeparator()
-        model_1 = sub_model_menu.Append(wx.ID_ANY, '能效等级总览')
-        model_2 = sub_model_menu.Append(wx.ID_ANY, '能效评估结果总览')
-        model_3 = sub_model_menu.Append(wx.ID_ANY, '能效排行总览')
-        model_6 = sub_model_menu.Append(wx.ID_ANY, '风资源对比总览')
-        model_4 = sub_model_menu.Append(wx.ID_ANY, '理论与实际功率对比分析')
-        model_5 = sub_model_menu.Append(wx.ID_ANY, '风资源对比')
-        # Bin分仓
-        model_7 = sub_model_menu.Append(wx.ID_ANY, '风速-风能利用系数Cp曲线')
-        model_8 = sub_model_menu.Append(wx.ID_ANY, '风速-桨距角曲线')
-        model_9 = sub_model_menu.Append(wx.ID_ANY, '桨距角-功率曲线')
-        model_10 = sub_model_menu.Append(wx.ID_ANY, '风速-转速曲线')
-        model_11 = sub_model_menu.Append(wx.ID_ANY, '转速-功率曲线')
-        model_menu_item = menu.AppendSubMenu(sub_model_menu, '模型图')
-        model_menu_item.SetBitmap(svg_to_bitmap(model_svg, size=(13, 13)))
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_open(event, path), open_item)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_new_dir(event, path), dir_item)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_delete(event, path), delete_item)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_rename(event, path), rename_item)
 
-        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_1(event, path), model_1)
-        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_2(event, path), model_2)
-        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_3(event, path), model_3)
-        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_4(event, path), model_4)
-        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_5(event, path), model_5)
-        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_6(event, path), model_6)
+        # 能效分析
+        self.menu_model1(menu, path)
+        # 控制曲线分析（Bin分仓）
+        self.menu_model2(menu, path)
 
+        self.tree.PopupMenu(menu)
+
+    def menu_model1(self, menu, path):
+        sub_model_menu1 = wx.Menu()
+        if os.path.isdir(path):
+            menu.AppendSeparator()
+            model_1 = sub_model_menu1.Append(wx.ID_ANY, '能效等级总览')
+            model_2 = sub_model_menu1.Append(wx.ID_ANY, '能效评估结果总览')
+            model_3 = sub_model_menu1.Append(wx.ID_ANY, '能效排行总览')
+            model_6 = sub_model_menu1.Append(wx.ID_ANY, '风资源对比总览')
+            self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_1(event, path), model_1)
+            self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_2(event, path), model_2)
+            self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_3(event, path), model_3)
+            self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_6(event, path), model_6)
+            menu.AppendSubMenu(sub_model_menu1, '能效分析').SetBitmap(svg_to_bitmap(model1_svg, size=(13, 13)))
+
+        elif path.endswith(".csv"):
+            menu.AppendSeparator()
+            model_4 = sub_model_menu1.Append(wx.ID_ANY, '理论与实际功率对比分析')
+            model_5 = sub_model_menu1.Append(wx.ID_ANY, '风资源对比')
+            self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_4(event, path), model_4)
+            self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_5(event, path), model_5)
+            menu.AppendSubMenu(sub_model_menu1, '能效分析').SetBitmap(svg_to_bitmap(model1_svg, size=(13, 13)))
+
+    def menu_model2(self, menu, path):
+        """
+        # 控制曲线分析（Bin分仓）
+        """
+        if not all([os.path.isfile(path), path.endswith(".csv")]):
+            return
+
+        sub_model_menu2 = wx.Menu()
+        # 控制曲线分析（Bin分仓）
+        model_7 = sub_model_menu2.Append(wx.ID_ANY, '风速-风能利用系数Cp曲线')
+        model_8 = sub_model_menu2.Append(wx.ID_ANY, '风速-桨距角曲线')
+        model_9 = sub_model_menu2.Append(wx.ID_ANY, '桨距角-功率曲线')
+        model_10 = sub_model_menu2.Append(wx.ID_ANY, '风速-转速曲线')
+        model_11 = sub_model_menu2.Append(wx.ID_ANY, '转速-功率曲线')
+
+        menu.AppendSubMenu(sub_model_menu2, '控制曲线分析').SetBitmap(svg_to_bitmap(model2_svg, size=(13, 13)))
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_7(event, path), model_7)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_8(event, path), model_8)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_9(event, path), model_9)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_10(event, path), model_10)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_11(event, path), model_11)
-
-        self.tree.PopupMenu(menu)
 
     def on_delete(self, event, path):
         loggers.logger.info(f"Delete clicked, file path: {path}")
@@ -400,11 +419,6 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_4(self, event, path):
         """理论与实际功率对比分析"""
-        loggers.logger.info(f"理论与实际功率对比分析 clicked, path: {path}")
-        if os.path.isdir(path):
-            dlg = wx.MessageDialog(self.frame, f"理论与实际功率对比分析不支持选择文件夹", "警告", wx.OK | wx.ICON_WARNING)
-            dlg.ShowModal()
-            return
 
         # 理论和实际功率曲线对比
         project_path = opening_dict[os.getpid()]["path"]
@@ -414,11 +428,6 @@ class TreeCtrl(metaclass=Singleton):
     def on_model_5(self, event, path):
         """风资源对比图"""
         loggers.logger.info(f"风资源对比图 clicked, path: {path}")
-        if os.path.isdir(path):
-            dlg = wx.MessageDialog(self.frame, f"理论与实际功率对比分析不支持选择文件夹", "警告", wx.OK | wx.ICON_WARNING)
-            dlg.ShowModal()
-            loggers.logger.error("理论与实际功率对比分析不支持选择文件夹")
-            return
 
         # 理论和实际功率曲线对比
         project_path = opening_dict[os.getpid()]["path"]
@@ -429,74 +438,36 @@ class TreeCtrl(metaclass=Singleton):
         """风资源对比总览图"""
         loggers.logger.info(f"风资源对比总览图 clicked, path: {path}")
 
-        if not os.path.isfile(path):
-            loggers.logger.error("风资源对比总览图不支持选择单个文件")
-            dlg = wx.MessageDialog(self.frame, f"风资源对比总览图不支持选择单个文件", "警告", wx.OK | wx.ICON_WARNING)
-            dlg.ShowModal()
-            return
-
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(compare_curve_all, path, project_path, 1, True))
         thread.start()
 
     def on_model_7(self, event, path):
         """风速-风能利用系数Cp曲线"""
-
-        if os.path.isdir(path):
-            dlg = wx.MessageDialog(self.frame, f"风速-风能利用系数Cp曲线不支持选择文件夹", "警告", wx.OK | wx.ICON_WARNING)
-            dlg.ShowModal()
-            loggers.logger.error("风速-风能利用系数Cp曲线不支持选择文件夹")
-            return
-
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["cp_windspeed"]))
         thread.start()
 
     def on_model_8(self, event, path):
         """风速-桨距角曲线"""
-
-        if os.path.isdir(path):
-            dlg = wx.MessageDialog(self.frame, f"风速-桨距角曲线不支持选择文件夹", "警告", wx.OK | wx.ICON_WARNING)
-            dlg.ShowModal()
-            loggers.logger.error("风速-桨距角曲线不支持选择文件夹")
-            return
-
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["pitch_windspeed"]))
         thread.start()
 
     def on_model_9(self, event, path):
         """桨距角-功率曲线"""
-        if os.path.isdir(path):
-            dlg = wx.MessageDialog(self.frame, f"桨距角-功率曲线不支持选择文件夹", "警告", wx.OK | wx.ICON_WARNING)
-            dlg.ShowModal()
-            loggers.logger.error("桨距角-功率曲线不支持选择文件夹")
-            return
-
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["power_pitch"]))
         thread.start()
 
     def on_model_10(self, event, path):
         """风速-转速曲线"""
-        if os.path.isdir(path):
-            dlg = wx.MessageDialog(self.frame, f"风速-转速曲线不支持选择文件夹", "警告", wx.OK | wx.ICON_WARNING)
-            dlg.ShowModal()
-            loggers.logger.error("风速-转速曲线不支持选择文件夹")
-            return
-
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["gen_wind_speed"]))
         thread.start()
 
     def on_model_11(self, event, path):
         """转速-功率曲线"""
-        if os.path.isdir(path):
-            dlg = wx.MessageDialog(self.frame, f"转速-功率曲线不支持选择文件夹", "警告", wx.OK | wx.ICON_WARNING)
-            dlg.ShowModal()
-            loggers.logger.error("转速-功率曲线不支持选择文件夹")
-            return
-
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["power_genspeed"]))
         thread.start()
