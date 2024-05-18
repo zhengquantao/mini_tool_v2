@@ -1,109 +1,28 @@
-from pyecharts import options as opts
-from pyecharts.charts import Page, Scatter
-from pyecharts.commons.utils import JsCode
-from pyecharts.faker import Collector, Faker
+import wx
+import wx.aui
+import wx.lib.agw.aui as aui
 
-C = Collector()
+class MyFrame(wx.Frame):
+    def __init__(self, parent, id=wx.ID_ANY, title="", pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_FRAME_STYLE):
+        super(MyFrame, self).__init__(parent, id, title, pos, size, style)
 
+        # 创建 AuiManager
+        self._aui_manager = aui.AuiManager(self)
 
-@C.funcs
-def scatter_base() -> Scatter:
-    c = (
-        Scatter()
-        .add_xaxis(Faker.choose())
-        .add_yaxis("商家A", Faker.values())
-        .set_global_opts(title_opts=opts.TitleOpts(title="Scatter-基本示例"))
-    )
-    return c
+        # 创建 AuiToolBar
+        toolbar = aui.AuiToolBar(self, style=aui.AUI_TB_OVERFLOW | aui.AUI_TB_VERT_TEXT | aui.AUI_TB_PLAIN_BACKGROUND & ~aui.AUI_TB_GRIPPER,
+                                 )
+        toolbar.AddSimpleTool(wx.ID_ANY, "Tool 1", wx.ArtProvider.GetBitmap(wx.ART_INFORMATION))
+        toolbar.Realize()
 
+        # 将工具栏添加到 AuiManager
+        self._aui_manager.AddPane(toolbar, aui.AuiPaneInfo().Top().CloseButton(False))
 
-@C.funcs
-def scatter_value_xaxis() -> Scatter:
-    c = (
-        Scatter()
-        .add_xaxis(Faker.values())
-        .add_yaxis("商家A", Faker.values())
-        .set_global_opts(
-            title_opts=opts.TitleOpts(title="Scatter-X 数值轴"),
-            xaxis_opts=opts.AxisOpts(type_="value"),
-            tooltip_opts=opts.TooltipOpts(formatter="{c}"),
-        )
-    )
-    return c
+        # 显示工具栏
+        self._aui_manager.Update()
 
-
-@C.funcs
-def scatter_spliteline() -> Scatter:
-    c = (
-        Scatter()
-        .add_xaxis(Faker.choose())
-        .add_yaxis("商家A", Faker.values())
-        .set_global_opts(
-            title_opts=opts.TitleOpts(title="Scatter-显示分割线"),
-            xaxis_opts=opts.AxisOpts(splitline_opts=opts.SplitLineOpts(is_show=True)),
-            yaxis_opts=opts.AxisOpts(splitline_opts=opts.SplitLineOpts(is_show=True)),
-        )
-    )
-    return c
-
-
-@C.funcs
-def scatter_visualmap_color() -> Scatter:
-    c = (
-        Scatter()
-        .add_xaxis(Faker.choose())
-        .add_yaxis("商家A", Faker.values())
-        .set_global_opts(
-            title_opts=opts.TitleOpts(title="Scatter-VisualMap(Color)"),
-            visualmap_opts=opts.VisualMapOpts(max_=150),
-        )
-    )
-    return c
-
-
-@C.funcs
-def scatter_visualmap_size() -> Scatter:
-    c = (
-        Scatter()
-        .add_xaxis(Faker.choose())
-        .add_yaxis("商家A", Faker.values())
-        .add_yaxis("商家B", Faker.values())
-        .set_global_opts(
-            title_opts=opts.TitleOpts(title="Scatter-VisualMap(Size)"),
-            visualmap_opts=opts.VisualMapOpts(type_="size", max_=150, min_=20),
-        )
-    )
-    return c
-
-
-@C.funcs
-def scatter_muti_dimension_data() -> Scatter:
-    c = (
-        Scatter()
-        .add_xaxis(Faker.choose())
-        .add_yaxis(
-            "商家A",
-            [list(z) for z in zip(Faker.values(), Faker.choose())],
-            label_opts=opts.LabelOpts(
-                formatter=JsCode(
-                    "function(params){return params.value[1] +' : '+ params.value[2];}"
-                )
-            ),
-        )
-        .set_global_opts(
-            title_opts=opts.TitleOpts(title="Scatter-多维度数据"),
-            tooltip_opts=opts.TooltipOpts(
-                formatter=JsCode(
-                    "function (params) {return params.name + ' : ' + params.value[2];}"
-                )
-            ),
-            visualmap_opts=opts.VisualMapOpts(
-                type_="color", max_=150, min_=20, dimension=1
-            ),
-        )
-    )
-    c.get_options()
-    return c
-
-
-Page().add(*[fn() for fn, _ in C.charts]).render()
+if __name__ == "__main__":
+    app = wx.App(False)
+    frame = MyFrame(None, title="AuiToolBar Example")
+    frame.Show()
+    app.MainLoop()
