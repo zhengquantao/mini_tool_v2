@@ -33,33 +33,35 @@ def build_page(plot_power_df, name):
     bar = (
         Bar(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
         .add_xaxis(grouped_mean.index.tolist())
-        .add_yaxis("概率密度", grouped_mean["wind_speed"].tolist(), label_opts=opts.LabelOpts(is_show=False),
-                   yaxis_index=1, color="#ffc084")
+        .add_yaxis("概率密度", grouped_mean["wind_speed"].tolist(), color="#ffc084")
         .extend_axis(
             yaxis=opts.AxisOpts(
-                type_="value",
-                name="数量",
+                name="功率(kw)",
                 min_=0,
-                position="left",
-                # axislabel_opts=opts.LabelOpts(formatter="{value} °C"),
+                position="right",
                 splitline_opts=opts.SplitLineOpts(is_show=True),
             ),
+            xaxis=opts.AxisOpts(
+                is_show=False,
+                min_=0,
+                splitline_opts=opts.SplitLineOpts(is_show=False),
+            ),
         )
+        .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
         .set_global_opts(
             title_opts=opts.TitleOpts(title=name),
             xaxis_opts=opts.AxisOpts(
                 name="风速(m/s)",
                 # type_="value",
-                # splitline_opts=opts.SplitLineOpts(is_show=True),
+                splitline_opts=opts.SplitLineOpts(is_show=True),
                 # min_=0,
                 # max_=max(xticks),
             ),
             yaxis_opts=opts.AxisOpts(
-                type_="value",
-                name="功率(kw)",
-                position="right",
-                # splitline_opts=opts.SplitLineOpts(is_show=True),
+                name="数量",
+                position="left",
                 min_=0,
+                splitline_opts=opts.SplitLineOpts(is_show=True),
             ),
             toolbox_opts=opts.ToolboxOpts(
                 is_show=True,  # 是否显示该工具
@@ -86,28 +88,27 @@ def build_page(plot_power_df, name):
             # )
             )
     )
-
+    grouped_mean = grouped_mean.fillna(0)
+    grouped_mean["wind_power_density"] = grouped_mean.apply(
+        lambda row: row["air_density"] * row["wind_speed2"] / 2, axis=1)
     # 创建Line图
     line1 = (
         Line()
         .add_xaxis(grouped_mean.index.tolist())
         .add_yaxis("功率曲线", grouped_mean["power"].tolist(),
-                   label_opts=opts.LabelOpts(is_show=False), linestyle_opts=opts.LineStyleOpts(width=2),
-                   is_symbol_show=False, color="#1f77b4", is_smooth=True, is_step=False,
-                   z=1, z_level=1, yaxis_index=0)
-    )
-    grouped_mean = grouped_mean.fillna(0)
-    grouped_mean["wind_power_density"] = grouped_mean.apply(
-        lambda row: row["air_density"] * row["wind_speed2"] / 2, axis=1)
-    line2 = (
-        Line()
-        .add_xaxis(grouped_mean.index.tolist())
+                   label_opts=opts.LabelOpts(is_show=False),
+                   is_symbol_show=False, color="#1f77b4", is_smooth=True,
+                   z=1, z_level=1,
+                   yaxis_index=1, xaxis_index=1,
+                   )
         .add_yaxis("风功率密度", grouped_mean["wind_power_density"].tolist(),
-                   label_opts=opts.LabelOpts(is_show=False), linestyle_opts=opts.LineStyleOpts(width=2),
-                   is_symbol_show=False, color="#239B56", is_smooth=True, is_step=False,
-                   z=1, z_level=1, yaxis_index=0)
+                   label_opts=opts.LabelOpts(is_show=False),
+                   is_symbol_show=False, color="#239B56", is_smooth=True,
+                   z=1, z_level=1,
+                   yaxis_index=1, xaxis_index=1,
+                   )
     )
 
-    page = bar.overlap(line1).overlap(line2)
+    page = bar.overlap(line1)
     return page
 
