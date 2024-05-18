@@ -58,7 +58,46 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
             #     range_end=100,  # 显示区域结束
             # ),
 
-        )
+
+            # 自定义文本框
+            # https://github.com/reed-hong/pyecharts/blob/5f01f2fb43d1602a46d77234721450008cbff7eb/example/graphic_example.py#L10
+            graphic_opts=[
+                opts.GraphicGroup(
+                    graphic_item=opts.GraphicItem(right="right", top="48%"),
+                    children=[
+                        # opts.GraphicRect(
+                        #     graphic_item=opts.GraphicItem(
+                        #         z=100, left="center", top="middle"
+                        #     ),
+                        #     graphic_shape_opts=opts.GraphicShapeOpts(
+                        #         width=150, height=25
+                        #     ),
+                        #     graphic_basicstyle_opts=opts.GraphicBasicStyleOpts(
+                        #         fill="#fff",
+                        #         stroke="#555",
+                        #         line_width=2,
+                        #         shadow_blur=8,
+                        #         shadow_offset_x=3,
+                        #         shadow_offset_y=3,
+                        #         shadow_color="rgba(0,0,0,0.3)",
+                        #     ),
+                        # ),
+                        opts.GraphicText(
+                            # graphic_item=opts.GraphicItem(
+                            #     left="center", top="middle", z=100
+                            # ),
+                            graphic_textstyle_opts=opts.GraphicTextStyleOpts(
+                                text="hello world",
+                                # font="14px Microsoft YaHei",
+                                # graphic_basicstyle_opts=opts.GraphicBasicStyleOpts(
+                                #     fill="#333"
+                                # ),
+                            ),
+                        ),
+                    ],
+                )
+            ],
+        ),
     )
     for idx, size in enumerate(sizes):
         size_data = data[data[hue] == size]
@@ -88,5 +127,7 @@ def add_scatter(scatter, data, name, col_x, col_y, color=None):
     obj = Scatter().add_xaxis(data[col_x].tolist()).add_yaxis(str(name)[:5], data[col_y].tolist(),
                                                               color=color,
                                                               label_opts=opts.LabelOpts(is_show=False),
+                                                              large=True,   # 大数据优化 数据>largeThreshold就优化
+                                                              largeThreshold=1000,  # 大于1000优化
                                                               )
     scatter.overlap(obj)
