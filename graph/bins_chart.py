@@ -127,7 +127,6 @@ def add_scatter(scatter, data, name, col_x, col_y, color=None):
     obj = Scatter().add_xaxis(data[col_x].tolist()).add_yaxis(str(name)[:5], data[col_y].tolist(),
                                                               color=color,
                                                               label_opts=opts.LabelOpts(is_show=False),
-                                                              large=True,   # 大数据优化 数据>largeThreshold就优化
-                                                              largeThreshold=1000,  # 大于1000优化
-                                                              )
+                                                              ).set_series_opts(large=True,  # 大数据优化 数据>largeThreshold就优化
+                                                                                largeThreshold=1000,)
     scatter.overlap(obj)

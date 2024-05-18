@@ -29,7 +29,6 @@ def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
             label_opts=opts.LabelOpts(is_show=False),
             color="#f30e08"
         )
-        .set_series_opts()
         .set_global_opts(
             title_opts=opts.TitleOpts(title="能效等级总览"),
             xaxis_opts=opts.AxisOpts(type_="value", min_=101.05, max_=102.95),
