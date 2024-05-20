@@ -39,33 +39,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 #
-import seaborn as sns
-
-import matplotlib as mpl
-
-from matplotlib import cm
-import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
-
-from mpl_toolkits.mplot3d import Axes3D
-
-#? 中文乱码问题
-font = fm.FontProperties(fname='微软雅黑.ttf')
-#? 字体设置：SimHei
-plt.rcParams["font.sans-serif"]=["Microsoft YaHei"]
-plt.rcParams["axes.unicode_minus"]=False
-mpl.rcParams['legend.fontsize'] = 10
-
-plt.rcParams.update(
-    {
-        # 'text.usetex': False,
-        'mathtext.fontset': 'stix',
-        'font.family': 'serif',
-        "font.serif": ['Microsoft YaHei'],
-    }
-)
-
-#
 from models.bin_analysis.quant.cloud.file_dir_tool import get_full_path
 from models.bin_analysis.quant.cloud.plot_tool import scatter_3d_plot
 
@@ -118,7 +91,31 @@ def joint_dist(dataset, turbine_code, power_cap, dir_path, plot_kind="kde"):
     g.map_diag(sns.histplot, kde=True)
     plt.show()
     '''
-    
+    import seaborn as sns
+
+    import matplotlib as mpl
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+    mpl.rcParams['legend.fontsize'] = 10
+
+    plt.rcParams.update(
+        {
+            # 'text.usetex': False,
+            'mathtext.fontset': 'stix',
+            'font.family': 'serif',
+            "font.serif": ['Microsoft YaHei'],
+        }
+    )
     # *** ---------- 3 jointplot绘制bivariate distribution ----------
     #? 基于jointplot绘制双变量概率密度分布图形
     #! kind：{"scatter"| "reg"| "resid"| "kde"| "hex"
@@ -152,7 +149,31 @@ def pcw_3d_dist(dataset, turbine_code, dir_path):
     
     :return:
     """
+    import seaborn as sns
 
+    import matplotlib as mpl
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+    mpl.rcParams['legend.fontsize'] = 10
+
+    plt.rcParams.update(
+        {
+            # 'text.usetex': False,
+            'mathtext.fontset': 'stix',
+            'font.family': 'serif',
+            "font.serif": ['Microsoft YaHei'],
+        }
+    )
     #? azim是绕z轴旋转的角度
     #? elev是绕y轴旋转的角度
     #? 默认值：azim=-60, elev=30
@@ -223,6 +244,31 @@ def binning_dist(dataset, turbine_code, dir_path):
     
     :return:
     """
+    import seaborn as sns
+
+    import matplotlib as mpl
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+    mpl.rcParams['legend.fontsize'] = 10
+
+    plt.rcParams.update(
+        {
+            # 'text.usetex': False,
+            'mathtext.fontset': 'stix',
+            'font.family': 'serif',
+            "font.serif": ['Microsoft YaHei'],
+        }
+    )
 
     bin_data = pd.DataFrame(dataset[[wind_speed_label, power_label]]).reset_index(drop=True)
 

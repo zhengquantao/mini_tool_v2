@@ -6,7 +6,6 @@ import wx.lib.agw.aui as aui
 
 from typing import TYPE_CHECKING, Type
 
-from settings.resources import overview
 from settings.settings import float_size
 
 if TYPE_CHECKING:
@@ -94,7 +93,8 @@ class Notebook:
         # page.SetFont(font)
         # ctrl.AddPage(page, "Welcome to MINI-TOOL", False, page_bmp)
 
-        file_path = os.path.join(os.getcwd(), r"introduce.html")
+        file_path = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), "static", "js",
+                                 "introduce.html")
         ctrl.AddPage(self.html_ctrl.create_ctrl(path=file_path), "Welcome to MINI-TOOL", True, page_bmp)
 
         # panel: wx.Panel = wx.Panel(ctrl, wx.ID_ANY)

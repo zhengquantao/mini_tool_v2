@@ -35,17 +35,6 @@ import numpy as np
 import pandas as pd
 
 #
-import seaborn as sns
-
-import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
-#? 中文乱码问题
-font = fm.FontProperties(fname='微软雅黑.ttf')
-#? 字体设置：SimHei
-plt.rcParams["font.sans-serif"]=["Microsoft YaHei"]
-plt.rcParams["axes.unicode_minus"]=False
-
-#
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -145,6 +134,15 @@ def pitch_relation_plot(dataset, turbine_code, file_path):
     
     :return:
     """
+    import seaborn as sns
+
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
 
     file_name = "{}_relation.png".format(turbine_code)
     full_path = os.path.join(file_path, file_name)
@@ -170,6 +168,15 @@ def mix_pitch_plot(dataset, turbine_code, file_path):
     
     :return:
     """
+    import seaborn as sns
+
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
 
     target_data = dataset[[wind_speed_label, pitch1_label, pitch2_label, pitch3_label, power_label]]
     target_data[power_label] = target_data[power_label] / 1000
@@ -531,7 +538,16 @@ def bin_pitch_plot(bin_df, bin_label, file_path, xlabel, title):
         xlabel (str): x轴 标注
         title (str): 图像标题
     """
-    
+    import seaborn as sns
+
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+
     plt.figure()
 
     # , label="XXX_pitch binning"
@@ -610,6 +626,15 @@ def common_bin_pitch_plot(bin_df, bin_var, xlabel, ylabel, title, file_path):
         title (str): 图像标题
         file_path (str): 图像文件完整路径
     """
+    import seaborn as sns
+
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
 
     plt.figure(figsize=(16,10))
 

@@ -1,7 +1,6 @@
 import wx
 import wx.aui
 import wx.lib.agw.aui as aui
-import aui2
 from aui2 import svg_to_bitmap
 
 # If MainFrame subclasses wx.Frame, uncomment the following lines
@@ -66,7 +65,7 @@ class ToolBarManager:
         # item.SetId(item_id)
         # item.SetLabel("Customize...")
         # append_items.append(item)
-        # frame.Bind(wx.EVT_MENU, self.OnCustomizeToolbar, id=self.items["CustomizeToolbar"]["id"])
+        # frame.Bind(wx.EVT_MENU, self.on_customize_toolbar, id=self.items["CustomizeToolbar"]["id"])
 
         # Popup menu id
         # The same popup menu is displayed for multiple toolbars, so
@@ -100,17 +99,17 @@ class ToolBarManager:
         self.toolbar_ids[tb_id] = "toolbar_top"
         self.toolbars["toolbar_top"] = {"id": tb_id, "item": tb2}
         tb2.SetToolBitmapSize(wx.Size(20, 20))
-        tb2.AddSimpleTool(wx.ID_FILE, "File", wx.Bitmap(aui2.svg_to_bitmap(cs.of_svg)), short_help_string="打开文件",)
+        tb2.AddSimpleTool(wx.ID_FILE, "File", wx.Bitmap(svg_to_bitmap(cs.of_svg)), short_help_string="打开文件",)
         # tb2.AddSpacer(5)
-        tb2.AddSimpleTool(wx.ID_OPEN, "Project", wx.Bitmap(aui2.svg_to_bitmap(cs.op_svg)), short_help_string="打开项目")
-        tb2.AddSimpleTool(wx.ID_SAVE, "Save", wx.Bitmap(aui2.svg_to_bitmap(cs.save_svg)), short_help_string="保存", )
-        tb2.AddSimpleTool(wx.ID_BACKWARD, "Back", wx.Bitmap(aui2.svg_to_bitmap(cs.back_svg)), short_help_string="返回", )
+        tb2.AddSimpleTool(wx.ID_OPEN, "Project", wx.Bitmap(svg_to_bitmap(cs.op_svg)), short_help_string="打开项目")
+        tb2.AddSimpleTool(wx.ID_SAVE, "Save", wx.Bitmap(svg_to_bitmap(cs.save_svg)), short_help_string="保存", )
+        tb2.AddSimpleTool(wx.ID_BACKWARD, "Back", wx.Bitmap(svg_to_bitmap(cs.back_svg)), short_help_string="返回", )
 
         tb2.AddSeparator()
-        tb2.AddSimpleTool(wx.ID_EXIT, "Exit", wx.Bitmap(aui2.svg_to_bitmap(cs.exit_svg)), short_help_string="退出",)
-        tb2.AddSimpleTool(wx.ID_COPY, "Copy", wx.Bitmap(aui2.svg_to_bitmap(cs.copy_svg)), short_help_string="复制",)
-        tb2.AddSimpleTool(wx.ID_PASTE, "Paste", wx.Bitmap(aui2.svg_to_bitmap(cs.paste_svg)), short_help_string="粘贴")
-        tb2.AddSimpleTool(wx.ID_CUT, "Cut", wx.Bitmap(aui2.svg_to_bitmap(cs.cut_svg)), short_help_string="剪切")
+        tb2.AddSimpleTool(wx.ID_EXIT, "Exit", wx.Bitmap(svg_to_bitmap(cs.exit_svg)), short_help_string="退出",)
+        tb2.AddSimpleTool(wx.ID_COPY, "Copy", wx.Bitmap(svg_to_bitmap(cs.copy_svg)), short_help_string="复制",)
+        tb2.AddSimpleTool(wx.ID_PASTE, "Paste", wx.Bitmap(svg_to_bitmap(cs.paste_svg)), short_help_string="粘贴")
+        tb2.AddSimpleTool(wx.ID_CUT, "Cut", wx.Bitmap(svg_to_bitmap(cs.cut_svg)), short_help_string="剪切")
         # tb2.SetCustomOverflowItems([], append_items)
         tb2.Realize()
         tb2.EnableTool(wx.ID_BACKWARD, False)
@@ -188,7 +187,7 @@ class ToolBarManager:
         self.toolbars["toolbar_right"] = {"id": tb_id, "item": tb6}
         tb6.SetToolBitmapSize(wx.Size(16, 16))
         database: int = wx.NewIdRef()
-        tb6.AddSimpleTool(database, "Database", wx.Bitmap(aui2.svg_to_bitmap(cs.database_svg, size=(13, 13))))
+        tb6.AddSimpleTool(database, "Database", wx.Bitmap(svg_to_bitmap(cs.database_svg, size=(13, 13))))
         # tb6.EnableTool(database, False)
         # tb6.AddSeparator()
         # tb6.AddSimpleTool(wx.NewIdRef(), "Clockwise 2",
@@ -222,24 +221,24 @@ class ToolBarManager:
                     .Dockable(False).Bottom())
 
         # "commit" all changes made to AuiManager
-        frame.Bind(wx.EVT_MENU, self.OnProjectNav, project_tb_id)
-        frame.Bind(wx.EVT_MENU, self.OnConsoleNav, console_tb_id)
+        frame.Bind(wx.EVT_MENU, self.on_project_nav, project_tb_id)
+        frame.Bind(wx.EVT_MENU, self.on_console_nav, console_tb_id)
         self.mgr.Update()
 
-    def OnProjectNav(self, _event: wx.CommandEvent):
+    def on_project_nav(self, _event: wx.CommandEvent):
         pane = self.mgr.GetPane("ProjectTree")
-        self.IsDisplay(pane)
+        self.is_display(pane)
 
-    def OnConsoleNav(self, _event: wx.CommandEvent):
+    def on_console_nav(self, _event: wx.CommandEvent):
         pane = self.mgr.GetPane("Console")
-        self.IsDisplay(pane)
+        self.is_display(pane)
 
-    def IsDisplay(self, pane):
+    def is_display(self, pane):
         if pane.IsShown():
             pane.Hide()
         else:
             pane.Show(True)
         self.mgr.Update()
 
-    def OnCustomizeToolbar(self, _event: wx.CommandEvent) -> None:
+    def on_customize_toolbar(self, _event: wx.CommandEvent) -> None:
         wx.MessageBox("Customize Toolbar clicked", "Test")

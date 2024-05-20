@@ -27,37 +27,7 @@
 # 加载包 (import package)
 # ***
 # --------------------------------------------------------------------
-import os
 import logging
-
-import numpy as np
-import pandas as pd
-
-# import statsmodels.api as sm
-from scipy.optimize import curve_fit
-
-import seaborn as sns
-
-from matplotlib import cm
-import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
-
-from mpl_toolkits.mplot3d import Axes3D
-
-#? 中文乱码问题
-font = fm.FontProperties(fname='微软雅黑.ttf')
-#? 字体设置：SimHei
-plt.rcParams["font.sans-serif"]=["Microsoft YaHei"]
-plt.rcParams["axes.unicode_minus"]=False
-
-plt.rcParams.update(
-    {
-        # 'text.usetex': False,
-        'mathtext.fontset': 'stix',
-        'font.family': 'serif',
-        "font.serif": ['Microsoft YaHei'],
-    }
-)
 
 #
 from models.bin_analysis.quant.cloud.wind_base_tool import power_label, wind_speed_label, gen_speed_label
@@ -101,6 +71,28 @@ def bin_curve_plot(data, col_x, col_y, xlabel, ylabel, title, file_path,
     
     :return:
     """
+    import seaborn as sns
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+
+    plt.rcParams.update(
+        {
+            # 'text.usetex': False,
+            'mathtext.fontset': 'stix',
+            'font.family': 'serif',
+            "font.serif": ['Microsoft YaHei'],
+        }
+    )
 
     plt.figure() # figsize=(12, 8)
     #? hue="label": 标记异常数据与否 , kind="line" 
@@ -142,6 +134,28 @@ def curve_plot(data, col_x, col_y, xlabel, ylabel, title, file_path, hue=None, s
     
     :return:
     """
+    import seaborn as sns
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+
+    plt.rcParams.update(
+        {
+            # 'text.usetex': False,
+            'mathtext.fontset': 'stix',
+            'font.family': 'serif',
+            "font.serif": ['Microsoft YaHei'],
+        }
+    )
 
     plt.figure()
 
@@ -195,6 +209,28 @@ def scatter_plot(data, col_x, col_y, xlabel, ylabel, title, file_path, hue=None,
     
     :return:
     """
+    import seaborn as sns
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+
+    plt.rcParams.update(
+        {
+            # 'text.usetex': False,
+            'mathtext.fontset': 'stix',
+            'font.family': 'serif',
+            "font.serif": ['Microsoft YaHei'],
+        }
+    )
 
     plt.figure()
     #? hue="label": 标记异常数据与否
@@ -226,7 +262,29 @@ def hue_scatter_plot(data, col_x, col_y, xlabel, ylabel, title, file_path, hue=N
     
     :return:
     """
-    
+    import seaborn as sns
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+
+    plt.rcParams.update(
+        {
+            # 'text.usetex': False,
+            'mathtext.fontset': 'stix',
+            'font.family': 'serif',
+            "font.serif": ['Microsoft YaHei'],
+        }
+    )
+
     fig, ax = plt.subplots()
     g = sns.scatterplot(
         data=data, x=col_x, y=col_y, hue=hue, size=size,
@@ -268,7 +326,29 @@ def plot_heatmap(df, vars, turbine_code, file_path):
     output: 
         none
     """
-    
+    import seaborn as sns
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+
+    plt.rcParams.update(
+        {
+            # 'text.usetex': False,
+            'mathtext.fontset': 'stix',
+            'font.family': 'serif',
+            "font.serif": ['Microsoft YaHei'],
+        }
+    )
+
     plt.figure()
     sns.heatmap(df[vars].corr(), annot=True)
     
@@ -291,6 +371,28 @@ def plot_timeseries(df, time_label, target_label):
     output: 
         none
     """
+    import seaborn as sns
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+
+    plt.rcParams.update(
+        {
+            # 'text.usetex': False,
+            'mathtext.fontset': 'stix',
+            'font.family': 'serif',
+            "font.serif": ['Microsoft YaHei'],
+        }
+    )
 
     fig, ax = plt.subplots(figsize=(16,3))
 
@@ -314,6 +416,28 @@ def plot_yaw_timeseries(df, time_label, yaw_oper_label, nacelle_dir_label):
     output: 
         none
     """
+    import seaborn as sns
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+
+    plt.rcParams.update(
+        {
+            # 'text.usetex': False,
+            'mathtext.fontset': 'stix',
+            'font.family': 'serif',
+            "font.serif": ['Microsoft YaHei'],
+        }
+    )
 
     fig, ax = plt.subplots(figsize=(16,3))
     
@@ -338,6 +462,28 @@ def plot_ti_timeseries(df, time_label, yaw_oper_label, nacelle_dir_label):
     output: 
         none
     """
+    import seaborn as sns
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+
+    plt.rcParams.update(
+        {
+            # 'text.usetex': False,
+            'mathtext.fontset': 'stix',
+            'font.family': 'serif',
+            "font.serif": ['Microsoft YaHei'],
+        }
+    )
 
     plt.figure(figsize=(16,3))
 
@@ -371,7 +517,29 @@ def draw_time_violinplot(turbine_data, vars_label, vars_legend, time_label, time
     output: 
         none
     """
-    
+    import seaborn as sns
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+
+    plt.rcParams.update(
+        {
+            # 'text.usetex': False,
+            'mathtext.fontset': 'stix',
+            'font.family': 'serif',
+            "font.serif": ['Microsoft YaHei'],
+        }
+    )
+
     fig, ax = plt.subplots(len(vars_label), figsize=fig_size)
     
     if orient == "v":
@@ -414,7 +582,29 @@ def draw_violinplot(df, vars_label, vars_legend, turbines_order, turbine_tick_la
     output: 
         none
     """
-    
+    import seaborn as sns
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+
+    plt.rcParams.update(
+        {
+            # 'text.usetex': False,
+            'mathtext.fontset': 'stix',
+            'font.family': 'serif',
+            "font.serif": ['Microsoft YaHei'],
+        }
+    )
+
     fig, ax = plt.subplots(len(vars_label), figsize=fig_size)
     
     if orient == "v":
@@ -448,6 +638,28 @@ def plot_vars(df, turbine_code, ws_range, x_var, figsize=(18,3)):
     output: 
         none
     """
+    import seaborn as sns
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+
+    plt.rcParams.update(
+        {
+            # 'text.usetex': False,
+            'mathtext.fontset': 'stix',
+            'font.family': 'serif',
+            "font.serif": ['Microsoft YaHei'],
+        }
+    )
 
     df_plot = df[(df['turbine_code']==turbine_code) 
                  & (df[wind_speed_label]>=ws_range[0]) & (df[wind_speed_label]<=ws_range[1])] 
@@ -487,6 +699,28 @@ def scatter_3d_plot(dataset, vars_list, file_path, xlabel=None, ylabel=None, zla
     
     :return:
     """
+    import seaborn as sns
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+
+    plt.rcParams.update(
+        {
+            # 'text.usetex': False,
+            'mathtext.fontset': 'stix',
+            'font.family': 'serif',
+            "font.serif": ['Microsoft YaHei'],
+        }
+    )
 
     #? azim是绕z轴旋转的角度
     #? elev是绕y轴旋转的角度

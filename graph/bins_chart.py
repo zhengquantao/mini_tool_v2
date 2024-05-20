@@ -2,7 +2,7 @@ import os
 
 
 from pyecharts.globals import CurrentConfig
-CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/static/"
+CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/"
 
 from pyecharts import options as opts
 from pyecharts.charts import Scatter, Line
@@ -10,7 +10,8 @@ from common.common import random_name, create_dir
 from settings.settings import float_size
 
 
-def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hue=None, sizes=None, turbine_code=None,):
+def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hue=None, sizes=None, turbine_code=None,
+               beside_title="", line_name=""):
     """
     按照指定数据列绘制曲线图 【单台风机分仓曲线】
     包括散点图、曲线和偏差展示
@@ -25,6 +26,9 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
 
     :param file_path: 图像文件完整路径
     :param bin_df (dataframe): 分仓数据集
+    :param turbine_code: 风机编号
+    :param beside_title: 侧边标题
+    :param line_name: 线名字
 
     :return:
     """
@@ -34,7 +38,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
         Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
         .set_global_opts(
             title_opts=opts.TitleOpts(title=title),
-            legend_opts=opts.LegendOpts(pos_right="right", pos_top="50%"),  # 将图例放在右边
+            legend_opts=opts.LegendOpts(pos_right="right", pos_top="50%", border_width=0),  # 将图例放在右边
             xaxis_opts=opts.AxisOpts(
                 name=xlabel,
                 # type_="value",
@@ -65,39 +69,15 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
                 opts.GraphicGroup(
                     graphic_item=opts.GraphicItem(right="right", top="48%"),
                     children=[
-                        # opts.GraphicRect(
-                        #     graphic_item=opts.GraphicItem(
-                        #         z=100, left="center", top="middle"
-                        #     ),
-                        #     graphic_shape_opts=opts.GraphicShapeOpts(
-                        #         width=150, height=25
-                        #     ),
-                        #     graphic_basicstyle_opts=opts.GraphicBasicStyleOpts(
-                        #         fill="#fff",
-                        #         stroke="#555",
-                        #         line_width=2,
-                        #         shadow_blur=8,
-                        #         shadow_offset_x=3,
-                        #         shadow_offset_y=3,
-                        #         shadow_color="rgba(0,0,0,0.3)",
-                        #     ),
-                        # ),
                         opts.GraphicText(
-                            # graphic_item=opts.GraphicItem(
-                            #     left="center", top="middle", z=100
-                            # ),
                             graphic_textstyle_opts=opts.GraphicTextStyleOpts(
-                                text="hello world",
-                                # font="14px Microsoft YaHei",
-                                # graphic_basicstyle_opts=opts.GraphicBasicStyleOpts(
-                                #     fill="#333"
-                                # ),
+                                text=beside_title,
                             ),
                         ),
                     ],
                 )
             ],
-        ),
+        )
     )
     for idx, size in enumerate(sizes):
         size_data = data[data[hue] == size]
@@ -106,7 +86,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
         Line()
         .add_xaxis(bin_df[col_x].tolist())
         .add_yaxis(
-            "line",
+            line_name,
             bin_df[col_y].tolist(),
             linestyle_opts=opts.LineStyleOpts(width=2),
             label_opts=opts.LabelOpts(is_show=False),
@@ -124,9 +104,12 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
 
 
 def add_scatter(scatter, data, name, col_x, col_y, color=None):
-    obj = Scatter().add_xaxis(data[col_x].tolist()).add_yaxis(str(name)[:5], data[col_y].tolist(),
-                                                              color=color,
-                                                              label_opts=opts.LabelOpts(is_show=False),
-                                                              ).set_series_opts(large=True,  # 大数据优化 数据>largeThreshold就优化
-                                                                                largeThreshold=1000,)
+    obj = Scatter().add_xaxis(data[col_x].tolist()).add_yaxis(
+        str(name)[:5], data[col_y].tolist(),
+        color=color,
+        label_opts=opts.LabelOpts(is_show=False),
+    ).set_series_opts(
+        large=True,  # 大数据优化 数据>largeThreshold就优化
+        largeThreshold=2000,
+    )
     scatter.overlap(obj)

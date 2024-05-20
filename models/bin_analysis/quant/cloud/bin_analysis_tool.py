@@ -50,33 +50,8 @@ import math
 import numpy as np
 import pandas as pd
 
-import seaborn as sns
-
-#
-import matplotlib
-
 from common.common import common_cut
 from graph.bins_chart import build_html
-
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
-#? 中文乱码问题
-font = fm.FontProperties(fname='微软雅黑.ttf')
-#? 字体设置：SimHei
-plt.rcParams["font.sans-serif"]=["Microsoft YaHei"]
-plt.rcParams["axes.unicode_minus"]=False
-
-''''''
-plt.rcParams.update(
-    {
-        # 'text.usetex': False,
-        'mathtext.fontset': 'stix',
-        'font.family': 'serif',
-        "font.serif": ['Microsoft YaHei'],
-    }
-)
-
 
 #
 import warnings
@@ -244,7 +219,7 @@ def bin_curve_analysis(dataset, turbine_code, air_density_tag=None, dir_path=Non
 
         if air_density_tag is not None:
             path, file_name = air_density_power_bin(dataset, air_density_tag, turbine_code, dir_path,
-                                                         hue=None, plot_flag=plot_flag)
+                                                    hue=None, plot_flag=plot_flag)
 
     elif "power_winddir" in run_func_list:
         # *** ---------- 8 风向-功率曲线 ----------
@@ -293,6 +268,29 @@ def power_curve_bin(dataset, turbine_code, dir_path, hue=power_label):
     
     :return:
     """
+    import seaborn as sns
+
+    #
+    import matplotlib
+    matplotlib.use('TkAgg')
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+
+    ''''''
+    plt.rcParams.update(
+        {
+            # 'text.usetex': False,
+            'mathtext.fontset': 'stix',
+            'font.family': 'serif',
+            "font.serif": ['Microsoft YaHei'],
+        }
+    )
+
     
     std_power_label = "std_power"
     actual_power_label = "actual_power"
@@ -529,8 +527,8 @@ def wind_speed_cp_bin(dataset, turbine_code=None, air_density_tag=None, dir_path
     wind_speed_bins = np.arange(0, np.ceil(target_data[wind_speed_label].max()), 0.25)
     wind_speed_labels = [x for x in wind_speed_bins[1:]]
 
-    target_data[wind_speed_bin_label] = pd.cut(target_data[wind_speed_label], bins=wind_speed_bins, 
-                                       labels=wind_speed_labels)
+    target_data[wind_speed_bin_label] = pd.cut(target_data[wind_speed_label], bins=wind_speed_bins,
+                                               labels=wind_speed_labels)
     
     # *** ---------- 3. 分仓binning拟合偏航角度曲线 ----------
     cp_mean, cp_std = binning_proc(target_data, wind_speed_labels, wind_speed_bin_label, cp_label,
@@ -581,7 +579,7 @@ def wind_speed_cp_bin(dataset, turbine_code=None, air_density_tag=None, dir_path
                                           title, dir_path, cp_windspeed_bin_df,
                                           hue=air_density_bin_label,
                                           sizes=pd.unique(target_data[air_density_bin_label]),
-                                          turbine_code=turbine_code)
+                                          turbine_code=turbine_code, beside_title=air_density_label)
     
     return full_path, file_name
 
@@ -651,7 +649,7 @@ def wind_speed_pitch_bin(dataset, turbine_code=None, file_path=None, hue=power_l
                                           title, file_path, pitch_windspeed_bin_df,
                                           hue=power_bin_label,
                                           sizes=pd.unique(dataset[power_bin_label]),
-                                          turbine_code=turbine_code)
+                                          turbine_code=turbine_code, beside_title=power_label)
 
     return full_path, file_name
 
@@ -718,7 +716,7 @@ def speed_wind_gen_bin(dataset, turbine_code=None, file_path=None, hue=power_lab
                                           title, file_path, gen_wind_speed_bin_df,
                                           hue=power_bin_label,
                                           sizes=pd.unique(dataset[power_bin_label]),
-                                          turbine_code=turbine_code)
+                                          turbine_code=turbine_code, beside_title=power_label)
 
     return full_path, file_name
 
@@ -785,7 +783,7 @@ def gen_speed_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_spe
                                           title, file_path, power_genspeed_bin_df,
                                           hue=wind_speed_bin_label,
                                           sizes=pd.unique(dataset[wind_speed_bin_label]),
-                                          turbine_code=turbine_code)
+                                          turbine_code=turbine_code, beside_title=wind_speed_label)
     
     return full_path, file_name
 
@@ -963,7 +961,7 @@ def pitch_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_speed_l
                                           title, file_path, power_pitch_bin_df,
                                           hue=wind_speed_bin_label,
                                           sizes=pd.unique(target_data[wind_speed_bin_label]),
-                                          turbine_code=turbine_code)
+                                          turbine_code=turbine_code, beside_title=wind_speed_label)
     
     return full_path, file_name
 
@@ -980,6 +978,26 @@ def farm_bin_curve_plot(bin_df, x_var, y_var, xlabel, ylabel, title, file_path):
         title (str): 图像标题
         file_path (str): 图像文件完整路径
     """
+    import seaborn as sns
+    import matplotlib
+    matplotlib.use('TkAgg')
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+
+    ''''''
+    plt.rcParams.update(
+        {
+            # 'text.usetex': False,
+            'mathtext.fontset': 'stix',
+            'font.family': 'serif',
+            "font.serif": ['Microsoft YaHei'],
+        }
+    )
 
     plt.figure(figsize=(16,10))
 

@@ -22,8 +22,8 @@ class LayoutManager:
         self.layout_ids = wx.NewIdRef(PERSPECTIVE_BUFFER_SIZE)
 
         frame.Bind(wx.EVT_MENU, self.on_create, id=mb_items["CreatePerspective"]["id"])
-        frame.Bind(wx.EVT_MENU, self.OnCopy, id=mb_items["CopyPerspectiveCode"]["id"])
-        frame.Bind(wx.EVT_MENU, self.OnRestore, id=self.layout_ids[0], id2=self.layout_ids[-1])
+        frame.Bind(wx.EVT_MENU, self.on_copy, id=mb_items["CopyPerspectiveCode"]["id"])
+        frame.Bind(wx.EVT_MENU, self.on_restore, id=self.layout_ids[0], id2=self.layout_ids[-1])
 
     def save(self, name: str = "") -> bool:
         """Saves perspective/layout or copies to clipboard.
@@ -75,8 +75,8 @@ class LayoutManager:
         name: str = dlg.GetValue()
         self.save(name)
 
-    def OnCopy(self, _event: wx.CommandEvent) -> None:
+    def on_copy(self, _event: wx.CommandEvent) -> None:
         self.save()
 
-    def OnRestore(self, event: wx.CommandEvent) -> None:
+    def on_restore(self, event: wx.CommandEvent) -> None:
         self.restore(event.GetId())

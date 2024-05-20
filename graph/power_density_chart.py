@@ -6,7 +6,7 @@ from common.common import random_name, common_cut, create_dir
 from models.utils.wind_base_tool import wind_speed_label, wind_speed_bin_label
 from settings.settings import float_size
 
-CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/static/"
+CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/"
 
 from pyecharts import options as opts
 from pyecharts.charts import Bar, Line

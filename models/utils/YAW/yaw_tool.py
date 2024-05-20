@@ -35,18 +35,6 @@ import pandas as pd
 
 import logging
 
-import statsmodels.formula.api as smf
-
-# import seaborn as sns
-# import matplotlib.pyplot as plt
-# import matplotlib.font_manager as fm
-
-# ? 中文乱码问题
-# font = fm.FontProperties(fname='微软雅黑.ttf')
-# # ? 字体设置：SimHei
-# plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
-# plt.rcParams["axes.unicode_minus"] = False
-
 #
 import warnings
 
@@ -59,9 +47,9 @@ import re
 digit_pattern = re.compile(r'(-?\d+)(\.\d+)?')
 
 #
-from file_dir_tool import create_proj_dir, create_dir
-from wind_base_tool import rule_removal, wind_speed_binning, binning_proc, box_drop_abnormal
-from wind_base_tool import mark_label
+from models.utils.file_dir_tool import create_proj_dir, create_dir
+from models.utils.wind_base_tool import rule_removal, wind_speed_binning, binning_proc, box_drop_abnormal
+from models.utils.wind_base_tool import mark_label
 
 # --------------------------------------------------------------------
 # ***
@@ -310,6 +298,7 @@ def yaw_quant_reg(data, wind_speed_label, power_label, turbine_code, dir_path):
         df = pd.DataFrame(data=training_data)
 
         # *** ---------- 2 二次分位数回归拟合 ----------
+        import statsmodels.formula.api as smf
         mod = smf.quantreg('cap ~ dev + I(dev ** 2.0)', df)
         res = mod.fit(q=.5)
         # logger.info(res.summary())
@@ -370,7 +359,16 @@ def bin_yaw_plot(data, col_x, col_y, fitted_label, xlabel, ylabel, title, file_p
     :return:
     """
 
-    #
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+
     band_data = data[(data[col_y] < data[fitted_label] * 1.2) & (data[col_y] > data[fitted_label] * 0.9)]
 
     # 
@@ -444,8 +442,7 @@ def yaw_misalignment_calc1(data, wind_speed_label, dev_list, wind_speed_bins):
 
     # 使用加权平均法计算机组的综合偏差
     speed_3_sum = sum([item ** 3 for item in wind_speed_avg_list])
-    weight_list = [round(item ** 3 / speed_3_sum, 3) for item in wind_speed_avg_list] \
- \
+    weight_list = [round(item ** 3 / speed_3_sum, 3) for item in wind_speed_avg_list]
     logger.info("分仓加权计算的综合偏差【模式一】：权重 {}".format(weight_list))
     # ! 参考论文: 2020_风力发电机组对风偏差检测算法研究与应用_李闯
     dev_angle = sum([x * y for x, y in zip(dev_list_x, weight_list)])

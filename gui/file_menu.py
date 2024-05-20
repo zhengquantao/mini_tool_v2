@@ -60,7 +60,7 @@ class FileManager:
         self.size_reporter = size_reporter
 
         # self.timer = wx.Timer(frame)
-        # frame.Bind(wx.EVT_TIMER, self.OnTimer)
+        # frame.Bind(wx.EVT_TIMER, self.on_timer)
         # self.timer.Start(100)
         self.menubar = menubar
         self.mb_items = menubar.items
@@ -81,12 +81,12 @@ class FileManager:
         mb_items["File"].Append(wx.ID_EXIT, "E&xit\tAlt-F4")
 
         # File
-        self.frame.Bind(wx.EVT_MENU, self.OnNewProject, id=mb_items["NewProject"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnOpenProject, id=mb_items["OpenProject"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnOpenFile, id=mb_items["OpenFile"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnSaveProject, id=mb_items["SaveProject"]["id"])
-        self.frame.Bind(wx.EVT_MENU_RANGE, self.RecentProject, id=wx.ID_FILE1, id2=wx.ID_FILE9)
-        self.frame.Bind(wx.EVT_MENU, self.OnExit, id=wx.ID_EXIT)
+        self.frame.Bind(wx.EVT_MENU, self.on_new_project, id=mb_items["NewProject"]["id"])
+        self.frame.Bind(wx.EVT_MENU, self.on_open_project, id=mb_items["OpenProject"]["id"])
+        self.frame.Bind(wx.EVT_MENU, self.on_open_file, id=mb_items["OpenFile"]["id"])
+        self.frame.Bind(wx.EVT_MENU, self.on_save_project, id=mb_items["SaveProject"]["id"])
+        self.frame.Bind(wx.EVT_MENU_RANGE, self.recent_project, id=wx.ID_FILE1, id2=wx.ID_FILE9)
+        self.frame.Bind(wx.EVT_MENU, self.on_exit, id=wx.ID_EXIT)
 
     def file_history(self):
         # 创建 FileHistory 对象
@@ -146,7 +146,7 @@ class FileManager:
         self.project_path = self.filehistory.GetHistoryFile(0)
         return self.project_path
 
-    def OnNewProject(self, event: wx.CommandEvent) -> None:
+    def on_new_project(self, event: wx.CommandEvent) -> None:
         dlg = wx.TextEntryDialog(self.frame, "请输入项目名:", "新建项目")
         if dlg.ShowModal() != wx.ID_OK:
             return
@@ -164,7 +164,7 @@ class FileManager:
         new_app(path)
         # self.open_project(path)
 
-    def OnOpenProject(self, event: wx.CommandEvent) -> None:
+    def on_open_project(self, event: wx.CommandEvent) -> None:
         select_dialog = wx.DirDialog(self.frame, "请选择要打开的项目：", style=wx.DD_DEFAULT_STYLE)
         if select_dialog.ShowModal() != wx.ID_OK:
             return
@@ -175,7 +175,7 @@ class FileManager:
         new_app(path)
         # self.open_project(path)
 
-    def OnOpenFile(self, event: wx.CommandEvent) -> None:
+    def on_open_file(self, event: wx.CommandEvent) -> None:
         select_dialog = wx.FileDialog(self.frame, "请选择要打开的文件：", style=wx.DD_DEFAULT_STYLE)
         if select_dialog.ShowModal() != wx.ID_OK:
             return
@@ -184,7 +184,7 @@ class FileManager:
         print(f"Chosen directory: {path}")
         self.tree_ctrl.on_open(event, path)
 
-    def OnSaveProject(self, event: wx.CommandEvent) -> None:
+    def on_save_project(self, event: wx.CommandEvent) -> None:
         select_dialog = wx.DirDialog(self.frame, "请选择要保存的路径：", style=wx.DD_DEFAULT_STYLE)
         if select_dialog.ShowModal() != wx.ID_OK:
             return
@@ -195,7 +195,7 @@ class FileManager:
         path = os.path.join(path, filepath)
         shutil.copytree(self.project_path, path, dirs_exist_ok=True)
 
-    def RecentProject(self, event: wx.CommandEvent) -> None:
+    def recent_project(self, event: wx.CommandEvent) -> None:
         file_num = event.GetId() - wx.ID_FILE1
         path = self.filehistory.GetHistoryFile(file_num)
         self.filehistory.AddFileToHistory(path)
@@ -204,7 +204,7 @@ class FileManager:
         new_app(path)
         # self.open_project(path)
 
-    def OnExit(self, _event: wx.CommandEvent) -> None:
+    def on_exit(self, _event: wx.CommandEvent) -> None:
         save_mini_file(self.mgr)
         dlg = wx.MessageDialog(self.frame, f"你确认要退出吗？", "警告", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING)
         if dlg.ShowModal() != wx.ID_YES:
@@ -212,7 +212,7 @@ class FileManager:
 
         self.frame.Destroy()
 
-    def OnTimer(self, _event: wx.TimerEvent) -> None:
+    def on_timer(self, _event: wx.TimerEvent) -> None:
         try:
             self.gauge.Pulse()
         except:

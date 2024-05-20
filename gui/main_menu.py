@@ -116,17 +116,17 @@ class MainMenu:
         self.items["Edit"].Enable(wx.ID_DELETE, False)
 
         self.items["Help"].Append(wx.ID_HELP)
-        self.frame.Bind(wx.EVT_MENU, self.OnHelp, id=wx.ID_HELP)
+        self.frame.Bind(wx.EVT_MENU, self.on_help, id=wx.ID_HELP)
         contact_menu = self.items["Help"].Append(wx.ID_HELP_CONTEXT, "Contact Us")
         contact_menu.SetBitmap(svg_to_bitmap(contact_svg, size=(15, 15)))
-        self.frame.Bind(wx.EVT_MENU, self.OnContact, id=wx.ID_HELP_CONTEXT)
+        self.frame.Bind(wx.EVT_MENU, self.on_contact, id=wx.ID_HELP_CONTEXT)
         self.items["Help"].Append(wx.ID_ABOUT)
-        self.frame.Bind(wx.EVT_MENU, self.OnAbout, id=wx.ID_ABOUT)
+        self.frame.Bind(wx.EVT_MENU, self.on_about, id=wx.ID_ABOUT)
         web_menu = self.items["Help"].Append(wx.ID_HELP_CONTENTS, "WebSite")
         web_menu.SetBitmap(svg_to_bitmap(web_svg, size=(15, 15)))
-        self.frame.Bind(wx.EVT_MENU, self.OnWebHome, id=wx.ID_HELP_CONTENTS)
+        self.frame.Bind(wx.EVT_MENU, self.on_web_home, id=wx.ID_HELP_CONTENTS)
 
-    def OnAbout(self, _event: wx.CommandEvent) -> None:
+    def on_about(self, _event: wx.CommandEvent) -> None:
         # msg = "wx.aui Demo\nAn advanced library for wxWidgets"
         # dlg = wx.MessageDialog(self.frame, msg, "About wx.aui Demo", wx.OK | wx.ICON_INFORMATION)
         # dlg.ShowModal()
@@ -137,19 +137,19 @@ class MainMenu:
         dlg.ShowModal()
         dlg.Destroy()
 
-    def OnHelp(self, _event: wx.CommandEvent) -> None:
+    def on_help(self, _event: wx.CommandEvent) -> None:
         msg = "wx.aui Demo\nAn advanced library for wxWidgets"
         dlg = wx.MessageDialog(self.frame, msg, "Help You", wx.OK)
         dlg.ShowModal()
         dlg.Destroy()
 
-    def OnContact(self, _event: wx.CommandEvent):
+    def on_contact(self, _event: wx.CommandEvent):
         msg = "Website: https://www.baidu.com \nPhone :110 3423 3242\n Email: 123234224324@qq.com \n Address: 中国广东省深圳市南山区前海街道50034号4楼"
         dlg = wx.MessageDialog(self.frame, msg, "Contact Us", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
 
-    def OnWebHome(self, _event: wx.CommandEvent):
+    def on_web_home(self, _event: wx.CommandEvent):
         """go to web homepage"""
         wx.BeginBusyCursor()
         import webbrowser

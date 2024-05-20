@@ -231,36 +231,36 @@ class PaneManager:
         # ctrl_key: str
         # for ctrl_key in content_ctrls.values():
         #     self.frame.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=self.mb_items[ctrl_key]["id"])
-        self.frame.Bind(aui.EVT_AUI_PANE_CLOSE, self.OnPaneClose)
-        self.frame.Bind(aui.EVT_AUI_PANE_MINIMIZE, self.OnPaneMin)
+        self.frame.Bind(aui.EVT_AUI_PANE_CLOSE, self.on_pane_close)
+        self.frame.Bind(aui.EVT_AUI_PANE_MINIMIZE, self.on_pane_min)
         # self.frame.Bind(wx.EVT_MENU, self.OnVetoTree, id=self.mb_items["VetoTree"]["id"])
         # self.frame.Bind(wx.EVT_MENU, self.OnVetoText, id=self.mb_items["VetoText"]["id"])
-        self.frame.Bind(aui.EVT_AUI_PANE_FLOATING, self.OnFloatDock)
-        self.frame.Bind(aui.EVT_AUI_PANE_FLOATED, self.OnFloatDock)
-        self.frame.Bind(aui.EVT_AUI_PANE_DOCKING, self.OnFloatDock)
-        self.frame.Bind(aui.EVT_AUI_PANE_DOCKED, self.OnFloatDock)
+        self.frame.Bind(aui.EVT_AUI_PANE_FLOATING, self.on_float_dock)
+        self.frame.Bind(aui.EVT_AUI_PANE_FLOATED, self.on_float_dock)
+        self.frame.Bind(aui.EVT_AUI_PANE_DOCKING, self.on_float_dock)
+        self.frame.Bind(aui.EVT_AUI_PANE_DOCKED, self.on_float_dock)
         # for menu_refid in self.flags:
-        #     self.frame.Bind(wx.EVT_MENU, self.OnMinimizeModeFlag, menu_refid)
-        # self.frame.Bind(wx.EVT_MENU, self.OnMinimizeModeFlag, id=mb_items["MinimizeCaptHide"]["id"])
-        # self.frame.Bind(wx.EVT_MENU, self.OnSetIconsOnPanes, id=mb_items["PaneIcons"]["id"])
-        # self.frame.Bind(wx.EVT_MENU, self.OnTransparentPane, id=mb_items["TransparentPane"]["id"])
-        # self.frame.Bind(wx.EVT_MENU, self.OnDockArt, id=mb_items["DefaultDockArt"]["id"])
-        # self.frame.Bind(wx.EVT_MENU, self.OnDockArt, id=mb_items["ModernDockArt"]["id"])
-        # self.frame.Bind(wx.EVT_MENU, self.OnSnapToScreen, id=mb_items["SnapToScreen"]["id"])
-        # self.frame.Bind(wx.EVT_MENU, self.OnSnapPanes, id=mb_items["SnapPanes"]["id"])
-        # self.frame.Bind(wx.EVT_MENU, self.OnFlyOut, id=mb_items["FlyOut"]["id"])
-        # self.frame.Bind(wx.EVT_MENU, self.OnCustomPaneButtons, id=mb_items["CustomPaneButtons"]["id"])
-        # self.frame.Bind(wx.EVT_MENU, self.OnSwitchPane, id=mb_items["SwitchPane"]["id"])
+        #     self.frame.Bind(wx.EVT_MENU, self.on_minimize_mode_flag, menu_refid)
+        # self.frame.Bind(wx.EVT_MENU, self.on_minimize_mode_flag, id=mb_items["MinimizeCaptHide"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.on_seticons_onpanes, id=mb_items["PaneIcons"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.on_transparent_pane, id=mb_items["TransparentPane"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.on_dockart, id=mb_items["DefaultDockArt"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.on_dockart, id=mb_items["ModernDockArt"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.on_snap_to_screen, id=mb_items["SnapToScreen"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.on_snap_panes, id=mb_items["SnapPanes"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.on_flyout, id=mb_items["FlyOut"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.on_custom_pane_buttons, id=mb_items["CustomPaneButtons"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.on_switch_pane, id=mb_items["SwitchPane"]["id"])
 
-        self.frame.Bind(wx.EVT_MENU, self.OnDelete, id=wx.ID_DELETE)
-        self.frame.Bind(wx.EVT_MENU, self.OnBack, id=wx.ID_BACKWARD)
-        self.frame.Bind(wx.EVT_MENU, self.OnCut, id=wx.ID_CUT)
-        self.frame.Bind(wx.EVT_MENU, self.OnPaste, id=wx.ID_PASTE)
-        self.frame.Bind(wx.EVT_MENU, self.OnCopy, id=wx.ID_COPY)
+        self.frame.Bind(wx.EVT_MENU, self.on_delete, id=wx.ID_DELETE)
+        self.frame.Bind(wx.EVT_MENU, self.on_back, id=wx.ID_BACKWARD)
+        self.frame.Bind(wx.EVT_MENU, self.on_cut, id=wx.ID_CUT)
+        self.frame.Bind(wx.EVT_MENU, self.on_paste, id=wx.ID_PASTE)
+        self.frame.Bind(wx.EVT_MENU, self.on_copy, id=wx.ID_COPY)
 
-        self.frame.Bind(wx.EVT_MENU, self.OnLinePlot, id=mb_items["LinePlot"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnBarPlot, id=mb_items["BarPlot"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnScatterPlot, id=mb_items["ScatterPlot"]["id"])
+        self.frame.Bind(wx.EVT_MENU, self.on_line_plot, id=mb_items["LinePlot"]["id"])
+        self.frame.Bind(wx.EVT_MENU, self.on_bar_plot, id=mb_items["BarPlot"]["id"])
+        self.frame.Bind(wx.EVT_MENU, self.on_scatter_plot, id=mb_items["ScatterPlot"]["id"])
 
     def default_layout(self):
         # all_panes: list[aui.AuiPaneInfo] = self.mgr.GetAllPanes()
@@ -295,13 +295,13 @@ class PaneManager:
             nb.Refresh()
             nb.Update()
 
-    def OnLinePlot(self, _event: wx.CommandEvent):
+    def on_line_plot(self, _event: wx.CommandEvent):
         self.echarts_show("Line Chart", "Line")
 
-    def OnBarPlot(self, _event: wx.CommandEvent):
+    def on_bar_plot(self, _event: wx.CommandEvent):
         self.echarts_show("Bar Chart", "Bar")
 
-    def OnScatterPlot(self, _event: wx.CommandEvent):
+    def on_scatter_plot(self, _event: wx.CommandEvent):
         self.echarts_show("Scatter Chart", "Scatter")
 
     def echarts_show(self, title, echart_type, save_path=None):
@@ -324,20 +324,20 @@ class PaneManager:
                                                         title=title, echart_type=echart_type, save_path=save_path)
         add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
 
-    def OnCopy(self, _event: wx.CommandEvent) -> None:
+    def on_copy(self, _event: wx.CommandEvent) -> None:
         # 模拟按键ctrl+c
         keyboard.send('ctrl+c')
 
-    def OnPaste(self, _event: wx.CommandEvent) -> None:
+    def on_paste(self, _event: wx.CommandEvent) -> None:
         keyboard.send('ctrl+v')
 
-    def OnCut(self, _event: wx.CommandEvent) -> None:
+    def on_cut(self, _event: wx.CommandEvent) -> None:
         keyboard.send('ctrl+x')
 
-    def OnDelete(self, _event: wx.CommandEvent) -> None:
+    def on_delete(self, _event: wx.CommandEvent) -> None:
         pass
 
-    def OnBack(self, _event: wx.CommandEvent) -> None:
+    def on_back(self, _event: wx.CommandEvent) -> None:
         keyboard.send('ctrl+z')
 
     def OnChangeContentPane(self, event: wx.CommandEvent) -> None:
@@ -348,7 +348,7 @@ class PaneManager:
             self.mgr.GetPane(pane_key).Show(ref_id == self.mb_items[ctrl_key]["id"])
         self.mgr.Update()
 
-    def OnPaneMin(self, event: aui.AuiManagerEvent) -> None:
+    def on_pane_min(self, event: aui.AuiManagerEvent) -> None:
 
         if event.pane.name in ["ProjectTree", "Console"]:
             event.pane.Hide()
@@ -356,7 +356,7 @@ class PaneManager:
             event.Veto()
             return
 
-    def OnPaneClose(self, event: aui.AuiManagerEvent) -> None:
+    def on_pane_close(self, event: aui.AuiManagerEvent) -> None:
         print(event.pane.name, event.GetEventType())
         # if not event.pane.name == "test10":
         #     return
@@ -391,7 +391,7 @@ class PaneManager:
     def OnVetoText(self, event: wx.CommandEvent) -> None:
         self.veto_text = event.IsChecked()
 
-    def OnFloatDock(self, event: aui.AuiManagerEvent) -> None:
+    def on_float_dock(self, event: aui.AuiManagerEvent) -> None:
 
         event_type = event.GetEventType()
 
@@ -406,7 +406,7 @@ class PaneManager:
         elif event_type == aui.wxEVT_AUI_PANE_DOCKED:
             pass  # The pane has been docked.
 
-    def OnMinimizeModeFlag(self, event: wx.CommandEvent) -> None:
+    def on_minimize_mode_flag(self, event: wx.CommandEvent) -> None:
         """Updates minimize mode state based on menu events."""
         print("--------------")
         min_mode: int = self.min_mode
@@ -442,7 +442,7 @@ class PaneManager:
         for pane in all_panes:
             pane.MinimizeMode(min_mode)
 
-    def OnSetIconsOnPanes(self, event: wx.CommandEvent) -> None:
+    def on_seticons_onpanes(self, event: wx.CommandEvent) -> None:
         all_panes: list[aui.AuiPaneInfo] = self.mgr.GetAllPanes()
         pane: aui.AuiPaneInfo
         checked = event.IsChecked()
@@ -451,7 +451,7 @@ class PaneManager:
         self.mgr.Update()
 
     # For some reason, only works when the Transparent Drag Flag is set.
-    def OnTransparentPane(self, _event: wx.CommandEvent) -> None:
+    def on_transparent_pane(self, _event: wx.CommandEvent) -> None:
         dlg = wx.TextEntryDialog(self.frame, "Enter a transparency value (0-255):", "Pane transparency")
         dlg.SetValue(str(self.transparency))
         if dlg.ShowModal() != wx.ID_OK:
@@ -486,7 +486,7 @@ class PaneManager:
 
         self.mgr.Update()
 
-    def OnDockArt(self, event: wx.CommandEvent) -> None:
+    def on_dockart(self, event: wx.CommandEvent) -> None:
         if event.GetId() == self.mb_items["DefaultDockArt"]["id"]:
             self.mgr.SetArtProvider(aui.AuiDefaultDockArt())
         elif self.mgr.CanUseModernDockArt():
@@ -494,10 +494,10 @@ class PaneManager:
         self.mgr.Update()
         self.frame.Update()
 
-    def OnSnapToScreen(self, _event: wx.CommandEvent) -> None:
+    def on_snap_to_screen(self, _event: wx.CommandEvent) -> None:
         self.mgr.SnapToScreen(True, monitor=0, hAlign=wx.RIGHT, vAlign=wx.TOP)
 
-    def OnSnapPanes(self, _event: wx.CommandEvent) -> None:
+    def on_snap_panes(self, _event: wx.CommandEvent) -> None:
         all_panes: list[aui.AuiPaneInfo] = self.mgr.GetAllPanes()
         pane: aui.AuiPaneInfo
 
@@ -540,7 +540,7 @@ class PaneManager:
         self.mgr.Update()
         self.frame.Refresh()
 
-    def OnFlyOut(self, event: wx.CommandEvent) -> None:
+    def on_flyout(self, event: wx.CommandEvent) -> None:
         pane: aui.AuiPaneInfo = self.mgr.GetPane("test8")
 
         if event.IsChecked():
@@ -556,7 +556,7 @@ class PaneManager:
 
         self.mgr.Update()
 
-    def OnCustomPaneButtons(self, event: wx.CommandEvent) -> None:
+    def on_custom_pane_buttons(self, event: wx.CommandEvent) -> None:
         art_provider: aui.AuiDefaultDockArt = self.mgr.GetArtProvider()
 
         bmp: ei.PyEmbeddedImage
@@ -572,7 +572,7 @@ class PaneManager:
         self.mgr.Update()
         self.frame.Refresh()
 
-    def OnSwitchPane(self, _event: wx.CommandEvent) -> None:
+    def on_switch_pane(self, _event: wx.CommandEvent) -> None:
         # Add the main windows and toolbars, in two separate columns
         # We'll use the item 'id' to store the notebook selection, or -1 if not a page
         # [("<caption>", "<name>", <idx>, <bitmap>, <window>)]

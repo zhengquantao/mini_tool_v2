@@ -20,9 +20,9 @@ class DockArtOptions:
     def bind_menu(self):
         menu_key: str
         for menu_key in gradient_menu:
-            self.frame.Bind(wx.EVT_MENU, self.OnGradient, id=self.mb_items[menu_key]["id"])
+            self.frame.Bind(wx.EVT_MENU, self.on_gradient, id=self.mb_items[menu_key]["id"])
 
-    def OnGradient(self, event: wx.CommandEvent) -> None:
+    def on_gradient(self, event: wx.CommandEvent) -> None:
         gradient_key: str = self.item_ids[event.GetId()]
         self.mgr.GetArtProvider().SetMetric(
             aui.AUI_DOCKART_GRADIENT_TYPE,

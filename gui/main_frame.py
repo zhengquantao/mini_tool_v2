@@ -28,7 +28,7 @@ class MainFrame:
         # super().__init__(parent, win_id, title, pos, size, style)
         # If subclassing wx.Frame, remove the next line or set it to self
         self.frame = wx.Frame(parent, win_id, title, pos, size, style)
-        self.frame.Bind(wx.EVT_CLOSE, self.OnExit)
+        self.frame.Bind(wx.EVT_CLOSE, self.on_exit)
 
     def init_man(self, mgr: aui.AuiManager) -> None:
         assert not self.initialized
@@ -44,7 +44,7 @@ class MainFrame:
 
     # If subclassing wx.Frame, uncomment the following lines and
     # remove .frame, if self.frame is not set to self
-    def OnExit(self, _event: wx.CloseEvent) -> None:
+    def on_exit(self, _event: wx.CloseEvent) -> None:
         save_mini_file(self.mgr)
         dlg = wx.MessageDialog(self.frame, f"你确认要退出吗？", "警告", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING)
         if dlg.ShowModal() != wx.ID_YES:

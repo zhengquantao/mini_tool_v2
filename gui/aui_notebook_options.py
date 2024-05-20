@@ -55,20 +55,20 @@ class NotebookOptions:
         mb_items: dict = self.mb_items
         menu_refid: wx.WindowIDRef
         for menu_refid in self.flags:
-            self.frame.Bind(wx.EVT_MENU, self.OnNotebookFlag, menu_refid)
-        self.frame.Bind(wx.EVT_MENU, self.OnNotebookFlag, id=mb_items["NotebookNoCloseButton"]["id"])
+            self.frame.Bind(wx.EVT_MENU, self.on_notebook_flag, menu_refid)
+        self.frame.Bind(wx.EVT_MENU, self.on_notebook_flag, id=mb_items["NotebookNoCloseButton"]["id"])
         for menu_refid in self.themes:
-            self.frame.Bind(wx.EVT_MENU, self.OnNotebookTheme, menu_refid)
+            self.frame.Bind(wx.EVT_MENU, self.on_notebook_theme, menu_refid)
 
-        self.frame.Bind(wx.EVT_MENU, self.OnNotebookDclickUnsplit, id=mb_items["NotebookDclickUnsplit"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnCustomTabButtons, id=mb_items["NotebookCustomButtons"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnMinMaxTabWidth, id=mb_items["NotebookMinMaxWidth"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnAddMultiLine, id=mb_items["NotebookMultiLine"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnPreview, id=mb_items["NotebookPreview"]["id"])
-        self.frame.Bind(aui.EVT_AUINOTEBOOK_ALLOW_DND, self.OnAllowNotebookDnD)
-        self.frame.Bind(aui.EVT_AUINOTEBOOK_PAGE_CLOSE, self.OnNotebookPageClose)
+        self.frame.Bind(wx.EVT_MENU, self.on_notebook_dclick_unplit, id=mb_items["NotebookDclickUnsplit"]["id"])
+        self.frame.Bind(wx.EVT_MENU, self.on_custome_tab_buttons, id=mb_items["NotebookCustomButtons"]["id"])
+        self.frame.Bind(wx.EVT_MENU, self.on_minmax_tab_width, id=mb_items["NotebookMinMaxWidth"]["id"])
+        self.frame.Bind(wx.EVT_MENU, self.on_add_multiline, id=mb_items["NotebookMultiLine"]["id"])
+        self.frame.Bind(wx.EVT_MENU, self.on_preview, id=mb_items["NotebookPreview"]["id"])
+        self.frame.Bind(aui.EVT_AUINOTEBOOK_ALLOW_DND, self.on_allow_notebook_dnd)
+        self.frame.Bind(aui.EVT_AUINOTEBOOK_PAGE_CLOSE, self.on_notebook_page_close)
 
-    def OnNotebookTheme(self, event: wx.CommandEvent) -> None:
+    def on_notebook_theme(self, event: wx.CommandEvent) -> None:
         """Update notebook theme (TabArt provider)."""
         event_id: wx.WindowIDRef = event.GetId()
         if self.notebook_ctrl.notebook_theme == self.themes[event_id]["rowid"]:
@@ -82,14 +82,14 @@ class NotebookOptions:
             nb.Refresh()
             nb.Update()
 
-    def OnNotebookFlag(self, event: wx.CommandEvent) -> None:
+    def on_notebook_flag(self, event: wx.CommandEvent) -> None:
         """Updates GUI AGW style flag state based on menu events."""
-        agwFlags: int = self.notebook_ctrl.notebook_style
+        agw_flags: int = self.notebook_ctrl.notebook_style
         event_id: wx.WindowIDRef = event.GetId()
         menu_key: str = self.item_ids[event_id]
         # If menu item is a part of a RADIO group, clear all associated group flags.
         if menu_key in agw_masks:
-            agwFlags &= ~agw_masks[menu_key]
+            agw_flags &= ~agw_masks[menu_key]
         """
         Note that a click toggles the state of a CHECK flag and sets a RADIO flag
         on. The code above checks if the flag is a part of RADIO group and clears
@@ -107,11 +107,11 @@ class NotebookOptions:
         """
         flag_mask: int = self.flags.get(event_id, 0)
         if flag_mask:  # Toggle flag state.
-            old_flag_state: int = agwFlags & flag_mask
+            old_flag_state: int = agw_flags & flag_mask
             new_flag_state: int = ~old_flag_state & flag_mask
-            agwFlags = agwFlags & ~flag_mask | new_flag_state
+            agw_flags = agw_flags & ~flag_mask | new_flag_state
 
-        self.notebook_ctrl.notebook_style = agwFlags
+        self.notebook_ctrl.notebook_style = agw_flags
 
         nb: aui.AuiNotebook
         for nb in self.notebook_ctrl.all_notebooks():
@@ -122,7 +122,7 @@ class NotebookOptions:
                     flag_mask & AUI_NB_CLOSE_MASK):
                 nb.SetCloseButton(page_idx=2, hasCloseButton=True)
 
-            nb.SetAGWWindowStyleFlag(agwFlags)
+            nb.SetAGWWindowStyleFlag(agw_flags)
 
             # Demonstrate how to remove a close button from a tab.
             # This method is only allowed if SetAGWWindowStyleFlag sets the
@@ -133,12 +133,12 @@ class NotebookOptions:
             nb.Refresh()
             nb.Update()
 
-    def OnNotebookDclickUnsplit(self, event: wx.CommandEvent) -> None:
+    def on_notebook_dclick_unplit(self, event: wx.CommandEvent) -> None:
         nb: aui.AuiNotebook
         for nb in self.notebook_ctrl.all_notebooks():
             nb.SetSashDClickUnsplit(event.IsChecked())
 
-    def OnCustomTabButtons(self, event: wx.CommandEvent) -> None:
+    def on_custome_tab_buttons(self, event: wx.CommandEvent) -> None:
         checked: bool = event.IsChecked()
         self.notebook_ctrl.custom_tab_buttons = checked
         nb: aui.AuiNotebook = self.mgr.GetPane("notebook_content").window
@@ -161,7 +161,7 @@ class NotebookOptions:
         nb.Refresh()
         nb.Update()
 
-    def OnMinMaxTabWidth(self, _event: wx.CommandEvent) -> None:
+    def on_minmax_tab_width(self, _event: wx.CommandEvent) -> None:
         nb: aui.AuiNotebook = self.mgr.GetPane("notebook_content").window
         min_tab_width, max_tab_width = nb.GetMinMaxTabWidth()
         dlg = wx.TextEntryDialog(self.frame, "Enter the minimum and maximum tab widths, separated by a comma:",
@@ -197,23 +197,23 @@ class NotebookOptions:
         nb.Refresh()
         nb.Update()
 
-    def OnAddMultiLine(self, _event: wx.CommandEvent) -> None:
+    def on_add_multiline(self, _event: wx.CommandEvent) -> None:
         nb: aui.AuiNotebook = self.mgr.GetPane("notebook_content").window
         nb.InsertPage(1, wx.TextCtrl(nb, -1, "Some more text", wx.DefaultPosition,
                                      wx.DefaultSize, wx.TE_MULTILINE | wx.NO_BORDER),
                       "Multi-Line\nTab Labels", True)
         nb.SetPageTextColour(1, wx.BLUE)
 
-    def OnPreview(self, _event: wx.CommandEvent) -> None:
+    def on_preview(self, _event: wx.CommandEvent) -> None:
         nb: aui.AuiNotebook = self.mgr.GetPane("notebook_content").window
         nb.NotebookPreview()
 
-    def OnAllowNotebookDnD(self, event: aui.AuiNotebookEvent) -> None:
+    def on_allow_notebook_dnd(self, event: aui.AuiNotebookEvent) -> None:
         # for the purpose of this test application, explicitly
         # allow all notebook drag and drop events
         event.Allow()
 
-    def OnNotebookPageClose(self, event: aui.AuiNotebookEvent) -> None:
+    def on_notebook_page_close(self, event: aui.AuiNotebookEvent) -> None:
         ctrl = event.GetEventObject()
         if isinstance(ctrl.GetPage(event.GetSelection()), wx.html.HtmlWindow):
             res = wx.MessageBox("Are you sure you want to close/hide this notebook page?",

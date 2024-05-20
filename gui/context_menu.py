@@ -21,9 +21,9 @@ class PopupMenu:
 
     def bind_DropDownToolbarItem(self, ref_id: wx.WindowIDRef) -> None:
         self.frame.Bind(aui.EVT_AUITOOLBAR_TOOL_DROPDOWN,
-                        self.OnDropDownToolbarItem, id=ref_id)
+                        self.on_drop_down_toolbar_item, id=ref_id)
 
-    def OnDropDownToolbarItem(self, event: wx.aui.AuiToolBarEvent) -> None:
+    def on_drop_down_toolbar_item(self, event: wx.aui.AuiToolBarEvent) -> None:
         if not event.IsDropDownClicked():
             return
 

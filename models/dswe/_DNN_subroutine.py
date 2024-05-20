@@ -6,7 +6,6 @@
 import math
 import torch
 import torch.nn as nn
-import matplotlib.pyplot as plt
 
 
 def get_default_device():
@@ -161,6 +160,7 @@ def train_model(n_epochs, model, train_dl, val_dl, batch_size, device, loss_fn, 
 
 def plot_losses(train_losses, val_losses):
     """Plot losses"""
+    import matplotlib.pyplot as plt
     n = len(train_losses)
     size = math.ceil(n)
     fig = plt.figure(figsize=(14, size * 5))

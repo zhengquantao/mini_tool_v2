@@ -6,7 +6,7 @@ import wx
 import wx.grid
 import wx.html2
 import wx.lib.agw.aui as aui
-from wx.lib.pubsub import pub as publisher
+from pubsub import pub as publisher
 
 # If MainFrame subclasses wx.Frame, uncomment the following lines
 # from typing import TYPE_CHECKING

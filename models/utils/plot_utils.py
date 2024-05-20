@@ -6,16 +6,17 @@ coding:utf-8
 '''
 
 import numpy as np
-# import matplotlib.pyplot as plt
 import pandas as pd
 import scipy.stats as stats
 from sklearn.neighbors import KernelDensity
-# import seaborn as sns
+
 
 np.random.seed(8)
 
 
 def fit_plot_line(x=[], y=[], ci=95):
+    import seaborn as sns
+    import matplotlib.pyplot as plt
     alpha = 1 - ci / 100
     n = len(x)
 
@@ -88,6 +89,8 @@ def plot_violinplot(data,label,title,num,index):
     -------
 
     """
+    import seaborn as sns
+    import matplotlib.pyplot as plt
     # data = data[data[label]<=30]
     data["real_time"] = pd.to_datetime(data["real_time"])
     data["月份"] = data["real_time"].dt.month
@@ -113,6 +116,8 @@ def plot_distplot(x, title_name,num):
     -------
 
     """
+    import seaborn as sns
+    import matplotlib.pyplot as plt
     sns.histplot(x, bins=40, alpha=0.5, label=title_name, color=sns.color_palette()[num], )
     # plt.title(title_name)
 
@@ -131,6 +136,8 @@ def plot_curve_line(x, y2, title_name, num):
     -------
 
     """
+    import seaborn as sns
+    import matplotlib.pyplot as plt
     sns.lineplot(x=sorted(x), y=sorted(y2), linewidth=2.0,
                  # ax=ax2,
                  label=title_name, color=sns.color_palette()[num],  ####5
@@ -155,6 +162,8 @@ def plot_power_distplot(x, y2, title_name, num):
     -------
 
     """
+    import seaborn as sns
+    import matplotlib.pyplot as plt
     fig, ax = plt.subplots()
 
     ax2 = ax.twinx()
@@ -189,6 +198,8 @@ def plot_power_distplot(x, y2, title_name, num):
 
 
 def plot_confidence_interval(x, y, y2, data, lower_bound, upper_bound, use_column, target_column, plot_name):
+    import seaborn as sns
+    import matplotlib.pyplot as plt
     # 绘制函数曲线和置信区间
     if plot_name is not None:
         plt.title(plot_name)
@@ -233,7 +244,8 @@ def Covmath_plot(matched, data1, data2, name, base_turbine):
     -------
 
     """
-
+    import seaborn as sns
+    import matplotlib.pyplot as plt
     fig = plt.figure(figsize=(14, 14))
     fig.subplots_adjust(hspace=0.3, wspace=0.3)
     ax = fig.add_subplot(3, 2, 1)

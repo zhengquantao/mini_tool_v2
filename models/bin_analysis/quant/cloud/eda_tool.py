@@ -42,26 +42,6 @@ from scipy.stats import pearsonr
 import warnings
 warnings.filterwarnings("ignore")
 
-#
-import seaborn as sns
-from windrose import WindroseAxes
-
-#
-import matplotlib as mpl
-
-from matplotlib import cm
-import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
-
-from mpl_toolkits.mplot3d import Axes3D
-
-#? 中文乱码问题
-font = fm.FontProperties(fname='微软雅黑.ttf')
-#? 字体设置：SimHei
-plt.rcParams["font.sans-serif"]=["Microsoft YaHei"]
-plt.rcParams["axes.unicode_minus"]=False
-mpl.rcParams['legend.fontsize'] = 10
-
 
 #
 from models.bin_analysis.quant.cloud.wind_base_tool import wind_speed_label, power_label, wind_direction_label, gen_speed_label
@@ -108,6 +88,26 @@ def plot_EWMA(data, time_label, ewma_label, turbine_code, dir_path):
     '''
     ewma_long = data[ewma_label].ewm(halflife='1 days', times=pd.DatetimeIndex(data[time_label])).mean()
     ewma_short = data[ewma_label].ewm(halflife='0.1 days', times=pd.DatetimeIndex(data[time_label])).mean()
+
+    #
+    import seaborn as sns
+    from windrose import WindroseAxes
+
+    #
+    import matplotlib as mpl
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+    mpl.rcParams['legend.fontsize'] = 10
     
     plt.subplots(figsize = (16,3))
     
@@ -150,7 +150,7 @@ def plot_windrose(data, turbine_code, dir_path):
     plot_save(dir_path, file_name)
 
 
-def set_dark_bg():
+def set_dark_bg(mpl=None, sns=None):
     """设置matplotlib绘图plot颜色风格
     """
 
@@ -158,7 +158,7 @@ def set_dark_bg():
     sns.set_palette('bright')
 
 
-def clear_plots():
+def clear_plots(plt=None):
     """清除matplotlib绘图plot对象
     """
 
@@ -177,6 +177,25 @@ def detect_missing_data(data, turbine_code, dir_path):
         turbine_code (str): 机组编码
         dir_path (str): 存储路径
     """
+    #
+    import seaborn as sns
+    from windrose import WindroseAxes
+
+    #
+    import matplotlib as mpl
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+    mpl.rcParams['legend.fontsize'] = 10
 
     # create a new DataFrame with the expected periods
     expected_periods = pd.date_range(start=data.index.min(), end=data.index.max(), freq='10T')
@@ -227,7 +246,27 @@ def most_productive_periods(data, turbine_code, dir_path, period='month'):
     """
 
     #? 针对时刻点【24小时或者12个月】基于发电功率均值【productive发电效率】进行排序
+
     #
+    import seaborn as sns
+    from windrose import WindroseAxes
+
+    #
+    import matplotlib as mpl
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+    mpl.rcParams['legend.fontsize'] = 10
+
     fig, ax1 = plt.subplots()
 
     file_name = ""
@@ -316,7 +355,25 @@ def corr_windspeed_power_winddirection(data, turbine_code, dir_path):
         turbine_code (str): 机组编码
         dir_path (str): 存储路径
     """
+    #
+    import seaborn as sns
+    from windrose import WindroseAxes
 
+    #
+    import matplotlib as mpl
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+    mpl.rcParams['legend.fontsize'] = 10
     # *** ---------- 1 Correlation coefficient analysis ----------
     # corr_windspeed_power = data[wind_speed_label].corr(data[power_label])
     corr_windspeed_power = pearsonr(data[wind_speed_label], data[power_label])
@@ -412,6 +469,25 @@ def avg_power_by_windspeed(data, turbine_code, dir_path):
         turbine_code (str): 机组编码
         dir_path (str): 存储路径
     """
+    #
+    import seaborn as sns
+    from windrose import WindroseAxes
+
+    #
+    import matplotlib as mpl
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+    mpl.rcParams['legend.fontsize'] = 10
 
     # Group data by wind speed and calculate average active power
     # uses the cut function to bin the wind speed values into 3 m/s intervals,

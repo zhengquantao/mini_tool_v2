@@ -2,7 +2,7 @@ import os
 
 from pyecharts.globals import CurrentConfig
 
-CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/static/"
+CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/"
 
 from pyecharts.charts import Page
 from common.common import random_name, create_dir

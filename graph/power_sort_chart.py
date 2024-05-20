@@ -6,7 +6,7 @@ from pyecharts.globals import CurrentConfig
 from common.common import random_name, create_dir
 from settings.settings import float_size
 
-CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/static/"
+CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/"
 
 from pyecharts import options as opts
 from pyecharts.charts import Bar

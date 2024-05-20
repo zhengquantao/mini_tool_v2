@@ -41,19 +41,19 @@ class ManagerOptions:
         mb_items: dict = self.mb_items
         menu_refid: wx.WindowIDRef
         for menu_refid in self.flags:
-            self.frame.Bind(wx.EVT_MENU, self.OnManagerFlag, menu_refid)
-        self.frame.Bind(wx.EVT_MENU, self.OnManagerFlag, id=mb_items["StandardGuides"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.OnManagerFlag, id=mb_items["NoHint"]["id"])
+            self.frame.Bind(wx.EVT_MENU, self.on_manager_flag, menu_refid)
+        self.frame.Bind(wx.EVT_MENU, self.on_manager_flag, id=mb_items["StandardGuides"]["id"])
+        self.frame.Bind(wx.EVT_MENU, self.on_manager_flag, id=mb_items["NoHint"]["id"])
         pass
 
-    def OnManagerFlag(self, event: wx.CommandEvent) -> None:
+    def on_manager_flag(self, event: wx.CommandEvent) -> None:
         """Updates GUI AGW style flag state based on menu events."""
-        agwFlags: int = self.mgr.GetAGWFlags()
+        agw_flag: int = self.mgr.GetAGWFlags()
         event_id: wx.WindowIDRef = event.GetId()
         menu_key: str = self.item_ids[event_id]
         # If menu item is a part of a RADIO group, clear all associated group flags.
         if menu_key in agw_masks:
-            agwFlags &= ~agw_masks[menu_key]
+            agw_flag &= ~agw_masks[menu_key]
         """
         Note that a click toggles the state of a CHECK flag and sets a RADIO flag
         on. The code above checks if the flag is a part of RADIO group and clears
@@ -71,9 +71,9 @@ class ManagerOptions:
         """
         flag_mask: int = self.flags.get(event_id, 0)
         if flag_mask:  # Toggle flag state.
-            old_flag_state: int = agwFlags & flag_mask
+            old_flag_state: int = agw_flag & flag_mask
             new_flag_state: int = ~old_flag_state & flag_mask
-            agwFlags = agwFlags & ~flag_mask | new_flag_state
+            agw_flag = agw_flag & ~flag_mask | new_flag_state
 
-        self.mgr.SetAGWFlags(agwFlags)
+        self.mgr.SetAGWFlags(agw_flag)
         self.mgr.DoUpdate()
