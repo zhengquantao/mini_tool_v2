@@ -1,11 +1,8 @@
 import wx
 import wx.aui
 import wx.lib.agw.aui as aui
-from typing import TypeAlias
 
 from gui.resources import sids, cids, pallet_from_color, pallets_from_color
-
-wxControl: TypeAlias = wx.BitmapButton | wx.SpinCtrl | wx.CheckBox
 
 
 # noinspection PyPep8Naming
@@ -99,7 +96,7 @@ class SettingsPanel:
             button = cids[ctrl_name]["ctrl"]
             button.SetBitmapLabel(pallets_from_color(colour))
 
-    def add_basic_box_sizer(self, ctrl: wxControl, ctrl_label: str) -> None:
+    def add_basic_box_sizer(self, ctrl, ctrl_label: str) -> None:
         sizer: wx.BoxSizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add((1, 1), 1, wx.EXPAND)
         sizer.Add(wx.StaticText(self.panel, -1, ctrl_label))

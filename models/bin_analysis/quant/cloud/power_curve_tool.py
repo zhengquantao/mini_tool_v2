@@ -37,24 +37,17 @@ import pandas as pd
 
 from scipy.optimize import curve_fit
 
-import seaborn as sns
-
-from matplotlib import cm
-import matplotlib.pyplot as plt
-
-from mpl_toolkits.mplot3d import Axes3D
-
 
 # *** ---------- openoa package ----------
 from scipy.optimize import differential_evolution
 
-from openoa.utils import power_curve
-from openoa.utils.plot import plot_windfarm
-
-from openoa.utils.filters import range_flag, bin_filter
-
-from openoa.utils.power_curve.parametric_forms import logistic5param
-from openoa.utils.power_curve.parametric_optimize import least_squares, fit_parametric_power_curve
+# from openoa.utils import power_curve
+# from openoa.utils.plot import plot_windfarm
+#
+# from openoa.utils.filters import range_flag, bin_filter
+#
+# from openoa.utils.power_curve.parametric_forms import logistic5param
+# from openoa.utils.power_curve.parametric_optimize import least_squares, fit_parametric_power_curve
 
 from typing import Callable
 
@@ -423,6 +416,9 @@ def scatter_two(data):
     :param data: 输入数据时序集
     :return:
     """
+    import seaborn as sns
+
+    import matplotlib.pyplot as plt
 
     plt.figure()
     #? hue="label": 标记异常数据与否
@@ -441,6 +437,9 @@ def plot_power_var(data, power_bin_data, turbine_code, file_path, hue="label"):
     :param file_path: 图像路径
     :return:
     """
+    import seaborn as sns
+
+    import matplotlib.pyplot as plt
 
     plt.figure()
     #? hue="label": 标记异常数据与否
@@ -489,6 +488,9 @@ def scatter_curve(data, curve, title, file_path, hue="label"):
     :param file_path: 图像文件完整路径
     :return:
     """
+    import seaborn as sns
+
+    import matplotlib.pyplot as plt
 
     plt.figure()
     #? hue="label": 标记异常数据与否
@@ -524,6 +526,9 @@ def scatter_curve_x(data, curve, title, file_path, hue="label"):
     :param file_path: 图像文件完整路径
     :return:
     """
+    import seaborn as sns
+
+    import matplotlib.pyplot as plt
 
     plt.figure()
     #? hue="label": 标记异常数据与否
@@ -558,6 +563,9 @@ def wind_speed_power_plot(data, turbine_code, file_path, air_density_tag=None):
 
     :return:
     """
+    import seaborn as sns
+
+    import matplotlib.pyplot as plt
 
     xlabel = "风速/(m·s$^{-1}$)"
     ylabel = "功率/(kW)"
@@ -596,6 +604,8 @@ def power_curve_pred_plot(wind_speed_list, actual_power_list, pred_power_list,
         file_path (str): 图像文件完整路径
         bin_curve_df (DataFrame): IEC BIN分仓拟合曲线
     """
+
+    import matplotlib.pyplot as plt
 
     plt.figure(figsize = (10, 6))
     plt.scatter(wind_speed_list, actual_power_list, color="blue", label="Ground truth", s=0.1)
@@ -742,7 +752,11 @@ def power_curve_vs_pred_3d_plot(dataset, vars_list, file_path, xlabel=None, ylab
     
     :return:
     """
-    
+
+    from matplotlib import cm
+    import matplotlib.pyplot as plt
+
+    from mpl_toolkits.mplot3d import Axes3D
     # *** ---------- 3D plot initializing ----------
     #? azim是绕z轴旋转的角度
     #? elev是绕y轴旋转的角度
@@ -800,6 +814,8 @@ def power_curve_analysis_openoa(dataset, turbine_code, file_path):
 
     :return:
     """
+
+    import matplotlib.pyplot as plt
 
     # Fit the power curves
     #? 返回的是函数

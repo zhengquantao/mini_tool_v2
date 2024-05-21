@@ -15,7 +15,7 @@ class SimpleHTTPRequestHandlerWithDirectory(http.server.SimpleHTTPRequestHandler
 def run_server(port=PORT):
     # 创建并启动服务器
     with socketserver.TCPServer(("", port), SimpleHTTPRequestHandlerWithDirectory) as httpd:
-        print("Serving at port", port)
+        # print("Serving at port", port)
         httpd.serve_forever()
 
 

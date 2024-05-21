@@ -38,7 +38,6 @@ import pandas as pd
 import warnings
 warnings.filterwarnings("ignore")
 
-import matplotlib.pyplot as plt
 
 
 # --------------------------------------------------------------------
@@ -115,6 +114,7 @@ def plot_save(dir_path, file_name):
         file_name (str): 文件名称
     """
 
+    import matplotlib.pyplot as plt
     full_path = os.path.join(dir_path, file_name)
     plt.savefig(full_path)
     plt.close()

@@ -9,5 +9,6 @@ scikit-learn==1.4.2
 torch==2.2.2
 chardet==5.2.0
 PyPubSub==4.0.3
-cefpython3==66.0
-
+cefpython3==66.1
+pyinstaller==6.6.0
+aui2==0.1.4

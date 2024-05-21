@@ -21,7 +21,7 @@ class MainFrame:
     # or set it to self.
     frame: wx.Frame
 
-    def __init__(self, parent: wx.Window | None, win_id: wx.WindowIDRef = wx.ID_ANY,
+    def __init__(self, parent: wx.Window, win_id: wx.WindowIDRef = wx.ID_ANY,
                  title: str = "", pos: wx.Point = wx.DefaultPosition, size: wx.Size = wx.DefaultSize,
                  style: int = wx.DEFAULT_FRAME_STYLE | wx.SUNKEN_BORDER) -> None:
         # If subclassing wx.Frame, uncomment the next line

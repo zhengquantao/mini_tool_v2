@@ -514,16 +514,19 @@ class HTMLCtrl(metaclass=Singleton):
     def start_position(self) -> wx.Point:
         return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
 
-    def create_ctrl(self, parent: wx.Frame = None, path: str = "") -> wx.html2.WebView:
+    def create_ctrl(self, parent: wx.Frame = None, path: str = "") -> wx.Panel:
         self.__class__.counter += 1
         if not parent:
             parent = self.frame
+        # wx.html2仅支持到echarts<=3.7.0的版本
         ctrl = wx.html2.WebView.New(parent, size=wx.Size(*float_size))
+        # print(ctrl.GetBackendVersionInfo().Name)
         ctrl.LoadURL(f"file:///{path}")
+        # ctrl = MainFrame(parent, f"file:///{path}")
         return ctrl
 
     def on_create(self, _event: wx.CommandEvent, caption="HTML Control", path=overview, width=700, height=400) -> None:
-        ctrl: wx.html2.WebView = self.create_ctrl(path=path)
+        ctrl = self.create_ctrl(path=path)
         self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).Float().Name("html_content").
                          FloatingPosition(self.start_position()).BestSize(wx.Size(width, height)).
                          CloseButton(True).MaximizeButton(True).MinimizeButton(True))

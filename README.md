@@ -39,7 +39,8 @@ python -m main
 
 - PyInstaller
   ```bash
-  pyinstaller --add-data="./static/datasets:pyecharts/datasets/" --add-data="./static/templates:pyecharts/render/templates/" --add-data="./static/js:static/js/" --additional-hooks-dir="./static/hooks" --icon="./static/icon.png" --name="mini-tool" --icon="./static/icon.png" -Fw main.py
+  # windows
+  pyinstaller mini-tool.spec
   ```
 
 

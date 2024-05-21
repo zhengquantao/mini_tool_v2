@@ -39,16 +39,6 @@ import pandas as pd
 # import statsmodels.api as sm
 from scipy.optimize import curve_fit
 
-import seaborn as sns
-
-import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
-#? 中文乱码问题
-font = fm.FontProperties(fname='微软雅黑.ttf')
-#? 字体设置：SimHei
-plt.rcParams["font.sans-serif"]=["Microsoft YaHei"]
-plt.rcParams["axes.unicode_minus"]=False
-
 #
 import warnings
 warnings.filterwarnings("ignore")
@@ -598,7 +588,15 @@ def linear_fit_scatter_plot(data, col_x, col_y, xlabel, ylabel, title, file_path
     
     :return:
     """
+    import seaborn as sns
 
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+    # ? 中文乱码问题
+    font = fm.FontProperties(fname='微软雅黑.ttf')
+    # ? 字体设置：SimHei
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+    plt.rcParams["axes.unicode_minus"] = False
     # *** ---------- 1 基于最小二乘的线性拟合 ----------
     # 线性拟合函数
     def linear_func(x,a,b):
