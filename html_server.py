@@ -11,6 +11,10 @@ class SimpleHTTPRequestHandlerWithDirectory(http.server.SimpleHTTPRequestHandler
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=DIRECTORY, **kwargs)
 
+    # 重写这个防止服务打包后起不来
+    def log_message(self, format, *args):
+        pass
+
 
 def run_server(port=PORT):
     # 创建并启动服务器
