@@ -12,3 +12,4 @@ PyPubSub==4.0.3
 cefpython3==66.1
 pyinstaller==6.6.0
 aui2==0.1.4
+sqlalchemy==2.0.25

@@ -35,7 +35,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
     colors = ["#EBDEF0", "#D7BDE2", "#C39BD3", "#AF7AC5", "#9B59B6", "#884EA0", "#76448A"]
     colors_size = len(colors)
     scatter = (
-        Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
+        Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px",))
         .set_global_opts(
             title_opts=opts.TitleOpts(title=title),
             legend_opts=opts.LegendOpts(pos_right="right", pos_top="50%", border_width=0),  # 将图例放在右边
@@ -51,7 +51,21 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
             toolbox_opts=opts.ToolboxOpts(
                 is_show=True,  # 是否显示该工具
                 orient="vertical",  # 工具栏 icon 的布局朝向
-                pos_left="right"  # 工具栏组件离容器左侧的距离
+                pos_left="right",  # 工具栏组件离容器左侧的距离
+                feature={
+                    "saveAsImage": opts.ToolBoxFeatureOpts(
+                        # 包括背景色等
+                        save_as_image=opts.ToolBoxFeatureSaveAsImageOpts(
+                            # 导出图片的背景色
+                            background_color="#ffffff"
+                        )
+                    ),
+                    "restore": opts.ToolBoxFeatureRestoreOpts(),
+                    "data_view": opts.ToolBoxFeatureDataViewOpts(),
+                    "data_zoom": opts.ToolBoxFeatureDataZoomOpts(),
+                    "magic_type": opts.ToolBoxFeatureMagicTypeOpts(),
+                    "brush": None,
+                }
             ),
             # # 区域缩放
             # datazoom_opts=opts.DataZoomOpts(

@@ -135,7 +135,6 @@ def curve_sigmod(x, y):
     return y2, popt
 
 
-
 def confidence_interval(data, confidence_interval=0.8, use_column=None, target_column=None, plot_name=None, logger=None,
                         num=5, plot_flag=0):
 

@@ -6,7 +6,7 @@
 import numpy as np
 import math
 import warnings
-from statsmodels.tsa import stattools as ts
+# from statsmodels.tsa import stattools as ts
 from scipy.optimize import minimize
 from ._GPMethods import *
 

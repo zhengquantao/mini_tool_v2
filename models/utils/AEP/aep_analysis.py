@@ -248,7 +248,7 @@ def aep_main(file_path, farm_name, real_time, wind_col, dirction_col, temperatur
     base_turbine = performance_ratio.sort_values(by="performance_ratio").iloc[int(len(performance_ratio) / 2), :][
         "turbine_code"]
 
-    return base_turbine + "." + type_flie, all_statistics
+    return base_turbine, all_statistics
 
 # if __name__ == "__main__":
 #     main()

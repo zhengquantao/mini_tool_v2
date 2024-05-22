@@ -9,14 +9,9 @@ from models.dswe import ComparePCurve, CovMatch
 from pandas import DataFrame, concat, read_csv
 import os
 from models.utils.data_cleansing import *
-import matplotlib.pyplot as plt
-from matplotlib import rcParams
 from models.utils.plot_utils import *
 
 from models.utils.data_cleansing import confidence_interval
-
-rcParams['font.family'] = 'Microsoft YaHei'
-import seaborn as sns
 
 
 def base_data_process(file_path, base_turbine, result_path, flag,
@@ -155,7 +150,7 @@ def cycle_compare(df1: DataFrame, filelist: list, file_path, data_result: DataFr
 
                 logger.info('end')
     data_result.index = data_result["turbine_code"].apply(lambda x: int(x[-3:]))
-    data_result.to_excel(os.path.join(result_path, farm_name + "_compareCurve.xlsx"))
+    # data_result.to_excel(os.path.join(result_path, farm_name + "_compareCurve.xlsx"))
     return data_result
 
 

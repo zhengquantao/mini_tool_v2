@@ -37,14 +37,14 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
                 orient="vertical",  # 工具栏 icon 的布局朝向
                 pos_left="right"  # 工具栏组件离容器左侧的距离
             ),
-            # 区域缩放
-            datazoom_opts=opts.DataZoomOpts(
-                is_show=True,  # 是否显示 组件。如果设置为 false，不会显示，但是数据过滤的功能还存在
-                type_="slider",  # 组件类型，可选 "slider", "inside"
-                orient="horizontal",  # 可选值为：'horizontal', 'vertical'
-                range_start=0,  # 显示区域开始
-                range_end=100,  # 显示区域结束
-            ),
+            # # 区域缩放
+            # datazoom_opts=opts.DataZoomOpts(
+            #     is_show=True,  # 是否显示 组件。如果设置为 false，不会显示，但是数据过滤的功能还存在
+            #     type_="slider",  # 组件类型，可选 "slider", "inside"
+            #     orient="horizontal",  # 可选值为：'horizontal', 'vertical'
+            #     range_start=0,  # 显示区域开始
+            #     range_end=100,  # 显示区域结束
+            # ),
             # # 提示
             # tooltip_opts=opts.TooltipOpts(
             #     is_show=True,  # 是否显示提示框组件，包括提示框浮层和 axisPointer。

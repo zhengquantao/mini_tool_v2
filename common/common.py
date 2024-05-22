@@ -135,6 +135,27 @@ def detect_encoding(filename):
         return encoding
 
 
+def find_file_path(start_file, file_name=None, level=5):
+    # 获取当前文件的路径
+    current_path = os.path.dirname(start_file)
+    i = 0
+    while i < level:
+        # 列出当前路径下的所有文件和文件夹
+        files_and_dirs = os.listdir(current_path)
+
+        # 检查是否存在名为'test.txt'的文件
+        if file_name in files_and_dirs:
+            return os.path.join(current_path, file_name)
+
+        # 如果已经到达了根目录，则停止查找
+        if os.path.dirname(current_path) == current_path:
+            return None
+
+        # 否则，继续在上一级目录中查找
+        current_path = os.path.dirname(current_path)
+        i += 1
+
+
 def is_second_data(data_df):
     """
     判断是否是秒级数据
@@ -157,13 +178,13 @@ def field_type_transform(data):
     data.loc[:, "air_density"] = data.loc[:, "air_density"].astype("float")
     data.loc[:, "pitch_angle"] = data.loc[:, "pitch_angle"].astype("float")
 
-    data.loc[:, "nacelle_temperature"] = data.loc[:, "nacelle_temperature"].apply(lambda x: str(x).replace(",", ""))
+    # data.loc[:, "nacelle_temperature"] = data.loc[:, "nacelle_temperature"].apply(lambda x: str(x).replace(",", ""))
     data.loc[:, "nacelle_temperature"] = data.loc[:, "nacelle_temperature"].astype("float")
 
-    data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: str(x).replace(",", ""))
+    # data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: str(x).replace(",", ""))
     data.loc[:, "power"] = data.loc[:, "power"].astype("float")
 
-    data.loc[:, "generator_speed"] = data.loc[:, "generator_speed"].apply(lambda x: str(x).replace(",", ""))
+    # data.loc[:, "generator_speed"] = data.loc[:, "generator_speed"].apply(lambda x: str(x).replace(",", ""))
     data.loc[:, "generator_speed"] = data.loc[:, "generator_speed"].astype("float")
 
     data["power"] = pd.to_numeric(data["power"])
@@ -171,6 +192,26 @@ def field_type_transform(data):
     data["nacelle_temperature"] = pd.to_numeric(data["nacelle_temperature"])
 
     return data
+
+
+def simple_data_cleaning(dataset, power_value):
+    """
+    简单数据清洗
+        功率与额定功率的比值< 0.7时，桨叶角度 <2;
+        功率比值0,7-0.8，桨叶角度< 4;
+        功率比值0.8-0.9，桨叶角度<6;
+    """
+    # *** ---------- 功率与额定功率的比值< 0.7时，桨叶角度 <2;----------
+    dataset = dataset.drop(dataset[(dataset["power"] < power_value * 0.7) & (dataset["pitch_angle"] < 2)].index)
+    # *** ---------- 功率比值0,7-0.8，桨叶角度< 4; ----------
+    dataset = dataset.drop(dataset[(dataset["power"] >= power_value * 0.7) & (dataset["power"] < power_value * 0.8) &
+                                   (dataset["pitch_angle"] < 4)].index)
+
+    # *** ---------- 功率比值0.8-0.9，桨叶角度<6; ----------
+    dataset = dataset.drop(dataset[(dataset["power"] >= power_value * 0.8) & (dataset["power"] < power_value * 0.9) &
+                                   (dataset["pitch_angle"] < 6)].index)
+
+    return dataset
 
 
 def read_csv_file(file):

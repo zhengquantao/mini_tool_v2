@@ -39,7 +39,7 @@ def build_page(plot_power_df, name):
                 name="功率(kw)",
                 min_=0,
                 position="right",
-                splitline_opts=opts.SplitLineOpts(is_show=True),
+                splitline_opts=opts.SplitLineOpts(is_show=False),
             ),
             xaxis=opts.AxisOpts(
                 is_show=False,

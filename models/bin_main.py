@@ -7,7 +7,7 @@ from scipy.optimize import minimize
 
 
 from common import loggers
-from common.common import read_csv_file
+from common.common import read_csv_file, detect_encoding, simple_data_cleaning
 from settings.settings import power_theoretical, geolocation
 
 # *** ---------- custom package ----------
@@ -41,15 +41,14 @@ def bin_main(file_path, project_path, img_mode=False, run_func_list=None):
     # 叶轮直径
     rotor_diameter = 104
 
-    # TODO:
     # 风轮半径：rotor radius
     rotor_radius = rotor_diameter / 2
 
     # 机组装机容量
-    power_cap = 2000
+    power_cap = None
 
     # 额定风速
-    rated_wind_speed = 10
+    rated_wind_speed = None
 
     # 切入风速
     cut_in_wind_speed = 3
@@ -79,6 +78,16 @@ def bin_main(file_path, project_path, img_mode=False, run_func_list=None):
         # SCADA数据文件夹
         # data = pd.read_csv(scada_file)  # , encoding="GB2312"
         data = read_csv_file(scada_file)
+        # 初始化额定功率
+        if not all([power_cap, rated_wind_speed]):
+
+            power_theoretical_path = os.path.join(project_path, power_theoretical)
+            power_theoretical_df = pd.read_csv(power_theoretical_path, encoding=detect_encoding(power_theoretical_path))
+            max_row = power_theoretical_df["WINDS_POWER"].idxmax()
+            row_data = power_theoretical_df.loc[max_row]
+            power_cap, rated_wind_speed = row_data["WINDS_POWER"], row_data["WINDS_SPEED"]
+
+        # data = simple_data_cleaning(data, power_cap)
         # 当前SCADA数据机组编号
         # turbine_code = data.loc[0, "风机"]
 

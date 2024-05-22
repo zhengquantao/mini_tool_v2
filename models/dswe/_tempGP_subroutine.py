@@ -8,7 +8,7 @@ import pandas as pd
 import math
 import random
 import warnings
-from statsmodels.tsa import stattools as ts
+# from statsmodels.tsa import stattools as ts
 from scipy.optimize import minimize
 from ._GPMethods import *
 

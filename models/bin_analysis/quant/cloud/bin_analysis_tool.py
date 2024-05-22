@@ -776,7 +776,7 @@ def gen_speed_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_spe
         ylabel = "功率/(kW)"
         title = "转速-功率分析" + " " + turbine_code
 
-        dataset = common_cut(dataset, wind_speed_label, wind_speed_bin_label, start=0, step=400)
+        dataset = common_cut(dataset, wind_speed_label, wind_speed_bin_label, start=0, step=3)
         dataset[wind_speed_bin_label] = dataset[wind_speed_bin_label].astype('float').fillna(0)
 
         full_path, file_name = build_html(dataset, gen_speed_label, power_label, xlabel, ylabel,

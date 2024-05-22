@@ -41,7 +41,7 @@ if WINDOWS:
 cef.Initialize(settings=settings)
 
 
-class MainFrame(wx.Panel):
+class CefFrame(wx.Panel):
 
     def __init__(self, parent, path=None):
         wx.Panel.__init__(self, parent=parent, id=wx.ID_ANY,  size=(WIDTH, HEIGHT))
