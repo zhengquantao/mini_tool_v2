@@ -1,32 +1,36 @@
 import wx
+import time
 
-class MyDialog(wx.Panel):
-    def __init__(self, parent, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
 
-        self.flag_timer_run = False
+class Mywin(wx.Frame):
+    def __init__(self, parent, title):
+        super(Mywin, self).__init__(parent, title=title, size=(300, 150))
 
-        # Event handler for timer event
-        def onTimer(event):
-            if not self.flag_timer_run:
-                # Perform actions here only once
-                print("Timer event triggered!")
+        panel = wx.Panel(self)
+        self.gauge = wx.Gauge(panel, range=100, size=(250, 25), pos=(10, 10))
+        start_button = wx.Button(panel, label="停止", pos=(100, 100))
+        start_button.Bind(wx.EVT_BUTTON, self.OnStart)
+        self.count = 0
 
-                # Stop the timer
-                self.timer.Stop()
+        self.timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
+        self.timer.Start(500)
+        self.Centre()
+        self.Show(True)
 
-                self.flag_timer_run = True
+    def OnStart(self, event):
+        self.timer.Stop()
 
-        # Create the timer
-        self.timer = wx.Timer(self, wx.ID_ANY)
-        self.timer.Bind(wx.EVT_TIMER, onTimer)
+    def OnTimer(self, event):
+        self.count = self.count + 1
+        self.gauge.SetValue(self.count)
+        self.Disable()
+        if self.count >= 100:
+            self.timer.Stop()
+            self.count = 0
+            self.Enable()
 
-    def startTimer(self):
-        if not self.flag_timer_run:
-            self.timer.Start(1000)  # Start timer with 1 second interval
 
-# Create the dialog
 app = wx.App()
-dialog = MyDialog(None)
-dialog.ShowModal()
+Mywin(None, "Gauge Example")
 app.MainLoop()
