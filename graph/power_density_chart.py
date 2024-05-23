@@ -66,7 +66,16 @@ def build_page(plot_power_df, name):
             toolbox_opts=opts.ToolboxOpts(
                 is_show=True,  # 是否显示该工具
                 orient="vertical",  # 工具栏 icon 的布局朝向
-                pos_left="right"  # 工具栏组件离容器左侧的距离
+                pos_left="95%",  # 工具栏组件离容器左侧的距离
+                feature={
+                    "saveAsImage": opts.ToolBoxFeatureSaveAsImageOpts(background_color="#ffffff", title="保存图片"),
+                    "restore": opts.ToolBoxFeatureRestoreOpts(),
+                    "dataView": opts.ToolBoxFeatureDataViewOpts(),
+                    "dataZoom": opts.ToolBoxFeatureDataZoomOpts(back_title="缩放还原"),
+                    "magicType": opts.ToolBoxFeatureMagicTypeOpts(line_title="切换折线", bar_title="切换柱状",
+                                                                  stack_title="切换堆叠", tiled_title="切换平铺", ),
+                    "brush": None,
+                }
             ),
             # # 区域缩放
             # datazoom_opts=opts.DataZoomOpts(

@@ -1,41 +1,32 @@
-import os
+import wx
 
-import chardet
-import pandas as pd
+class MyDialog(wx.Panel):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
 
-def detect_encoding(filename):
-    with open(filename, 'rb') as file:
-        rawdata = file.read(1000)
-        encoding = chardet.detect(rawdata)['encoding']
-        return encoding
+        self.flag_timer_run = False
 
-def transform_data(path):
-    for file in os.listdir(path):
-        if not file.endswith(".csv"):
-            continue
-        print(file)
-        data = pd.read_csv(os.path.join(path, file), encoding=detect_encoding(os.path.join(path, file)))
-        data.loc[:, "wind_speed"] = data.loc[:, "wind_speed"].astype("float")
-        data.loc[:, "wind_direction"] = data.loc[:, "wind_direction"].astype("float")
+        # Event handler for timer event
+        def onTimer(event):
+            if not self.flag_timer_run:
+                # Perform actions here only once
+                print("Timer event triggered!")
 
-        data.loc[:, "air_density"] = data.loc[:, "air_density"].astype("float")
-        data.loc[:, "pitch_angle"] = data.loc[:, "pitch_angle"].astype("float")
+                # Stop the timer
+                self.timer.Stop()
 
-        data.loc[:, "nacelle_temperature"] = data.loc[:, "nacelle_temperature"].apply(lambda x: str(x).replace(",", ""))
-        data.loc[:, "nacelle_temperature"] = data.loc[:, "nacelle_temperature"].astype("float")
+                self.flag_timer_run = True
 
-        data.loc[:, "power"] = data.loc[:, "power"].apply(lambda x: str(x).replace(",", ""))
-        data.loc[:, "power"] = data.loc[:, "power"].astype("float")
+        # Create the timer
+        self.timer = wx.Timer(self, wx.ID_ANY)
+        self.timer.Bind(wx.EVT_TIMER, onTimer)
 
-        data.loc[:, "generator_speed"] = data.loc[:, "generator_speed"].apply(lambda x: str(x).replace(",", ""))
-        data.loc[:, "generator_speed"] = data.loc[:, "generator_speed"].astype("float")
+    def startTimer(self):
+        if not self.flag_timer_run:
+            self.timer.Start(1000)  # Start timer with 1 second interval
 
-        data["power"] = pd.to_numeric(data["power"])
-        data["generator_speed"] = pd.to_numeric(data["generator_speed"])
-        data["nacelle_temperature"] = pd.to_numeric(data["nacelle_temperature"])
-
-        data.to_csv(os.path.join(path, file), encoding="utf-8")
-
-
-if __name__ == '__main__':
-    transform_data(r"C:\Users\EDY\Desktop\30057")
+# Create the dialog
+app = wx.App()
+dialog = MyDialog(None)
+dialog.ShowModal()
+app.MainLoop()

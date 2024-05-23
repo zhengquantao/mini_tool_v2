@@ -16,6 +16,7 @@ from aui2 import svg_to_bitmap
 
 from common.common import read_file, remove_file, rename_file, get_file_info, add_notebook_page, detect_encoding
 from common import loggers
+from gui.gauge_frame import GaugePanel
 from models.bin_main import bin_main
 from models.compare_curve import compare_curve, compare_curve_all
 from models.dswe_main import iec_main
@@ -190,10 +191,15 @@ class TreeCtrl(metaclass=Singleton):
         self.timer = wx.Timer(frame)
         frame.Bind(wx.EVT_TIMER, self.update_file_tree)
         self.timer.Start(3000)
+        self.gauge = None
 
     def add_page(self, msg):
         file_paths, file_name = msg
         add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
+        if not self.gauge:
+            return
+        self.gauge.destroy()
+        self.gauge = None
 
     def update_file_tree(self, event):
         project_path = opening_dict[os.getpid()]["path"]
@@ -399,6 +405,7 @@ class TreeCtrl(metaclass=Singleton):
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(geo_main, path, project_path))
         thread.start()
+        self.gauge = GaugePanel(self.frame, "能效等级总览")
 
     def on_model_2(self, event, path):
         """能效评估结果总览"""
@@ -408,6 +415,7 @@ class TreeCtrl(metaclass=Singleton):
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(iec_main, path, project_path))
         thread.start()
+        self.gauge = GaugePanel(self.frame, "能效评估结果总览")
 
     def on_model_3(self, event, path):
         """能效排行"""
@@ -416,6 +424,7 @@ class TreeCtrl(metaclass=Singleton):
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(iec_main, path, project_path, True))
         thread.start()
+        self.gauge = GaugePanel(self.frame, "能效排行")
 
     def on_model_4(self, event, path):
         """理论与实际功率对比分析"""
@@ -424,6 +433,7 @@ class TreeCtrl(metaclass=Singleton):
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(compare_curve, path, project_path))
         thread.start()
+        self.gauge = GaugePanel(self.frame, "理论与实际功率对比分析")
 
     def on_model_5(self, event, path):
         """风资源对比图"""
@@ -433,6 +443,7 @@ class TreeCtrl(metaclass=Singleton):
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(compare_curve, path, project_path, 1, True))
         thread.start()
+        self.gauge = GaugePanel(self.frame, "风资源对比图")
 
     def on_model_6(self, event, path):
         """风资源对比总览图"""
@@ -441,36 +452,42 @@ class TreeCtrl(metaclass=Singleton):
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(compare_curve_all, path, project_path, 1, True))
         thread.start()
+        self.gauge = GaugePanel(self.frame, "风资源对比总览图")
 
     def on_model_7(self, event, path):
         """风速-风能利用系数Cp曲线"""
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["cp_windspeed"]))
         thread.start()
+        self.gauge = GaugePanel(self.frame, "风速-风能利用系数Cp曲线")
 
     def on_model_8(self, event, path):
         """风速-桨距角曲线"""
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["pitch_windspeed"]))
         thread.start()
+        self.gauge = GaugePanel(self.frame, "风速-桨距角曲线")
 
     def on_model_9(self, event, path):
         """桨距角-功率曲线"""
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["power_pitch"]))
         thread.start()
+        self.gauge = GaugePanel(self.frame, "桨距角-功率曲线")
 
     def on_model_10(self, event, path):
         """风速-转速曲线"""
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["gen_wind_speed"]))
         thread.start()
+        self.gauge = GaugePanel(self.frame, "风速-转速曲线")
 
     def on_model_11(self, event, path):
         """转速-功率曲线"""
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["power_genspeed"]))
         thread.start()
+        self.gauge = GaugePanel(self.frame, "转速-功率曲线")
 
     def on_item_expanded(self, event):
         print("Item expanded!")

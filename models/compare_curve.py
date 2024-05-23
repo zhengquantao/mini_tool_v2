@@ -8,7 +8,7 @@ from graph import compare_curve_chart, power_density_chart, power_density_all_ch
 from models.utils.data_cleansing import curve_sigmod, sigmoid
 from models.utils.data_integration import curve_line_extra
 from models.utils.wind_base_tool import cut_speed
-from settings.settings import power_theoretical, geolocation
+from settings.settings import power_theoretical, ignore_files
 
 
 def compare_curve(file_path, project_path, num=1, select=False):
@@ -55,7 +55,7 @@ def compare_curve_all(file_path, project_path, num=1, select=False):
         if not file.endswith(".csv"):
             continue
 
-        if file in [power_theoretical, geolocation]:
+        if file in ignore_files:
             continue
 
         turbine_code = file.split(os.sep)[-1].split(".")[0]

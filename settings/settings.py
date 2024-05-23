@@ -61,3 +61,5 @@ cols_titles = {
     "power": "功率",
 
 }
+
+ignore_files = [power_theoretical, geolocation]

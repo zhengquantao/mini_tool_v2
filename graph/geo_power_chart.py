@@ -1,5 +1,6 @@
 import os
 
+from pyecharts.commons.utils import JsCode
 from pyecharts.globals import CurrentConfig
 
 from common.common import random_name, create_dir
@@ -17,21 +18,31 @@ def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
         Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
         .add_xaxis(plot_power_df["turbine_code"].to_list())
         .add_yaxis(
-            series_name=turbine,
-            y_axis=plot_power_df["Weighted diff"].to_list(),
+            series_name="",
+            y_axis=plot_power_df["Weighted_diff"].to_list(),
             symbol_size=20,
-            label_opts=opts.LabelOpts(is_show=False),
-            color="#f30e08"
+            label_opts=opts.LabelOpts(formatter=JsCode(
+                    "function (params) {return params.name + ' : ' + params.value[1];}"
+                )),
         )
         .set_global_opts(
-            title_opts=opts.TitleOpts(title="能效等级总览"),
+            title_opts=opts.TitleOpts(title=f"{turbine}能效等级总览"),
+            # xaxis_opts=opts.AxisOpts(is_show=False),
             toolbox_opts=opts.ToolboxOpts(
                 is_show=True,  # 是否显示该工具
                 orient="vertical",  # 工具栏 icon 的布局朝向
-                pos_left="right"  # 工具栏组件离容器左侧的距离
-            ),
-            visualmap_opts=opts.VisualMapOpts(max_=plot_power_df["Weighted diff"].max(),
-                                              min_=plot_power_df["Weighted diff"].min()),
+                pos_left="95%",  # 工具栏组件离容器左侧的距离
+                feature={
+                    "saveAsImage": opts.ToolBoxFeatureSaveAsImageOpts(background_color="#ffffff", title="保存图片"),
+                    "restore": opts.ToolBoxFeatureRestoreOpts(),
+                    "dataView": opts.ToolBoxFeatureDataViewOpts(),
+                    "dataZoom": opts.ToolBoxFeatureDataZoomOpts(back_title="缩放还原"),
+                    "magicType": opts.ToolBoxFeatureMagicTypeOpts(line_title="切换折线", bar_title="切换柱状",
+                                                                  stack_title="切换堆叠", tiled_title="切换平铺", ),
+                    "brush": None,
+                }),
+            visualmap_opts=opts.VisualMapOpts(max_=plot_power_df["Weighted_diff"].max(),
+                                              min_=plot_power_df["Weighted_diff"].min()),
             # # 区域缩放
             # datazoom_opts=opts.DataZoomOpts(
             #     is_show=True,  # 是否显示 组件。如果设置为 false，不会显示，但是数据过滤的功能还存在
@@ -56,9 +67,3 @@ def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
     html_path = scatter.render(os.path.join(factor_path, file_name))
 
     return html_path, file_name
-
-
-def add_scatter(scatter, data, name, color="green"):
-    obj = Scatter().add_xaxis([item[0] for item in data]).add_yaxis(name, [item[1] for item in data],
-                                                                    color=color, symbol_size=20,)
-    scatter.overlap(obj)

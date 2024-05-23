@@ -38,7 +38,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
         Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px",))
         .set_global_opts(
             title_opts=opts.TitleOpts(title=title),
-            legend_opts=opts.LegendOpts(pos_right="right", pos_top="50%", border_width=0),  # 将图例放在右边
+            legend_opts=opts.LegendOpts(pos_right="right", pos_top="45%", border_width=0),  # 将图例放在右边
             xaxis_opts=opts.AxisOpts(
                 name=xlabel,
                 # type_="value",
@@ -50,20 +50,15 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
                 splitline_opts=opts.SplitLineOpts(is_show=True)),
             toolbox_opts=opts.ToolboxOpts(
                 is_show=True,  # 是否显示该工具
-                orient="vertical",  # 工具栏 icon 的布局朝向
-                pos_left="right",  # 工具栏组件离容器左侧的距离
+                # orient="horizontal",  # 工具栏 icon 的布局朝向
+                pos_left="530",  # 工具栏组件离容器左侧的距离
                 feature={
-                    "saveAsImage": opts.ToolBoxFeatureOpts(
-                        # 包括背景色等
-                        save_as_image=opts.ToolBoxFeatureSaveAsImageOpts(
-                            # 导出图片的背景色
-                            background_color="#ffffff"
-                        )
-                    ),
+                    "saveAsImage": opts.ToolBoxFeatureSaveAsImageOpts(background_color="#ffffff", title="保存图片"),
                     "restore": opts.ToolBoxFeatureRestoreOpts(),
-                    "data_view": opts.ToolBoxFeatureDataViewOpts(),
-                    "data_zoom": opts.ToolBoxFeatureDataZoomOpts(),
-                    "magic_type": opts.ToolBoxFeatureMagicTypeOpts(),
+                    "dataView": opts.ToolBoxFeatureDataViewOpts(),
+                    "dataZoom": opts.ToolBoxFeatureDataZoomOpts(back_title="缩放还原"),
+                    "magicType": opts.ToolBoxFeatureMagicTypeOpts(line_title="切换折线", bar_title="切换柱状",
+                                                                  stack_title="切换堆叠", tiled_title="切换平铺", ),
                     "brush": None,
                 }
             ),
@@ -81,7 +76,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
             # https://github.com/reed-hong/pyecharts/blob/5f01f2fb43d1602a46d77234721450008cbff7eb/example/graphic_example.py#L10
             graphic_opts=[
                 opts.GraphicGroup(
-                    graphic_item=opts.GraphicItem(right="right", top="48%"),
+                    graphic_item=opts.GraphicItem(right="right", top="43%"),
                     children=[
                         opts.GraphicText(
                             graphic_textstyle_opts=opts.GraphicTextStyleOpts(

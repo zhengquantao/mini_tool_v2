@@ -4,7 +4,7 @@ coding:utf-8
 @Time:2023/8/25 11:38
 @Author: Natsu
 '''
-
+from common.common import read_csv_file
 from models.dswe import ComparePCurve, CovMatch
 from pandas import DataFrame, concat, read_csv
 import os
@@ -12,6 +12,7 @@ from models.utils.data_cleansing import *
 from models.utils.plot_utils import *
 
 from models.utils.data_cleansing import confidence_interval
+from settings.settings import ignore_files
 
 
 def base_data_process(file_path, base_turbine, result_path, flag,
@@ -35,15 +36,16 @@ def base_data_process(file_path, base_turbine, result_path, flag,
     ## 读取标杆风机数据
     filelist = os.listdir(file_path)
     data_result = DataFrame(
-        columns=["turbine_code", "Weighted diff", "Weighted stat diff", "Scaled diff", "Scaled stat diff",
-                 "Unweighted diff", "Unweighted stat diff"])
+        columns=["turbine_code", "Weighted_diff", "Weighted_stat_diff", "Scaled_diff", "Scaled_stat_diff",
+                 "Unweighted_diff", "Unweighted_stat_diff"])
     if ".csv" in base_turbine:
         name = base_turbine
     else:
         name = base_turbine + '.csv'
 
-    filelist.remove(name)
-    df1 = read_csv(os.path.join(file_path, name)).fillna(1)
+    # filelist.remove(name)
+    # df1 = read_csv(os.path.join(file_path, name)).fillna(1)
+    df1 = read_csv_file(os.path.join(file_path, name))
     df1 = df1.loc[:, feature_columns + target_columns].astype(float)
     # df1 = Data_cleansing(df1,feature_columns+target_columns, )
 
@@ -101,55 +103,60 @@ def cycle_compare(df1: DataFrame, filelist: list, file_path, data_result: DataFr
     logger.info("start")
 
     for i in filelist:
-        if ".csv" in i:
-            logger.info(i)
-            df2 = read_csv(os.path.join(file_path, i)).fillna(1)
-            df2 = df2.loc[:, feature_columns + target_columns].astype(float)
-            # df2 = Data_cleansing(df2, feature_columns+target_columns)
-            df2, clean_percentage = confidence_interval(df2, Confidence, Wind_col, target_columns, i, logger=logger)
+        if not i.endswith(".csv"):
+            continue
+        if i in ignore_files:
+            continue
 
-            ### 这里可以循环使用不同的特征计算结果
-            if flag_cycle == 1:
+        logger.info(i)
+        # df2 = read_csv(os.path.join(file_path, i)).fillna(1)
+        df2 = read_csv_file(os.path.join(file_path, i))
+        df2 = df2.loc[:, feature_columns + target_columns].astype(float)
+        # df2 = Data_cleansing(df2, feature_columns+target_columns)
+        df2, clean_percentage = confidence_interval(df2, Confidence, Wind_col, target_columns, i, logger=logger)
 
-                for k in range(df2.shape[1] - 1):
-                    colum.append(df2.columns[k])
-                    # num = min(df1.shape[0],df2.shape[0])
-                    logger.info(colum)
-                    # 合并标杆风机和对比风机的数据
-                    Xlist = [df1.iloc[:, colum].to_numpy(), df2.iloc[:, colum].to_numpy()]
-                    ylist = [df1.loc[:, target_columns].to_numpy(), df2.loc[:, target_columns].to_numpy()]
+        ### 这里可以循环使用不同的特征计算结果
+        if flag_cycle == 1:
 
-                    if len(colum) == 1:
-                        testcol = [0]
-                    else:
-                        testcol = [0, 1]
-
-                    ##数据比较
-                    cpc = ComparePCurve(Xlist, ylist, testcol)
-
-                    ## 保存结果
-                    data_result.loc[len(data_result)] = [i.split(".")[0], cpc.weighted_diff, cpc.weighted_stat_diff,
-                                                         cpc.scaled_diff, cpc.scaled_stat_diff, cpc.unweighted_diff,
-                                                         cpc.unweighted_stat_diff]
-
-                    logger.info('end')
-            else:
-
-                ##这里是使用规定的特征（默认）
-                Xlist = [df1.loc[:, feature_columns].to_numpy(), df2.loc[:, feature_columns].to_numpy()]
+            for k in range(df2.shape[1] - 1):
+                colum.append(df2.columns[k])
+                # num = min(df1.shape[0],df2.shape[0])
+                logger.info(colum)
+                # 合并标杆风机和对比风机的数据
+                Xlist = [df1.iloc[:, colum].to_numpy(), df2.iloc[:, colum].to_numpy()]
                 ylist = [df1.loc[:, target_columns].to_numpy(), df2.loc[:, target_columns].to_numpy()]
+
                 if len(colum) == 1:
                     testcol = [0]
                 else:
                     testcol = [0, 1]
 
+                ##数据比较
                 cpc = ComparePCurve(Xlist, ylist, testcol)
+
+                ## 保存结果
                 data_result.loc[len(data_result)] = [i.split(".")[0], cpc.weighted_diff, cpc.weighted_stat_diff,
                                                      cpc.scaled_diff, cpc.scaled_stat_diff, cpc.unweighted_diff,
                                                      cpc.unweighted_stat_diff]
 
                 logger.info('end')
-    data_result.index = data_result["turbine_code"].apply(lambda x: int(x[-3:]))
+        else:
+
+            ##这里是使用规定的特征（默认）
+            Xlist = [df1.loc[:, feature_columns].to_numpy(), df2.loc[:, feature_columns].to_numpy()]
+            ylist = [df1.loc[:, target_columns].to_numpy(), df2.loc[:, target_columns].to_numpy()]
+            if len(colum) == 1:
+                testcol = [0]
+            else:
+                testcol = [0, 1]
+
+            cpc = ComparePCurve(Xlist, ylist, testcol)
+            data_result.loc[len(data_result)] = [i.split(".")[0], cpc.weighted_diff, cpc.weighted_stat_diff,
+                                                 cpc.scaled_diff, cpc.scaled_stat_diff, cpc.unweighted_diff,
+                                                 cpc.unweighted_stat_diff]
+
+            logger.info('end')
+    # data_result.index = data_result["turbine_code"].apply(lambda x: int(x[-3:]))
     # data_result.to_excel(os.path.join(result_path, farm_name + "_compareCurve.xlsx"))
     return data_result
 
