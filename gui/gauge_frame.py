@@ -1,48 +1,39 @@
-import time
-
 import wx
 
 
-class GaugePanel:
+class GaugePanel(wx.GenericProgressDialog):
     def __init__(self, parent, title):
-        self.panel_dialog = wx.ProgressDialog(title,
-                                              "准备中",
-                                              maximum=100,
-                                              parent=parent,
-                                              style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE)
-
-        self.count = 0
-        self.timer = wx.Timer(self.panel_dialog)
-        self.panel_dialog.Bind(wx.EVT_TIMER, self.update_progress)
-        self.timer.StartOnce()
+        wx.GenericProgressDialog.__init__(self, title, "准备中", maximum=100, parent=parent,
+                                          style=wx.PD_APP_MODAL | wx.PD_ELAPSED_TIME)
+        self.timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self.update_progress)
+        self.timer.Start(600)
 
     def update_progress(self, event):
         try:
-            while self.count < 50:
-                self.count += 0.5
-                time.sleep(1)
-                self.panel_dialog.Update(self.count, "加载中")
-            while self.count >= 50 and self.count < 100:
-                time.sleep(1)
-                self.count += 0.02
-                self.panel_dialog.Update(self.count, "加载中")
+            value = self.GetValue()
+            if value < 50:
+                value += 1
+                self.Update(value, "加载中")
 
-            if self.count >= 100:
-                self.timer.Stop()
-                self.panel_dialog.Destroy()
-                # self.panel_dialog.Close(True)
+            elif value >= 50 and value < 100:
+                value += 0.02
+                self.Update(value, "加载中")
+
+            else:
+                wx.CallAfter(self.close)
+
         except:
             pass
 
     def destroy(self):
         try:
-            self.panel_dialog.Update(98, "加载中")
-            time.sleep(1.5)
-            self.panel_dialog.Update(100, "加载完成")
-            self.count = 100
-            self.timer.Stop()
-            self.panel_dialog.Destroy()
-            # self.panel_dialog.Close(True)
+            self.Update(100, "加载完成")
+            wx.CallAfter(self.close)
+
         except Exception as e:
             print(e)
 
+    def close(self):
+        self.timer.Stop()
+        wx.CallAfter(self.Destroy)

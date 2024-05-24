@@ -1,32 +1,30 @@
-import wx
+from pyecharts import options as opts
+from pyecharts.charts import Scatter
+from pyecharts.commons.utils import JsCode
+from pyecharts.faker import Faker
 
-class MyDialog(wx.Panel):
-    def __init__(self, parent, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-
-        self.flag_timer_run = False
-
-        # Event handler for timer event
-        def onTimer(event):
-            if not self.flag_timer_run:
-                # Perform actions here only once
-                print("Timer event triggered!")
-
-                # Stop the timer
-                self.timer.Stop()
-
-                self.flag_timer_run = True
-
-        # Create the timer
-        self.timer = wx.Timer(self, wx.ID_ANY)
-        self.timer.Bind(wx.EVT_TIMER, onTimer)
-
-    def startTimer(self):
-        if not self.flag_timer_run:
-            self.timer.Start(1000)  # Start timer with 1 second interval
-
-# Create the dialog
-app = wx.App()
-dialog = MyDialog(None)
-dialog.ShowModal()
-app.MainLoop()
+c = (
+    Scatter()
+    .add_xaxis(Faker.choose())
+    .add_yaxis(
+        "商家A",
+        Faker.values(),
+        label_opts=opts.LabelOpts(
+            formatter=JsCode(
+                "function(params){return params.value[1] +' : '+ params.value[2];}"
+            )
+        ),
+    )
+    .set_global_opts(
+        title_opts=opts.TitleOpts(title="Scatter-多维度数据"),
+        tooltip_opts=opts.TooltipOpts(
+            formatter=JsCode(
+                "function (params) {return params.name + ' : ' + params.value[2];}"
+            )
+        ),
+        visualmap_opts=opts.VisualMapOpts(
+            type_="color", max_=150, min_=20, dimension=1
+        ),
+    )
+    .render("scatter_multi_dimension.html")
+)

@@ -169,7 +169,7 @@ class ToolBarManager:
 
         self.toolbar_ids[project_tb_id] = "toolbar_left"
         self.toolbars["toolbar_left"] = {"id": project_tb_id, "item": tb5}
-        tb5.AddSimpleTool(project_tb_id, "Package", svg_to_bitmap(cs.tree_nav_svg, size=(13, 13)),)
+        tb5.AddSimpleTool(project_tb_id, "Project", svg_to_bitmap(cs.tree_nav_svg, size=(13, 13)),)
         # tb5.AddSeparator()
         # tb5.AddSimpleTool(wx.NewIdRef(), "Test", wx.ArtProvider.GetBitmap(wx.ART_QUESTION))
         # tb5.AddSimpleTool(wx.NewIdRef(), "Test", wx.ArtProvider.GetBitmap(wx.ART_INFORMATION))
