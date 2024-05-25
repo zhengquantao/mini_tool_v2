@@ -14,7 +14,7 @@ from pyecharts.charts import Bar, Line
 
 def build_html(factor_path, turbine, plot_power_df, name, *args, **kwargs):
     page = build_page(plot_power_df, name)
-    file_name = random_name(turbine, "风资源对比图")
+    file_name = random_name(turbine, "风资源对比")
     factor_path = create_dir(factor_path)
     html_path = page.render(os.path.join(factor_path, file_name))
 

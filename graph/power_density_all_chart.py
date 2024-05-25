@@ -17,7 +17,7 @@ def build_html(factor_path, data_list, factor_name, *args, **kwargs):
         child_page_list.append(child_page)
     page.add(*child_page_list)
 
-    file_name = random_name(factor_name, "风资源对比总览图")
+    file_name = random_name(factor_name, "风资源对比总览")
     factor_path = create_dir(factor_path)
     html_path = page.render(os.path.join(factor_path, file_name))
 

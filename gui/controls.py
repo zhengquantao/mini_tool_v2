@@ -1,3 +1,4 @@
+import datetime
 import os
 from threading import Thread
 
@@ -22,7 +23,7 @@ from models.compare_curve import compare_curve, compare_curve_all
 from models.dswe_main import iec_main
 from models.geo_main import geo_main
 from settings.resources import overview
-from settings.settings import opening_dict, float_size, display_grid_count, model2_svg, model1_svg
+from settings.settings import opening_dict, float_size, display_grid_count, model2_svg, model1_svg, result_dir
 
 
 class Singleton(type):
@@ -218,11 +219,15 @@ class TreeCtrl(metaclass=Singleton):
     def start_position(self) -> wx.Point:
         return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
 
-    def create_ctrl(self, path="./") -> wx.TreeCtrl:
+    def create_ctrl(self, path="./", init_project=False) -> wx.TreeCtrl:
         self.__class__.counter += 1
         self.tree: wx.TreeCtrl = wx.TreeCtrl(self.frame, wx.ID_ANY, wx.Point(0, 0), wx.Size(160, 250),
                                              wx.TR_DEFAULT_STYLE | wx.TR_TWIST_BUTTONS | wx.TR_NO_LINES | wx.NO_BORDER)
         self.tree.SetDoubleBuffered(True)
+
+        if init_project:
+            return self.tree
+
         imglist: wx.ImageList = wx.ImageList(16, 16, True, 2)
         icons = [wx.ART_FOLDER, wx.ART_FILE_OPEN, wx.ART_NORMAL_FILE]
         for icon in icons:
@@ -256,6 +261,9 @@ class TreeCtrl(metaclass=Singleton):
 
     def build_tree(self, dir_path, parent_item):
         for item in os.listdir(dir_path):
+            if item.endswith(".mini"):
+                continue
+
             item_path = os.path.join(dir_path, item)
             if os.path.isdir(item_path):
                 new_item = self.tree.AppendItem(parent_item, item)
@@ -274,12 +282,15 @@ class TreeCtrl(metaclass=Singleton):
 
         menu = wx.Menu()
         open_item = menu.Append(wx.ID_ANY, '打开')
-        dir_item = menu.Append(wx.ID_ANY, '新建文件夹')
+
         delete_item = menu.Append(wx.ID_ANY, '删除')
         rename_item = menu.Append(wx.ID_ANY, '重命名')
+        # 文件夹才能创建文件夹
+        if os.path.isdir(path):
+            dir_item = menu.Append(wx.ID_ANY, '新建文件夹')
+            self.tree.Bind(wx.EVT_MENU, lambda event: self.on_new_dir(event, path), dir_item)
 
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_open(event, path), open_item)
-        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_new_dir(event, path), dir_item)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_delete(event, path), delete_item)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_rename(event, path), rename_item)
 
@@ -321,11 +332,11 @@ class TreeCtrl(metaclass=Singleton):
 
         sub_model_menu2 = wx.Menu()
         # 控制曲线分析（Bin分仓）
-        model_7 = sub_model_menu2.Append(wx.ID_ANY, '风速-风能利用系数Cp曲线')
-        model_8 = sub_model_menu2.Append(wx.ID_ANY, '风速-桨距角曲线')
-        model_9 = sub_model_menu2.Append(wx.ID_ANY, '桨距角-功率曲线')
-        model_10 = sub_model_menu2.Append(wx.ID_ANY, '风速-转速曲线')
-        model_11 = sub_model_menu2.Append(wx.ID_ANY, '转速-功率曲线')
+        model_7 = sub_model_menu2.Append(wx.ID_ANY, '风速-风能利用系数分析')
+        model_8 = sub_model_menu2.Append(wx.ID_ANY, '风速-桨距角分析')
+        model_9 = sub_model_menu2.Append(wx.ID_ANY, '桨距角-功率分析')
+        model_10 = sub_model_menu2.Append(wx.ID_ANY, '风速-转速分析')
+        model_11 = sub_model_menu2.Append(wx.ID_ANY, '转速-功率分析')
 
         menu.AppendSubMenu(sub_model_menu2, '控制曲线分析').SetBitmap(svg_to_bitmap(model2_svg, size=(13, 13)))
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_7(event, path), model_7)
@@ -402,6 +413,10 @@ class TreeCtrl(metaclass=Singleton):
     def on_model_1(self, event, path):
         """能效等级总览"""
         loggers.logger.info(f"能效等级总览 clicked, path: {path}")
+
+        if self.open_history_html_file(path, "能效等级总览"):
+            return
+
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(geo_main, path, project_path))
         thread.start()
@@ -411,6 +426,9 @@ class TreeCtrl(metaclass=Singleton):
         """能效评估结果总览"""
         loggers.logger.info(f"能效评估结果总览 clicked, path: {path}")
 
+        if self.open_history_html_file(path, "能效评估结果总览"):
+            return
+
         # 能效评估结果总览
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(iec_main, path, project_path))
@@ -418,16 +436,24 @@ class TreeCtrl(metaclass=Singleton):
         self.gauge = GaugePanel(self.frame, "能效评估结果总览")
 
     def on_model_3(self, event, path):
-        """能效排行"""
-        loggers.logger.info(f"能效排行 clicked, path: {path}")
+        """能效排行总览"""
+        loggers.logger.info(f"能效排行总览 clicked, path: {path}")
+
+        if self.open_history_html_file(path, "能效排行总览"):
+            return
+
         # 能效评估结果总览
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(iec_main, path, project_path, True))
         thread.start()
-        self.gauge = GaugePanel(self.frame, "能效排行")
+        self.gauge = GaugePanel(self.frame, "能效排行总览")
 
     def on_model_4(self, event, path):
         """理论与实际功率对比分析"""
+        loggers.logger.info(f"理论与实际功率对比分析 clicked, path: {path}")
+
+        if self.open_history_html_file(path, "理论与实际功率对比分析"):
+            return
 
         # 理论和实际功率曲线对比
         project_path = opening_dict[os.getpid()]["path"]
@@ -436,58 +462,115 @@ class TreeCtrl(metaclass=Singleton):
         self.gauge = GaugePanel(self.frame, "理论与实际功率对比分析")
 
     def on_model_5(self, event, path):
-        """风资源对比图"""
+        """风资源对比"""
         loggers.logger.info(f"风资源对比图 clicked, path: {path}")
+
+        if self.open_history_html_file(path, "风资源对比"):
+            return
 
         # 理论和实际功率曲线对比
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(compare_curve, path, project_path, 1, True))
         thread.start()
-        self.gauge = GaugePanel(self.frame, "风资源对比图")
+        self.gauge = GaugePanel(self.frame, "风资源对比")
 
     def on_model_6(self, event, path):
-        """风资源对比总览图"""
-        loggers.logger.info(f"风资源对比总览图 clicked, path: {path}")
+        """风资源对比总览"""
+        loggers.logger.info(f"风资源对比总览 clicked, path: {path}")
+
+        if self.open_history_html_file(path, "风资源对比总览"):
+            return
 
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(compare_curve_all, path, project_path, 1, True))
         thread.start()
-        self.gauge = GaugePanel(self.frame, "风资源对比总览图")
+        self.gauge = GaugePanel(self.frame, "风资源对比总览")
 
     def on_model_7(self, event, path):
-        """风速-风能利用系数Cp曲线"""
+        """风速-风能利用系数分析"""
+        loggers.logger.info(f"风速-风能利用系数分析 clicked, path: {path}")
+        if self.open_history_html_file(path, "风速-风能利用系数分析"):
+            return
+
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["cp_windspeed"]))
         thread.start()
-        self.gauge = GaugePanel(self.frame, "风速-风能利用系数Cp曲线")
+        self.gauge = GaugePanel(self.frame, "风速-风能利用系数分析")
 
     def on_model_8(self, event, path):
-        """风速-桨距角曲线"""
+        """风速-桨距角分析"""
+        loggers.logger.info(f"风速-桨距角分析 clicked, path: {path}")
+        if self.open_history_html_file(path, "风速-桨距角分析"):
+            return
+
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["pitch_windspeed"]))
         thread.start()
-        self.gauge = GaugePanel(self.frame, "风速-桨距角曲线")
+        self.gauge = GaugePanel(self.frame, "风速-桨距角分析")
 
     def on_model_9(self, event, path):
-        """桨距角-功率曲线"""
+        """桨距角-功率分析"""
+        loggers.logger.info(f"桨距角-功率分析 clicked, path: {path}")
+        if self.open_history_html_file(path, "桨距角-功率分析"):
+            return
+
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["power_pitch"]))
         thread.start()
-        self.gauge = GaugePanel(self.frame, "桨距角-功率曲线")
+        self.gauge = GaugePanel(self.frame, "桨距角-功率分析")
 
     def on_model_10(self, event, path):
-        """风速-转速曲线"""
+        """风速-转速分析"""
+        loggers.logger.info(f"风速-转速分析 clicked, path: {path}")
+        if self.open_history_html_file(path, "风速-转速分析"):
+            return
+
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["gen_wind_speed"]))
         thread.start()
-        self.gauge = GaugePanel(self.frame, "风速-转速曲线")
+        self.gauge = GaugePanel(self.frame, "风速-转速分析")
 
     def on_model_11(self, event, path):
-        """转速-功率曲线"""
+        """转速-功率分析"""
+        loggers.logger.info(f"转速-功率分析 clicked, path: {path}")
+        if self.open_history_html_file(path, "转速-功率分析"):
+            return
+
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["power_genspeed"]))
         thread.start()
-        self.gauge = GaugePanel(self.frame, "转速-功率曲线")
+        self.gauge = GaugePanel(self.frame, "转速-功率分析")
+
+    def open_history_html_file(self, path, operation_type) -> bool:
+        """
+        当前打开的文件已经存在结果，且文件最后编辑时间<结果创建时间，则直接打开结果
+        """
+        last_updated_time = os.path.getmtime(path)
+        project_path = opening_dict[os.getpid()]["path"]
+        if os.path.isfile(path):
+            name = path.split(os.sep)[-1][:-4]
+        else:
+            name = path.split(os.sep)[-1]
+
+        result_dir_path = os.path.join(project_path, result_dir)
+        results_path_lists = os.listdir(result_dir_path)
+        file_name = ""
+        for result_path in results_path_lists:
+            # result_path: 30057008-风速-桨距角分析 30057008-20240524103450.html
+            if not result_path.startswith(f"{name}-{operation_type}") or not result_path.endswith(".html"):
+                continue
+            file_time = result_path.split("-")[-1].split(".")[0]
+            create_time = datetime.datetime.strptime(file_time, "%Y%m%d%H%M%S").timestamp()
+            if create_time < last_updated_time:
+                continue
+            file_name = result_path
+            break
+
+        if not file_name:
+            return False
+
+        self.on_open(wx.Event, os.path.join(result_dir_path, file_name))
+        return True
 
     def on_item_expanded(self, event):
         print("Item expanded!")

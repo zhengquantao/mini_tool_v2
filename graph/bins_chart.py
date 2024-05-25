@@ -43,6 +43,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
                 name=xlabel,
                 # type_="value",
                 splitline_opts=opts.SplitLineOpts(is_show=True),
+                min_=-5 if title.startswith("桨距角-功率分析") else 0,
             ),
             yaxis_opts=opts.AxisOpts(
                 name=ylabel,
@@ -70,7 +71,6 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
             #     range_start=0,  # 显示区域开始
             #     range_end=100,  # 显示区域结束
             # ),
-
 
             # 自定义文本框
             # https://github.com/reed-hong/pyecharts/blob/5f01f2fb43d1602a46d77234721450008cbff7eb/example/graphic_example.py#L10

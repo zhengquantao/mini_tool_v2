@@ -104,11 +104,12 @@ class FileManager:
         self.filehistory.Save(self.config)
         self.config.Flush()
 
-    def open_project(self, path: str):
+    def open_project(self, path: str, init_project=False):
         pid = os.getpid()
         print(f"当前进程号：{pid}")
         opening_dict[pid] = {"path": path, "records": {}}
-        self.mgr.AddPane(self.tree_ctrl.create_ctrl(path), aui.AuiPaneInfo().Name("ProjectTree").Caption(path).
+        self.mgr.AddPane(self.tree_ctrl.create_ctrl(path, init_project=init_project),
+                         aui.AuiPaneInfo().Name("ProjectTree").Caption(path).
                          CloseButton(False).MaximizeButton(False).
                          MinimizeButton(True).Movable(False).Floatable(False).
                          Icon(svg_to_bitmap(cs.tree_svg, size=(20, 20))))
@@ -135,7 +136,7 @@ class FileManager:
                 return
             except Exception as e:
                 pass
-        self.open_project(os.getcwd())
+        self.open_project(os.getcwd(), init_project=True)
 
     def get_recent_project_path(self) -> str:
 

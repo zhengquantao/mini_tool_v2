@@ -21,9 +21,10 @@ def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
             series_name="",
             y_axis=plot_power_df["Weighted_diff"].to_list(),
             symbol_size=20,
-            label_opts=opts.LabelOpts(formatter=JsCode(
-                    "function (params) {return params.name + ' : ' + params.value[1];}"
-                )),
+            label_opts=opts.LabelOpts(is_show=True),
+            # label_opts=opts.LabelOpts(formatter=JsCode(
+            #         "function (params) {return params.name + ' : ' + params.value[1];}"
+            #     )),
         )
         .set_global_opts(
             title_opts=opts.TitleOpts(title=f"{turbine}能效等级总览"),
@@ -58,8 +59,8 @@ def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
                 # 'item': 数据项图形触发，主要在散点图，饼图等无类目轴的图表中使用。
                 # 'axis': 坐标轴触发，主要在柱状图，折线图等会使用类目轴的图表中使用。
                 # 'none': 什么都不触发
-                trigger="axis",
-                axis_pointer_type="cross",
+                trigger="item",
+                # axis_pointer_type="cross",
             )))
 
     file_name = random_name(turbine, "能效等级总览")
