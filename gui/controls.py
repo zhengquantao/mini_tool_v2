@@ -6,6 +6,7 @@ import pandas as pd
 import wx
 import wx.grid
 import wx.html2
+import wx.lib.agw.customtreectrl as CT
 import wx.lib.agw.aui as aui
 from pubsub import pub as publisher
 
@@ -189,9 +190,7 @@ class TreeCtrl(metaclass=Singleton):
         frame.Bind(wx.EVT_MENU, self.on_create, id=self.create_menu_id)
         publisher.subscribe(self.add_page, "add_page")
 
-        self.timer = wx.Timer(frame)
-        frame.Bind(wx.EVT_TIMER, self.update_file_tree)
-        self.timer.Start(3000)
+        self.result_dir = None
         self.gauge = None
 
     def add_page(self, msg):
@@ -202,7 +201,13 @@ class TreeCtrl(metaclass=Singleton):
         self.gauge.destroy()
         self.gauge = None
 
-    def update_file_tree(self, event):
+        if not self.result_dir:
+            self.result_dir = self.tree.AppendItem(self.root, result_dir, image=0, data=os.path.dirname(file_paths))
+            self.tree.EnsureVisible(self.result_dir)
+        new_item = self.tree.AppendItem(self.result_dir, file_name, image=2, data=file_paths)
+        self.tree.EnsureVisible(new_item)
+
+    def update_file_tree(self, event, path=None):
         project_path = opening_dict[os.getpid()]["path"]
         new_file_list = get_file_info(project_path)
         if new_file_list == self.now_file_list:
@@ -221,8 +226,10 @@ class TreeCtrl(metaclass=Singleton):
 
     def create_ctrl(self, path="./", init_project=False) -> wx.TreeCtrl:
         self.__class__.counter += 1
-        self.tree: wx.TreeCtrl = wx.TreeCtrl(self.frame, wx.ID_ANY, wx.Point(0, 0), wx.Size(160, 250),
-                                             wx.TR_DEFAULT_STYLE | wx.TR_TWIST_BUTTONS | wx.TR_NO_LINES | wx.NO_BORDER)
+        # self.tree: wx.TreeCtrl = wx.TreeCtrl(self.frame, wx.ID_ANY, wx.Point(0, 0), wx.Size(160, 250),
+        #                                      wx.TR_DEFAULT_STYLE | wx.TR_TWIST_BUTTONS | wx.TR_NO_LINES | wx.NO_BORDER)
+        self.tree = CT.CustomTreeCtrl(self.frame, wx.ID_ANY, wx.Point(-1, -1), wx.Size(160, 500),
+                                      agwStyle=wx.TR_HAS_BUTTONS | wx.TR_TWIST_BUTTONS | wx.TR_NO_LINES | wx.NO_BORDER)
         self.tree.SetDoubleBuffered(True)
 
         if init_project:
@@ -242,7 +249,7 @@ class TreeCtrl(metaclass=Singleton):
         self.tree.SortChildren(self.root)
         self.tree.Expand(self.root)
 
-        self.tree.Bind(wx.EVT_TREE_ITEM_RIGHT_CLICK, self.on_right_click)
+        self.tree.Bind(wx.EVT_TREE_ITEM_RIGHT_CLICK, self.on_right_click_up)
         self.tree.Bind(wx.EVT_TREE_ITEM_EXPANDED, self.on_item_expanded)
         self.tree.Bind(wx.EVT_TREE_ITEM_COLLAPSED, self.on_item_collapsed)
         self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.on_sel_changed)
@@ -275,8 +282,19 @@ class TreeCtrl(metaclass=Singleton):
                 self.tree.SetItemImage(new_item, 2)
                 self.tree.SetItemData(new_item, item_path)
 
-    def on_right_click(self, event):
+    def on_right_click_up(self, event):
         item = event.GetItem()
+
+        if not item:
+            event.Skip()
+            return
+
+        if not self.tree.IsItemEnabled(item):
+            event.Skip()
+            return
+
+        self.current = item
+
         path = self.tree.GetItemData(item)
         print(f"right clicked, path: {path}")
 
@@ -288,7 +306,9 @@ class TreeCtrl(metaclass=Singleton):
         # 文件夹才能创建文件夹
         if os.path.isdir(path):
             dir_item = menu.Append(wx.ID_ANY, '新建文件夹')
+            flush_item = menu.Append(wx.ID_ANY, '刷新')
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_new_dir(event, path), dir_item)
+            self.tree.Bind(wx.EVT_MENU, lambda event: self.update_file_tree(event, path), flush_item)
 
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_open(event, path), open_item)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_delete(event, path), delete_item)
@@ -348,9 +368,14 @@ class TreeCtrl(metaclass=Singleton):
     def on_delete(self, event, path):
         loggers.logger.info(f"Delete clicked, file path: {path}")
         dlg = wx.MessageDialog(self.frame, f"你确认要删除文件 {path.split(os.sep)[-1]} 吗？",
-                               "刪除文件", wx.OK | wx.ICON_WARNING)
-        if dlg.ShowModal() != wx.ID_OK:
+                               "刪除文件", wx.YES_NO | wx.ICON_WARNING)
+        if dlg.ShowModal() != wx.ID_YES:
             return
+
+        self.tree.DeleteChildren(self.current)
+        self.tree.Delete(self.current)
+        self.current = None
+
         remove_file(path)
 
     def on_open(self, event, path):
@@ -399,16 +424,21 @@ class TreeCtrl(metaclass=Singleton):
 
         os.makedirs(os.path.join(path, directory_name), exist_ok=True)
 
+        new_item = self.tree.AppendItem(self.current, directory_name, image=0, data=os.path.join(path, directory_name))
+        self.tree.EnsureVisible(new_item)
+
     def on_rename(self, event, path):
         loggers.logger.info(f"Rename clicked, file path: {path}")
-        dlg = wx.TextEntryDialog(self.frame, "请输入新文件名:", "文件重命名")
+        file_list = path.split(os.sep)
+        dlg = wx.TextEntryDialog(self.frame, "请输入新文件名:", "文件重命名", value=file_list[-1])
         if dlg.ShowModal() != wx.ID_OK:
             return
 
         directory_name: str = dlg.GetValue()
-        file_list = path.split(os.sep)
         file_list[-1] = directory_name
         rename_file(path, os.sep.join(file_list))
+        self.tree.SetItemText(self.current, directory_name)
+        self.tree.SetPyData(self.current, os.sep.join(file_list))
 
     def on_model_1(self, event, path):
         """能效等级总览"""
