@@ -17,7 +17,7 @@ from aui2 import svg_to_bitmap
 
 from common.common import read_file, remove_file, rename_file, get_file_info, add_notebook_page, detect_encoding
 from common import loggers
-from gui.gauge_frame import GaugePanel
+from gui.gauge_panel import GaugePanel
 from models.bin_main import bin_main
 from models.compare_curve import compare_curve, compare_curve_all
 from models.dswe_main import iec_main

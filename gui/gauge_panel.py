@@ -6,7 +6,7 @@ from common.common import async_raise
 class GaugePanel(wx.GenericProgressDialog):
     def __init__(self, parent, title, thread_id=None,):
         wx.GenericProgressDialog.__init__(self, title, "准备中", maximum=100, parent=parent,
-                                          style=wx.PD_APP_MODAL | wx.PD_CAN_SKIP)
+                                          style=wx.PD_APP_MODAL | wx.PD_CAN_ABORT)
         self.thread_id = thread_id
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.update_progress)
@@ -14,7 +14,7 @@ class GaugePanel(wx.GenericProgressDialog):
 
     def update_progress(self, event):
         try:
-            if self.WasSkipped():
+            if self.WasCancelled():
                 loggers.logger.info("任务强制停止")
                 async_raise(self.thread_id, SystemExit, logger=loggers.logger)
                 wx.CallAfter(self.close)
