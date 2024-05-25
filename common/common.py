@@ -1,5 +1,8 @@
+import ctypes
 import datetime
+import inspect
 import json
+import logging
 import os
 import shutil
 import time
@@ -14,6 +17,28 @@ import wx.svg
 import wx.lib.agw.aui as aui
 
 from settings.settings import opening_dict, cols_titles, result_dir
+
+
+def async_raise(thread_id, exctype, logger=logging):
+    """
+    通过C语言的库抛出异常
+    :param thread_id:
+    :param exctype:
+    :return:
+    """
+    # 在子线程内部抛出一个异常结束线程
+    thread_id = ctypes.c_long(thread_id)
+    if not inspect.isclass(exctype):
+        exctype = type(exctype)
+    res = ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, ctypes.py_object(exctype))
+
+    if res == 0:
+        logger.info("线程id违法")
+    elif res != 1:
+        ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, None)
+        logger.info("异常抛出失败")
+    else:
+        logger.info(f"线程：{thread_id},已停止")
 
 
 def new_app(path):
