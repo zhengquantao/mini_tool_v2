@@ -243,6 +243,7 @@ class TreeCtrl(metaclass=Singleton):
         root_name = path.split(os.sep)[-1]
         self.now_file_list = get_file_info(path)
         self.root: wx.TreeItemId = self.tree.AddRoot(root_name, 0, data=path)
+        self.tree.SetItemImage(self.root, 0, wx.TreeItemIcon_Normal)
         self.tree.SetItemImage(self.root, 0, wx.TreeItemIcon_Expanded)
 
         self.build_tree(path, self.root)
