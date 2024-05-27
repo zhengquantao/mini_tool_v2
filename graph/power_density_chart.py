@@ -33,7 +33,7 @@ def build_page(plot_power_df, name):
     bar = (
         Bar(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
         .add_xaxis(grouped_mean.index.tolist())
-        .add_yaxis("概率密度", grouped_mean["wind_speed"].tolist(), color="#ffc084")
+        .add_yaxis("风频", grouped_mean["wind_speed"].tolist(), color="#ffc084")
         .extend_axis(
             yaxis=opts.AxisOpts(
                 name="功率(kw)",

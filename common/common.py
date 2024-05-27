@@ -219,7 +219,7 @@ def field_type_transform(data):
     return data
 
 
-def simple_data_cleaning(dataset, power_value):
+def data_cleaning_by_pitchangle(dataset, power_value):
     """
     简单数据清洗
         功率与额定功率的比值< 0.7时，桨叶角度 <2;

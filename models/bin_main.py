@@ -7,7 +7,7 @@ from scipy.optimize import minimize
 
 
 from common import loggers
-from common.common import read_csv_file, detect_encoding, simple_data_cleaning
+from common.common import read_csv_file, detect_encoding, data_cleaning_by_pitchangle
 from settings.settings import power_theoretical, ignore_files
 
 # *** ---------- custom package ----------
@@ -87,7 +87,7 @@ def bin_main(file_path, project_path, img_mode=False, run_func_list=None):
             row_data = power_theoretical_df.loc[max_row]
             power_cap, rated_wind_speed = row_data["WINDS_POWER"], row_data["WINDS_SPEED"]
 
-        # data = simple_data_cleaning(data, power_cap)
+        # data = data_cleaning_by_pitchangle(data, power_cap)
         # 当前SCADA数据机组编号
         # turbine_code = data.loc[0, "风机"]
 
