@@ -111,8 +111,8 @@ main_menu_items = {
             "NotebookArtChrome":            {"type": "radio", "label": "Chrome Theme"},
             "separator40":                  {"label": ""},
             "NotebookPreview":              {"label": "Preview Of All Notebook Pages"},
-            "separator310":         {"label": ""},
-            "Settings":             {"label": "&Settings\tCtrl-O"},
+            # "separator310":         {"label": ""},
+            # "Settings":             {"label": "&Settings\tCtrl-O"},
         }
     },
     # "Notebook": {

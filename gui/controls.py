@@ -23,7 +23,7 @@ from models.bin_main import bin_main
 from models.compare_curve import compare_curve, compare_curve_all
 from models.dswe_main import iec_main
 from models.geo_main import geo_main
-from settings.resources import overview
+# from settings.resources import overview
 from settings.settings import opening_dict, float_size, display_grid_count, model2_svg, model1_svg, result_dir
 
 
@@ -255,6 +255,7 @@ class TreeCtrl(metaclass=Singleton):
         self.tree.Bind(wx.EVT_TREE_ITEM_COLLAPSED, self.on_item_collapsed)
         self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.on_sel_changed)
         self.tree.Bind(wx.EVT_TREE_SEL_CHANGING, self.on_sel_changing)
+        self.tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.on_open)
 
         return self.tree
 
@@ -379,7 +380,11 @@ class TreeCtrl(metaclass=Singleton):
 
         remove_file(path)
 
-    def on_open(self, event, path):
+    def on_open(self, event, path=None):
+
+        if not path:
+            path = self.tree.GetItemData(event.GetItem())
+
         if not os.path.isfile(path):
             return
 
@@ -656,7 +661,7 @@ class HTMLCtrl(metaclass=Singleton):
         # ctrl = CefFrame(parent, f"file:///{path}")
         return ctrl
 
-    def on_create(self, _event: wx.CommandEvent, caption="HTML Control", path=overview, width=700, height=400) -> None:
+    def on_create(self, _event: wx.CommandEvent, caption="HTML Control", path="", width=700, height=400) -> None:
         ctrl: wx.html2.WebView = self.create_ctrl(path=path)
         self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).Float().Name("html_content").
                          FloatingPosition(self.start_position()).BestSize(wx.Size(width, height)).

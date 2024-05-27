@@ -97,7 +97,7 @@ class MainApp:
         paneman.default_layout()
         # layman.save("Default Startup")
         setman: SettingsPanel = SettingsPanel(frame, mgr)
-        setman.build_panel(menubar.items)
+        # setman.build_panel(menubar.items)
 
         file_manager: FileManager = FileManager(
             frame, mgr, menubar, html_ctrl, text_ctrl,

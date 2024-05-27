@@ -21,6 +21,11 @@ class SettingsPanel:
         self.mgr = mgr
         self.panel = wx.Panel(frame, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize)
         self.sizers = []
+        self.set_color()
+
+    def set_color(self):
+        for ctrl_name in cids:
+            self.art_provider().SetColour(cids[ctrl_name]["aui_id"], cids[ctrl_name]["color"])
 
     def build_panel(self, mb_items: dict) -> None:
         panel: wx.Panel = self.panel
@@ -29,7 +34,7 @@ class SettingsPanel:
         spinner: wx.SpinCtrl
         ctrl_id: wx.WindowIDRef
         self.sid_ctrls = {}
-        for ctrl_name in sids:
+        for ctrl_name in cids:
             label = sids[ctrl_name]["label"]
             ctrl_id = wx.NewIdRef()
             sids[ctrl_name]["ctrl_id"] = ctrl_id
