@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Type
 
 from aui2 import svg_to_bitmap
 
-from settings.settings import float_size, left_svg, top_svg
+from settings.settings import float_size, left_svg, top_svg, new_page_svg
 
 if TYPE_CHECKING:
     # If MainFrame subclasses wx.Frame, uncomment the following line
@@ -155,12 +155,18 @@ class Notebook:
         menu.AppendSeparator()
         left_split_item = menu.Append(wx.ID_ANY, '左右分屏')
         top_split_item = menu.Append(wx.ID_ANY, '上下分屏')
+        close_split_item = menu.Append(wx.ID_ANY, '关闭分屏')
+        menu.AppendSeparator()
+        float_item = menu.Append(wx.ID_ANY, '新窗口')
         left_split_item.SetBitmap(svg_to_bitmap(left_svg, size=(13, 13)))
         top_split_item.SetBitmap(svg_to_bitmap(top_svg, size=(13, 13)))
+        float_item.SetBitmap(svg_to_bitmap(new_page_svg, size=(13, 13)))
         self.notebook_object.Bind(wx.EVT_MENU, lambda event: self.on_close(event, page_index), close_item)
         self.notebook_object.Bind(wx.EVT_MENU, lambda event: self.on_all_close(event, page_index), all_close_item)
         self.notebook_object.Bind(wx.EVT_MENU, lambda event: self.on_left_split(event, page_index), left_split_item)
         self.notebook_object.Bind(wx.EVT_MENU, lambda event: self.on_top_split(event, page_index), top_split_item)
+        self.notebook_object.Bind(wx.EVT_MENU, lambda event: self.on_close_split(event, page_index), close_split_item)
+        self.notebook_object.Bind(wx.EVT_MENU, lambda event: self.on_float(event, page_index), float_item)
         self.notebook_object.PopupMenu(menu)
 
     def on_close(self, event, page_index):
@@ -172,8 +178,15 @@ class Notebook:
 
     def on_left_split(self, event, page_index):
         self.notebook_object.Split(page_index, wx.LEFT)
+
     def on_top_split(self, event, page_index):
         self.notebook_object.Split(page_index, wx.TOP)
+
+    def on_close_split(self, event, page_index):
+        self.notebook_object.UnSplit()
+
+    def on_float(self, event, page_index):
+        self.notebook_object.FloatPage(page_index)
 
     def on_create(self, _event: wx.CommandEvent) -> None:
         ctrl: aui.AuiNotebook = self.create_ctrl()
