@@ -278,6 +278,8 @@ class TreeCtrl(metaclass=Singleton):
                 new_item = self.tree.AppendItem(parent_item, item)
                 self.tree.SetItemImage(new_item, 0)
                 self.tree.SetItemData(new_item, item_path)
+                if item == result_dir and not self.result_dir:
+                    self.result_dir = new_item
                 self.build_tree(item_path, new_item)
             else:
                 new_item = self.tree.AppendItem(parent_item, item)
