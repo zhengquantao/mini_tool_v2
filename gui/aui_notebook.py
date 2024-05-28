@@ -6,7 +6,9 @@ import wx.lib.agw.aui as aui
 
 from typing import TYPE_CHECKING, Type
 
-from settings.settings import float_size
+from aui2 import svg_to_bitmap
+
+from settings.settings import float_size, left_svg, top_svg
 
 if TYPE_CHECKING:
     # If MainFrame subclasses wx.Frame, uncomment the following line
@@ -137,9 +139,41 @@ class Notebook:
         # ctrl.SetPageTextColour(2, wx.RED)
         # ctrl.SetPageTextColour(1, wx.BLUE)
         # ctrl.SetRenamable(1, True)
-
+        ctrl.Bind(aui.EVT_AUINOTEBOOK_TAB_RIGHT_DOWN, self.on_right_click_up)
         self.notebook_object = ctrl
         return ctrl
+
+    def on_right_click_up(self, event):
+
+        page_index = event.GetSelection()
+
+        print(f"right clicked, tab_id: {page_index}")
+
+        menu = wx.Menu()
+        close_item = menu.Append(wx.ID_ANY, '关闭')
+        all_close_item = menu.Append(wx.ID_ANY, '全部关闭')
+        menu.AppendSeparator()
+        left_split_item = menu.Append(wx.ID_ANY, '左右分屏')
+        top_split_item = menu.Append(wx.ID_ANY, '上下分屏')
+        left_split_item.SetBitmap(svg_to_bitmap(left_svg, size=(13, 13)))
+        top_split_item.SetBitmap(svg_to_bitmap(top_svg, size=(13, 13)))
+        self.notebook_object.Bind(wx.EVT_MENU, lambda event: self.on_close(event, page_index), close_item)
+        self.notebook_object.Bind(wx.EVT_MENU, lambda event: self.on_all_close(event, page_index), all_close_item)
+        self.notebook_object.Bind(wx.EVT_MENU, lambda event: self.on_left_split(event, page_index), left_split_item)
+        self.notebook_object.Bind(wx.EVT_MENU, lambda event: self.on_top_split(event, page_index), top_split_item)
+        self.notebook_object.PopupMenu(menu)
+
+    def on_close(self, event, page_index):
+        self.notebook_object.DeletePage(page_index)
+
+    def on_all_close(self, event, page_index):
+        while self.notebook_object.GetPageCount() > 0:
+            self.notebook_object.DeletePage(0)
+
+    def on_left_split(self, event, page_index):
+        self.notebook_object.Split(page_index, wx.LEFT)
+    def on_top_split(self, event, page_index):
+        self.notebook_object.Split(page_index, wx.TOP)
 
     def on_create(self, _event: wx.CommandEvent) -> None:
         ctrl: aui.AuiNotebook = self.create_ctrl()
