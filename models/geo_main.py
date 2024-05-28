@@ -23,7 +23,7 @@ def geo_main(file_path, project_path):
                                     flag=1, feature_columns=["wind_speed", "wind_direction"], target_columns=["power"],
                                     wind_col=["wind_speed"], confidence=0.8, logger=loggers.logger,
                                     farm_name=factor_name)
-    file_paths, file_name = geo_power_chart.build_html(project_path, factor_name, all_statistics, )
+    file_paths, file_name = geo_power_chart.build_html(project_path, factor_name, data_result, )
 
     return file_paths, file_name
 
