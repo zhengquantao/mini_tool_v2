@@ -16,11 +16,11 @@ from gui.main_frame import MainFrame
 from gui.main_menu import MainMenu
 from gui.controls import SizeReportCtrl, TextCtrl, TreeCtrl, HTMLCtrl, GridCtrl
 from gui.aui_notebook import Notebook
-from gui.aui_notebook_options import NotebookOptions
-from gui.aui_manager_options import ManagerOptions
-from gui.aui_dockart_options import DockArtOptions
+# from gui.aui_notebook_options import NotebookOptions
+# from gui.aui_manager_options import ManagerOptions
+# from gui.aui_dockart_options import DockArtOptions
 from gui.base_panes import PaneManager
-from gui.perspective import LayoutManager
+# from gui.perspective import LayoutManager
 from gui.gui import SettingsPanel
 
 
@@ -59,7 +59,7 @@ class MainApp:
         # 注释侧边栏
         tbman: ToolBarManager = ToolBarManager(frame, mgr)
         popup: PopupMenu = PopupMenu(frame)
-        popup.bind_DropDownToolbarItem(tbman.items["DropDownToolbarItem"]["id"])
+        # popup.bind_DropDownToolbarItem(tbman.items["DropDownToolbarItem"]["id"])
 
         ID_SizeReportCtrl: wx.WindowIDRef = wx.WindowIDRef()
         size_reporter: SizeReportCtrl = SizeReportCtrl(frame, mgr, ID_SizeReportCtrl)

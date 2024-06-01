@@ -32,7 +32,8 @@ def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
             toolbox_opts=opts.ToolboxOpts(
                 is_show=True,  # 是否显示该工具
                 orient="vertical",  # 工具栏 icon 的布局朝向
-                pos_left="95%",  # 工具栏组件离容器左侧的距离
+                pos_left="",
+                pos_right="5",  # 工具栏组件离容器左侧的距离
                 feature={
                     "saveAsImage": opts.ToolBoxFeatureSaveAsImageOpts(background_color="#ffffff", title="保存图片"),
                     "restore": opts.ToolBoxFeatureRestoreOpts(),
