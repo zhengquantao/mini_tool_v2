@@ -182,7 +182,7 @@ class PaneManager:
 
         self.mgr.AddPane(notebook_ctrl.create_ctrl(), aui.AuiPaneInfo().Name("notebook_content").
                          CenterPane().PaneBorder(False).
-                         CloseButton(True).MaximizeButton(True).MinimizeButton(True).Movable(True).
+                         CloseButton(True).MaximizeButton(True).MinimizeButton(True).Movable(False).
                          FloatingSize(wx.Size(*float_size)).BestSize(*float_size).MinSize(*float_size))
 
         # Show how to add a control inside a tab

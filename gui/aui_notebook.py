@@ -78,7 +78,7 @@ class Notebook:
         # create the notebook off-window to avoid flicker
         client_size: wx.Size = frame.GetClientSize()
         ctrl: aui.AuiNotebook = aui.AuiNotebook(frame, wx.ID_ANY, wx.Point(*client_size),
-                                                wx.Size(430, 200), agwStyle=self.notebook_style)
+                                                wx.Size(*client_size), agwStyle=self.notebook_style)
         # type: list[Type[wx.aui.AuiTabArt]]
         arts = [aui.AuiDefaultTabArt, aui.AuiSimpleTabArt, aui.VC71TabArt,
                 aui.FF2TabArt, aui.VC8TabArt, aui.ChromeTabArt]
@@ -133,8 +133,8 @@ class Notebook:
         #                          wx.Size(*float_size), wx.TE_MULTILINE | wx.NO_BORDER), "wxTextCtrl 8")
 
         # Demonstrate how to disable a tab
-        if self.__class__.counter == 1:
-            ctrl.EnableTab(0, True)
+        # if self.__class__.counter == 1:
+        #     ctrl.EnableTab(0, True)
 
         # ctrl.SetPageTextColour(2, wx.RED)
         # ctrl.SetPageTextColour(1, wx.BLUE)

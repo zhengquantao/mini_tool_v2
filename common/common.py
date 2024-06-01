@@ -141,7 +141,7 @@ def add_notebook_page(notebook_ctrl, html_ctrl, file_paths, file_name):
     ctrl = notebook_ctrl.notebook_object
     pid = os.getpid()
     opening_dict[pid]["records"][file_name] = file_paths
-    ctrl.AddPage(html_ctrl.create_ctrl(path=file_paths), file_name, True, page_bmp)
+    ctrl.AddPage(html_ctrl.create_ctrl(parent=ctrl, path=file_paths), file_name, True, page_bmp)
     return ctrl
 
 

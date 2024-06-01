@@ -62,9 +62,11 @@ class GridCtrl(metaclass=Singleton):
     def start_position(self) -> wx.Point:
         return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
 
-    def create_ctrl(self, data_df=None) -> wx.grid.Grid:
+    def create_ctrl(self, parent=None, data_df=None) -> wx.grid.Grid:
+        if not parent:
+            parent = self.frame
         self.__class__.counter += 1
-        grid = wx.grid.Grid(self.frame, wx.ID_ANY, wx.Point(0, 0), wx.Size(150, 250),
+        grid = wx.grid.Grid(parent, wx.ID_ANY, wx.Point(0, 0), wx.Size(150, 250),
                             wx.NO_BORDER)
 
         grid.CreateGrid(100, 50)  # 创建一个n行n列的表格
@@ -142,10 +144,12 @@ class TextCtrl(metaclass=Singleton):
     def start_position(self) -> wx.Point:
         return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
 
-    def create_ctrl(self, text: str = "", width: int = 500, height: int = 400, style=wx.TE_MULTILINE,
+    def create_ctrl(self, parent=None, text: str = "", width: int = 500, height: int = 400, style=wx.TE_MULTILINE,
                     font=None) -> wx.TextCtrl:
+        if not parent:
+            parent = self.frame
         self.__class__.counter += 1
-        ctrl = wx.TextCtrl(self.frame, wx.ID_ANY, text, wx.DefaultPosition,
+        ctrl = wx.TextCtrl(parent, wx.ID_ANY, text, wx.DefaultPosition,
                            wx.Size(width, height), style=style)
         if not font:
             font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
@@ -400,17 +404,17 @@ class TreeCtrl(metaclass=Singleton):
         opening_dict[pid]["records"][file_name] = path
 
         if path.endswith(".html"):
-            ctrl.AddPage(self.html_ctrl.create_ctrl(path=path), file_name, True, page_bmp)
+            ctrl.AddPage(self.html_ctrl.create_ctrl(parent=ctrl, path=path), file_name, True, page_bmp)
 
         elif any([path.endswith(".csv"), path.endswith(".xlsx"), path.endswith(".xls")]):
             data_df = pd.read_csv(path, encoding=detect_encoding(path))
-            ctrl.AddPage(self.grid_ctrl.create_ctrl(data_df), file_name, True, page_bmp)
+            ctrl.AddPage(self.grid_ctrl.create_ctrl(ctrl, data_df), file_name, True, page_bmp)
 
         elif any([path.endswith(".png"), path.endswith(".jpg"), path.endswith(".jpeg")]):
             image = wx.Bitmap(path)
             # size = self.mgr.GetPaneByName("notebook_content").window.GetSize()
             # image = image.Rescale(size[0], size[1])
-            image_ctrl = wx.StaticBitmap(self.frame, wx.ID_ANY, image)
+            image_ctrl = wx.StaticBitmap(ctrl, wx.ID_ANY, image)
             ctrl.AddPage(image_ctrl, file_name, True, page_bmp)
 
         else:
@@ -695,9 +699,11 @@ class SizeReportCtrl(metaclass=Singleton):
         self.create_menu_id = create_menu_id
         frame.Bind(wx.EVT_MENU, self.on_create, id=self.create_menu_id)
 
-    def create_ctrl(self, width: int = 80, height: int = 80) -> wx.Control:
+    def create_ctrl(self, parent=None, width: int = 80, height: int = 80) -> wx.Control:
         self.__class__.counter += 1
-        ctrl = wx.Control(self.frame, wx.ID_ANY, wx.DefaultPosition,
+        if not parent:
+            parent = self.frame
+        ctrl = wx.Control(parent, wx.ID_ANY, wx.DefaultPosition,
                           wx.Size(width, height), style=wx.NO_BORDER)
         ctrl.Bind(wx.EVT_PAINT, self.OnPaint)
         ctrl.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
