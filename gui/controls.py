@@ -66,8 +66,10 @@ class GridCtrl(metaclass=Singleton):
         if not parent:
             parent = self.frame
         self.__class__.counter += 1
-        grid = wx.grid.Grid(parent, wx.ID_ANY, wx.Point(0, 0), wx.Size(150, 250),
-                            wx.NO_BORDER)
+
+        panel = wx.Panel(parent, -1)
+        grid = wx.grid.Grid(panel, wx.ID_ANY, wx.Point(0, 0), size=wx.Size(*float_size),
+                            style=wx.NO_BORDER)
 
         grid.CreateGrid(100, 50)  # 创建一个n行n列的表格
         grid.EnableScrolling(True, True)
@@ -77,7 +79,11 @@ class GridCtrl(metaclass=Singleton):
         # 渲染表格
         self.render_grid(data_df, grid)
 
-        return grid
+        # 设置panel自适应屏幕
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(grid, 0, wx.ALL | wx.EXPAND, 5)
+        panel.SetSizer(sizer)
+        return panel
 
     def render_grid(self, data: pd.DataFrame(), grid):
         if not isinstance(data, pd.DataFrame):
