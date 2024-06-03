@@ -58,7 +58,7 @@ class Notebook:
         frame.Bind(wx.EVT_MENU, self.on_create, id=self.create_menu_id)
 
     def start_position(self) -> wx.Point:
-        return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
+        return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(2, 2) * self.__class__.counter)
 
     def all_notebooks(self) -> list[aui.AuiNotebook]:
         """Returns a list of existing AGW AuiNotebook objects."""
@@ -77,7 +77,7 @@ class Notebook:
 
         # create the notebook off-window to avoid flicker
         client_size: wx.Size = frame.GetClientSize()
-        ctrl: aui.AuiNotebook = aui.AuiNotebook(frame, wx.ID_ANY, wx.Point(*client_size),
+        ctrl: aui.AuiNotebook = aui.AuiNotebook(frame, wx.ID_ANY, wx.DefaultPosition,
                                                 wx.Size(*client_size), agwStyle=self.notebook_style)
         # type: list[Type[wx.aui.AuiTabArt]]
         arts = [aui.AuiDefaultTabArt, aui.AuiSimpleTabArt, aui.VC71TabArt,

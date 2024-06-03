@@ -60,9 +60,9 @@ class GridCtrl(metaclass=Singleton):
         frame.Bind(wx.EVT_MENU, self.on_create, id=self.create_menu_id)
 
     def start_position(self) -> wx.Point:
-        return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
+        return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(2, 2) * self.__class__.counter)
 
-    def create_ctrl(self, parent=None, data_df=None) -> wx.grid.Grid:
+    def create_ctrl(self, parent=None, data_df=None) -> wx.Panel:
         if not parent:
             parent = self.frame
         self.__class__.counter += 1
@@ -81,7 +81,8 @@ class GridCtrl(metaclass=Singleton):
 
         # 设置panel自适应屏幕
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(grid, 0, wx.ALL | wx.EXPAND, 5)
+        # 1 自动铺满窗口
+        sizer.Add(grid, 1, wx.ALL | wx.EXPAND, 0)
         panel.SetSizer(sizer)
         return panel
 
@@ -117,7 +118,7 @@ class GridCtrl(metaclass=Singleton):
         grid.EndBatch()
 
     def on_create(self, _event: wx.CommandEvent) -> None:
-        ctrl: wx.grid.Grid = self.create_ctrl()
+        ctrl: wx.Panel = self.create_ctrl()
         caption = "Grid"
         self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).Float().
                          FloatingPosition(self.start_position()).FloatingSize(wx.Size(300, 200)).
@@ -148,7 +149,7 @@ class TextCtrl(metaclass=Singleton):
         frame.Bind(wx.EVT_MENU, self.on_create, id=self.create_menu_id)
 
     def start_position(self) -> wx.Point:
-        return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
+        return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(2, 2) * self.__class__.counter)
 
     def create_ctrl(self, parent=None, text: str = "", width: int = 500, height: int = 400, style=wx.TE_MULTILINE,
                     font=None) -> wx.TextCtrl:
@@ -232,9 +233,9 @@ class TreeCtrl(metaclass=Singleton):
         # self.tree.Refresh()
 
     def start_position(self) -> wx.Point:
-        return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
+        return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(2, 2) * self.__class__.counter)
 
-    def create_ctrl(self, path="./", init_project=False) -> wx.TreeCtrl:
+    def create_ctrl(self, path="./", init_project=False) -> CT.CustomTreeCtrl:
         self.__class__.counter += 1
         # self.tree: wx.TreeCtrl = wx.TreeCtrl(self.frame, wx.ID_ANY, wx.Point(0, 0), wx.Size(160, 250),
         #                                      wx.TR_DEFAULT_STYLE | wx.TR_TWIST_BUTTONS | wx.TR_NO_LINES | wx.NO_BORDER)
@@ -270,7 +271,7 @@ class TreeCtrl(metaclass=Singleton):
         return self.tree
 
     def on_create(self, _event: wx.CommandEvent) -> None:
-        ctrl: wx.TreeCtrl = self.create_ctrl()
+        ctrl: CT.CustomTreeCtrl = self.create_ctrl()
         caption = "Tree Control"
         self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).
                          FloatingPosition(self.start_position()).CloseButton(False).
@@ -660,7 +661,7 @@ class HTMLCtrl(metaclass=Singleton):
         frame.Bind(wx.EVT_MENU, self.on_create, id=self.create_menu_id)
 
     def start_position(self) -> wx.Point:
-        return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
+        return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(2, 2) * self.__class__.counter)
 
     def create_ctrl(self, parent: wx.Frame = None, path: str = "") -> wx.html2.WebView:
         self.__class__.counter += 1
@@ -717,7 +718,7 @@ class SizeReportCtrl(metaclass=Singleton):
         return ctrl
 
     def start_position(self) -> wx.Point:
-        return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(20, 20) * self.__class__.counter)
+        return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(2, 2) * self.__class__.counter)
 
     def on_create(self, _event: wx.CommandEvent) -> None:
         ctrl: wx.Control = self.create_ctrl()

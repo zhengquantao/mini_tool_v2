@@ -33,13 +33,13 @@ class MainApp:
         # super().__init__(redirect=False)
         # If subclassing wx.App, remove the next two lines.
         self.app = wx.App(False)
-        self.OnInit(project_path)
+        self.on_init(project_path)
 
     # If subclassing wx.App, remove this method.
-    def MainLoop(self):
+    def main_loop(self):
         self.app.MainLoop()
 
-    def OnInit(self, project_path=None):
+    def on_init(self, project_path=None):
         # If subclassing wx.App, this methods is envoked automatically by the framework.
         mgr: aui.AuiManager = aui.AuiManager()
 
@@ -61,18 +61,18 @@ class MainApp:
         popup: PopupMenu = PopupMenu(frame)
         # popup.bind_DropDownToolbarItem(tbman.items["DropDownToolbarItem"]["id"])
 
-        ID_SizeReportCtrl: wx.WindowIDRef = wx.WindowIDRef()
-        size_reporter: SizeReportCtrl = SizeReportCtrl(frame, mgr, ID_SizeReportCtrl)
-        ID_TextCtrl: wx.WindowIDRef = wx.WindowIDRef()
-        text_ctrl: TextCtrl = TextCtrl(frame, mgr, ID_TextCtrl)
-        ID_HTMLCtrl: wx.WindowIDRef = wx.WindowIDRef()
-        html_ctrl: HTMLCtrl = HTMLCtrl(frame, mgr, ID_HTMLCtrl)
-        ID_GridCtrl: wx.WindowIDRef = wx.WindowIDRef()
-        grid_ctrl: GridCtrl = GridCtrl(frame, mgr, ID_GridCtrl)
-        ID_NotebookCtrl: wx.WindowIDRef = wx.WindowIDRef()
-        notebook_ctrl: Notebook = Notebook(frame, mgr, ID_NotebookCtrl, html_ctrl)
-        ID_TreeCtrl: wx.WindowIDRef = wx.WindowIDRef()
-        tree_ctrl: TreeCtrl = TreeCtrl(frame, mgr, ID_TreeCtrl, notebook_ctrl, html_ctrl, grid_ctrl)
+        id_size_report_ctrl: wx.WindowIDRef = wx.WindowIDRef()
+        size_reporter: SizeReportCtrl = SizeReportCtrl(frame, mgr, id_size_report_ctrl)
+        id_text_ctrl: wx.WindowIDRef = wx.WindowIDRef()
+        text_ctrl: TextCtrl = TextCtrl(frame, mgr, id_text_ctrl)
+        id_html_ctrl: wx.WindowIDRef = wx.WindowIDRef()
+        html_ctrl: HTMLCtrl = HTMLCtrl(frame, mgr, id_html_ctrl)
+        id_grid_ctrl: wx.WindowIDRef = wx.WindowIDRef()
+        grid_ctrl: GridCtrl = GridCtrl(frame, mgr, id_grid_ctrl)
+        id_notebook_ctrl: wx.WindowIDRef = wx.WindowIDRef()
+        notebook_ctrl: Notebook = Notebook(frame, mgr, id_notebook_ctrl, html_ctrl)
+        id_tree_ctrl: wx.WindowIDRef = wx.WindowIDRef()
+        tree_ctrl: TreeCtrl = TreeCtrl(frame, mgr, id_tree_ctrl, notebook_ctrl, html_ctrl, grid_ctrl)
 
         # init log
         logger_frames = text_ctrl.create_ctrl()
@@ -111,7 +111,7 @@ class MainApp:
 
 def run_gui(project_path=None):
     app = MainApp(project_path)
-    app.MainLoop()
+    app.main_loop()
 
 
 def main():

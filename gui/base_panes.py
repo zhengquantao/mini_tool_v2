@@ -219,18 +219,18 @@ class PaneManager:
         for ref_id, pane_name in self.req_pane_ids.items():
             menu.Append(ref_id, self.mgr.GetPane(pane_name).caption)
 
-        menu.Bind(wx.EVT_MENU_OPEN, self.OnMenuOpenUserAttention)
+        menu.Bind(wx.EVT_MENU_OPEN, self.on_menu_open_user_attention)
 
     def bind_menu(self):
         mb_items: dict = self.mb_items
         menu_refid: wx.WindowIDRef
         self.themes = {self.mb_items[key]["id"]: agw_tabart_provider[key] for key in agw_tabart_provider}
         for menu_refid in self.themes:
-            self.frame.Bind(wx.EVT_MENU, self.OnNotebookTheme, menu_refid)
+            self.frame.Bind(wx.EVT_MENU, self.on_notebook_theme, menu_refid)
 
         # ctrl_key: str
         # for ctrl_key in content_ctrls.values():
-        #     self.frame.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=self.mb_items[ctrl_key]["id"])
+        #     self.frame.Bind(wx.EVT_MENU, self.on_change_content_pane, id=self.mb_items[ctrl_key]["id"])
         self.frame.Bind(aui.EVT_AUI_PANE_CLOSE, self.on_pane_close)
         self.frame.Bind(aui.EVT_AUI_PANE_MINIMIZE, self.on_pane_min)
         # self.frame.Bind(wx.EVT_MENU, self.OnVetoTree, id=self.mb_items["VetoTree"]["id"])
@@ -281,7 +281,7 @@ class PaneManager:
         self.mgr.GetPane("notebook_content").Show()
         self.mgr.Update()
 
-    def OnNotebookTheme(self, event: wx.CommandEvent) -> None:
+    def on_notebook_theme(self, event: wx.CommandEvent) -> None:
         """Update notebook theme (TabArt provider)."""
         event_id: wx.WindowIDRef = event.GetId()
         if self.notebook_ctrl.notebook_theme == self.themes[event_id]["rowid"]:
@@ -340,7 +340,7 @@ class PaneManager:
     def on_back(self, _event: wx.CommandEvent) -> None:
         keyboard.send('ctrl+z')
 
-    def OnChangeContentPane(self, event: wx.CommandEvent) -> None:
+    def on_change_content_pane(self, event: wx.CommandEvent) -> None:
         ctrl_key: str
         pane_key: str
         ref_id: wx.WindowIDRef = event.GetId()
@@ -357,7 +357,7 @@ class PaneManager:
             return
 
     def on_pane_close(self, event: aui.AuiManagerEvent) -> None:
-        print(event.pane.name, event.GetEventType())
+        # print(event.pane.name, event.GetEventType())
         # if not event.pane.name == "test10":
         #     return
         # self.mgr.GetPane(event.GetPane().window)
@@ -408,7 +408,6 @@ class PaneManager:
 
     def on_minimize_mode_flag(self, event: wx.CommandEvent) -> None:
         """Updates minimize mode state based on menu events."""
-        print("--------------")
         min_mode: int = self.min_mode
         event_id: wx.WindowIDRef = event.GetId()
         menu_key: str = self.item_ids[event_id]
@@ -648,13 +647,13 @@ class PaneManager:
                     nb.SetSelection(item.GetId())
                     item.GetWindow().SetFocus()
 
-    def OnRequestUserAttention(self, event: wx.CommandEvent) -> None:
+    def on_request_user_attention(self, event: wx.CommandEvent) -> None:
         ref_id: wx.WindowIDRef = event.GetId()
         if ref_id not in self.req_pane_ids: return
         pane: aui.AuiPaneInfo = self.mgr.GetPane(self.req_pane_ids[ref_id])
         self.mgr.RequestUserAttention(pane.window)
 
-    def OnMenuOpenUserAttention(self, event: wx.MenuEvent) -> None:
+    def on_menu_open_user_attention(self, event: wx.MenuEvent) -> None:
         menu: wx.Menu = event.GetMenu()
         menu_item: wx.MenuItem
         for menu_item in menu.MenuItems:
