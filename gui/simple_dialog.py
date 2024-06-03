@@ -1,7 +1,7 @@
-from json import detect_encoding
-
 import pandas as pd
 import wx
+
+from common.common import detect_encoding
 
 
 class SimpleDialog(wx.Dialog):
