@@ -19,6 +19,9 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
         .add_xaxis(abnormal_scatter[0].tolist())
         .add_yaxis(abnormal_scatter[2], abnormal_scatter[1].tolist(), label_opts=opts.LabelOpts(is_show=False),
                    color="#ffb48d")
+        .set_series_opts(
+            large=True,  # 大数据优化 数据>largeThreshold就优化
+            largeThreshold=2000,)
         .set_global_opts(
             title_opts=opts.TitleOpts(title="理论与实际功率对比分析"),
             xaxis_opts=opts.AxisOpts(
@@ -70,6 +73,9 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
         .add_xaxis(normal_scatter[0].tolist())
         .add_yaxis(normal_scatter[2], normal_scatter[1].tolist(), label_opts=opts.LabelOpts(is_show=False),
                    color="#81bac4")
+        .set_series_opts(
+            large=True,  # 大数据优化 数据>largeThreshold就优化
+            largeThreshold=2000, )
         .set_global_opts(title_opts=opts.TitleOpts(title=normal_scatter[2]),))
 
     # 创建Line图
