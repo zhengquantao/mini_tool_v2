@@ -114,7 +114,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
 
 def add_scatter(scatter, data, name, col_x, col_y, color=None):
     obj = Scatter().add_xaxis(data[col_x].tolist()).add_yaxis(
-        str(name)[:5], data[col_y].tolist(),
+        str(name)[:6], data[col_y].tolist(),
         color=color,
         label_opts=opts.LabelOpts(is_show=False),
     ).set_series_opts(
