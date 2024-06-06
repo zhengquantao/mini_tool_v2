@@ -117,7 +117,7 @@ def run_gui(project_path=None):
 def main():
     web = Process(target=run_server)
     web.start()
-    run_gui()
+    Process(target=run_gui).start()
     daemon_app(web)
 
 

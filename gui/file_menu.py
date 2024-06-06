@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+import sys
 
 import wx
 import wx.aui
@@ -65,6 +66,7 @@ class FileManager:
         self.menubar = menubar
         self.mb_items = menubar.items
         self.item_ids = menubar.item_ids
+        self.init = False
         # self.init_maps()
         # self.init_ui_state()
         self.bind_menu()
@@ -136,6 +138,7 @@ class FileManager:
                 return
             except Exception as e:
                 pass
+        self.init = True
         self.open_project(os.getcwd(), init_project=True)
 
     def get_recent_project_path(self) -> str:
@@ -174,6 +177,11 @@ class FileManager:
         print(f"Chosen directory: {path}")
         self.add_history(path)
         new_app(path)
+
+        if self.init:
+            # self.frame.Close(True)
+            self.frame.Destroy()
+
         # self.open_project(path)
 
     def on_open_file(self, event: wx.CommandEvent) -> None:
