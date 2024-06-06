@@ -7,7 +7,7 @@ CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/"
 from pyecharts import options as opts
 from pyecharts.charts import Scatter, Line
 from common.common import random_name, create_dir
-from settings.settings import float_size
+from settings.settings import float_size, main_title
 
 
 def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hue=None, sizes=None, turbine_code=None,
@@ -35,7 +35,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
     colors = ["#EBDEF0", "#D7BDE2", "#C39BD3", "#AF7AC5", "#9B59B6", "#884EA0", "#76448A"]
     colors_size = len(colors)
     scatter = (
-        Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px",))
+        Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title))
         .set_global_opts(
             title_opts=opts.TitleOpts(title=title),
             legend_opts=opts.LegendOpts(pos_right="right", pos_top="45%", border_width=0),  # 将图例放在右边
@@ -52,7 +52,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
             toolbox_opts=opts.ToolboxOpts(
                 is_show=True,  # 是否显示该工具
                 # orient="horizontal",  # 工具栏 icon 的布局朝向
-                pos_left="530",  # 工具栏组件离容器左侧的距离
+                pos_left="80%",  # 工具栏组件离容器左侧的距离
                 feature={
                     "saveAsImage": opts.ToolBoxFeatureSaveAsImageOpts(background_color="#ffffff", title="保存图片"),
                     "restore": opts.ToolBoxFeatureRestoreOpts(),
@@ -88,7 +88,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
             ],
         )
     )
-    for idx, size in enumerate(sizes):
+    for idx, size in enumerate(sorted(sizes)):
         size_data = data[data[hue] == size]
         add_scatter(scatter, size_data, size, col_x, col_y, color=colors[idx % colors_size])
     line = (
@@ -105,7 +105,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
         )
     )
     page = scatter.overlap(line)
-    file_name = random_name(turbine_code, title)
+    file_name = random_name(turbine_code, title.split("   ")[0])
     file_path = create_dir(file_path)
     html_path = page.render(os.path.join(file_path, file_name))
 
@@ -114,7 +114,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
 
 def add_scatter(scatter, data, name, col_x, col_y, color=None):
     obj = Scatter().add_xaxis(data[col_x].tolist()).add_yaxis(
-        str(name)[:6], data[col_y].tolist(),
+        str(round(name, 3)), data[col_y].tolist(),
         color=color,
         label_opts=opts.LabelOpts(is_show=False),
     ).set_series_opts(

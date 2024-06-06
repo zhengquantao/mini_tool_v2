@@ -3,7 +3,7 @@ import os
 from pyecharts.globals import CurrentConfig
 
 from common.common import random_name, create_dir
-from settings.settings import float_size, opening_dict
+from settings.settings import float_size, opening_dict, main_title
 
 CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/"
 
@@ -20,7 +20,7 @@ Echarts_Type = {
 
 def build_html(x, y, title, echart_type="bar", save_path=None):
     echarts = Echarts_Type.get(echart_type, Bar)
-    obj = echarts(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
+    obj = echarts(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title))
     obj.add_xaxis(x.to_list())
     add_yaxis(obj, y)
     obj.set_global_opts(

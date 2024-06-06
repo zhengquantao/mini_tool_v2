@@ -4,7 +4,7 @@ from pyecharts.commons.utils import JsCode
 from pyecharts.globals import CurrentConfig
 
 from common.common import random_name, create_dir
-from settings.settings import float_size
+from settings.settings import float_size, main_title
 
 CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/"
 
@@ -15,7 +15,7 @@ from pyecharts.charts import Scatter
 def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
 
     scatter = (
-        Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
+        Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title))
         .add_xaxis(plot_power_df["turbine_code"].to_list())
         .add_yaxis(
             series_name="",

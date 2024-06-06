@@ -9,6 +9,7 @@ import os
 
 from graph import dswe_chart, power_sort_chart
 from models.utils.AEP import aep_analysis
+from models.utils.Energy_compare import base_data_process
 from settings.settings import power_theoretical
 from common import loggers
 """
@@ -27,13 +28,21 @@ def iec_main(file_path, project_path, sort_only=False):
     curve_line_path = os.path.join(project_path, power_theoretical)
     turbine_code = file_path.split(os.sep)[-1].split(".")[0]
 
-    _, all_statistics = aep_analysis.aep_main(file_path, factor_name, ["real_time"], ["wind_speed"], ["wind_direction"],
+    base_turbine, all_statistics = aep_analysis.aep_main(file_path, factor_name, ["real_time"], ["wind_speed"], ["wind_direction"],
                                               ["nacelle_temperature"], ["air_density"], ["power"], curve_line_path,  # ["air_density"]
                                               confidence_num=0.8, logger=loggers.logger)
     if sort_only:
         file_paths, file_name = power_sort_chart.build_html(project_path, turbine_code, all_statistics)
         return file_paths, file_name
 
+    data_result = base_data_process(file_path, base_turbine, result_path=None,
+                                    flag=1, feature_columns=["wind_speed", "wind_direction"], target_columns=["power"],
+                                    wind_col=["wind_speed"], confidence=0.8, logger=loggers.logger,
+                                    farm_name=factor_name)
+    data_result = data_result[["turbine_code", "Weighted_diff"]].sort_values(by="turbine_code")
+    all_statistics = all_statistics.sort_values(by="turbine_code")
+    all_statistics["Weighted_diff"] = data_result["Weighted_diff"]
+    all_statistics.fillna(0, inplace=True)
     file_paths, file_name = dswe_chart.build_html(project_path, turbine_code, all_statistics)
 
     return file_paths, file_name

@@ -4,7 +4,7 @@ import os
 from pyecharts.globals import CurrentConfig
 
 from common.common import random_name, create_dir
-from settings.settings import float_size
+from settings.settings import float_size, main_title
 
 CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/"
 
@@ -24,7 +24,7 @@ def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
 def sort_chart(plot_power_df):
     plot_power_df = plot_power_df.sort_values(by='iec_power(mWh)', ascending=True)
     bar = (
-        Bar(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
+        Bar(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title))
         .add_xaxis(plot_power_df["turbine_code"].tolist())
         .add_yaxis("理论发电量", plot_power_df["pdf_power(mWh)"].tolist())
         .add_yaxis("实际发电量", plot_power_df["iec_power(mWh)"].tolist())

@@ -4,7 +4,7 @@ from pyecharts.globals import CurrentConfig
 
 from common.common import random_name, common_cut, create_dir
 from models.utils.wind_base_tool import wind_speed_label, wind_speed_bin_label
-from settings.settings import float_size
+from settings.settings import float_size, main_title
 
 CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/"
 
@@ -31,7 +31,7 @@ def build_page(plot_power_df, name):
     grouped_mean = plot_power_df[plot_power_df["groups"] > 0].groupby("groups").agg(
         {"power": "mean", "wind_speed": "size", "air_density": "mean", "wind_speed2": "mean"})
     bar = (
-        Bar(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
+        Bar(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title))
         .add_xaxis(grouped_mean.index.tolist())
         .add_yaxis("风频", grouped_mean["wind_speed"].tolist(), color="#ffc084")
         .extend_axis(
@@ -108,13 +108,13 @@ def build_page(plot_power_df, name):
         .add_yaxis("功率曲线", grouped_mean["power"].tolist(),
                    label_opts=opts.LabelOpts(is_show=False),
                    is_symbol_show=False, color="#1f77b4", is_smooth=True,
-                   z=1, z_level=1,
+                   z=1, z_level=1, linestyle_opts=opts.LineStyleOpts(width=4),
                    yaxis_index=1, xaxis_index=1,
                    )
         .add_yaxis("风功率密度", grouped_mean["wind_power_density"].tolist(),
                    label_opts=opts.LabelOpts(is_show=False),
                    is_symbol_show=False, color="#239B56", is_smooth=True,
-                   z=1, z_level=1,
+                   z=1, z_level=1, linestyle_opts=opts.LineStyleOpts(width=4),
                    yaxis_index=1, xaxis_index=1,
                    )
     )

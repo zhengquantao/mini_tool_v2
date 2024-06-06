@@ -541,6 +541,7 @@ def wind_speed_cp_bin(dataset, turbine_code=None, air_density_tag=None, dir_path
     cp_windspeed_bin_df[cp_label] = cp_mean
     cp_windspeed_bin_df['{}_std'.format(cp_label)] = cp_std
 
+    cp_windspeed_bin_df = cp_windspeed_bin_df.drop(cp_windspeed_bin_df[cp_windspeed_bin_df[cp_label] == 0].index)
 
     # *** ---------- 5. 组装binning分仓曲线数据 ----------
     if plot_flag:
@@ -620,6 +621,7 @@ def wind_speed_pitch_bin(dataset, turbine_code=None, file_path=None, hue=power_l
     pitch_windspeed_bin_df[pitch_label] = pitch_mean
     pitch_windspeed_bin_df['{}_std'.format(pitch_label)] = pitch_std
 
+    pitch_windspeed_bin_df = pitch_windspeed_bin_df.drop(pitch_windspeed_bin_df[pitch_windspeed_bin_df[pitch_label] == 0].index)
 
     # *** ---------- 4. 组装binning分仓曲线数据 ----------
     if plot_flag:
@@ -683,7 +685,7 @@ def speed_wind_gen_bin(dataset, turbine_code=None, file_path=None, hue=power_lab
     gen_wind_speed_bin_df[wind_speed_label] = wind_speed_labels
     gen_wind_speed_bin_df[gen_speed_label] = gen_speed_mean
     gen_wind_speed_bin_df['{}_std'.format(gen_speed_label)] = gen_speed_std
-
+    gen_wind_speed_bin_df = gen_wind_speed_bin_df.drop(gen_wind_speed_bin_df[gen_wind_speed_bin_df[gen_speed_label] == 0].index)
 
     # *** ---------- 4. 组装binning分仓曲线数据 ----------
     if plot_flag:
@@ -750,7 +752,7 @@ def gen_speed_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_spe
     power_genspeed_bin_df[gen_speed_label] = gen_speed_labels
     power_genspeed_bin_df[power_label] = power_mean
     power_genspeed_bin_df['{}_std'.format(power_label)] = power_std
-
+    power_genspeed_bin_df = power_genspeed_bin_df.drop(power_genspeed_bin_df[power_genspeed_bin_df[power_label] == 0].index)
 
     # *** ---------- 4. 组装binning分仓曲线数据 ----------
     if plot_flag:
@@ -933,7 +935,7 @@ def pitch_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_speed_l
     power_pitch_bin_df[pitch_label] = pitch_labels
     power_pitch_bin_df[power_label] = power_mean
     power_pitch_bin_df['{}_std'.format(power_label)] = power_std
-
+    power_pitch_bin_df = power_pitch_bin_df.drop(power_pitch_bin_df[power_pitch_bin_df[power_label] == 0].index)
 
     # *** ---------- 4. 组装binning分仓曲线数据 ----------
     if plot_flag:

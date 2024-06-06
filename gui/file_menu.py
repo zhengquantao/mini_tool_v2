@@ -142,7 +142,7 @@ class FileManager:
 
         if not self.filehistory.GetCount():
             self.project_path = os.getcwd()
-            return self.project_path
+            return ""
 
         self.project_path = self.filehistory.GetHistoryFile(0)
         return self.project_path

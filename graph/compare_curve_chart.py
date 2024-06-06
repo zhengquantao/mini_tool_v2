@@ -3,7 +3,7 @@ import os
 from pyecharts.globals import CurrentConfig
 
 from common.common import random_name, create_dir
-from settings.settings import float_size
+from settings.settings import float_size, main_title
 
 CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/"
 
@@ -15,7 +15,7 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
                power_line, *args, **kwargs):
 
     scatter1 = (
-        Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
+        Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title))
         .add_xaxis(abnormal_scatter[0].tolist())
         .add_yaxis(abnormal_scatter[2], abnormal_scatter[1].tolist(), label_opts=opts.LabelOpts(is_show=False),
                    color="#ffb48d")
@@ -84,7 +84,7 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
         .add_xaxis(fitting_line[0])
         .add_yaxis(fitting_line[2], fitting_line[1],
                    label_opts=opts.LabelOpts(is_show=False),
-                   is_symbol_show=False,
+                   is_symbol_show=False, linestyle_opts=opts.LineStyleOpts(width=4),
                    z=10, z_level=10, color="#ff0000")
         .set_global_opts(title_opts=opts.TitleOpts(title=fitting_line[2]))
     )
@@ -94,7 +94,7 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
         .add_yaxis(power_line[2], power_line[1].tolist(),
                    label_opts=opts.LabelOpts(is_show=False),
                    # 隐藏标签点
-                   is_symbol_show=False,
+                   is_symbol_show=False, linestyle_opts=opts.LineStyleOpts(width=4),
                    # 控制页面层级
                    z=10, z_level=10, color="#2078bc")
         .set_global_opts(title_opts=opts.TitleOpts(title=power_line[2]),)

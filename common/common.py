@@ -52,6 +52,7 @@ def daemon_app(app):
     current_process = psutil.Process()
 
     while len(current_process.children()) > 3:
+        print("------------------")
         time.sleep(3)
 
     app.terminate()

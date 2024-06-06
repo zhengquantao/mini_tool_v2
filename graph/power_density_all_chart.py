@@ -2,6 +2,8 @@ import os
 
 from pyecharts.globals import CurrentConfig
 
+from settings.settings import main_title
+
 CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/"
 
 from pyecharts.charts import Page
@@ -10,7 +12,7 @@ from graph.power_density_chart import build_page
 
 
 def build_html(factor_path, data_list, factor_name, *args, **kwargs):
-    page = Page(layout=Page.SimplePageLayout)
+    page = Page(layout=Page.SimplePageLayout, page_title=main_title)
     child_page_list = []
     for data in data_list:
         child_page = build_page(data[1][0], data[1][1],)

@@ -4,7 +4,7 @@ from pyecharts.globals import CurrentConfig
 
 from common.common import random_name, create_dir
 from graph.power_sort_chart import sort_chart
-from settings.settings import float_size
+from settings.settings import float_size, main_title
 
 CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/"
 
@@ -23,6 +23,7 @@ def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
 
 
 def top_page(plot_power_df):
+    plot_power_df = plot_power_df.sort_values(by="Weighted_diff")
     bar = (
         Bar(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
         .add_xaxis(plot_power_df["turbine_code"].tolist())
@@ -34,7 +35,7 @@ def top_page(plot_power_df):
                 name="发电量(kw/h)",
                 min_=0,
                 position="left",
-                # axislabel_opts=opts.LabelOpts(formatter="{value} °C"),
+                axislabel_opts=opts.LabelOpts(formatter="{value} kw"),
                 splitline_opts=opts.SplitLineOpts(
                     is_show=True
                 ),
@@ -44,10 +45,11 @@ def top_page(plot_power_df):
             title_opts=opts.TitleOpts(title="发电量与能效对比"),
             yaxis_opts=opts.AxisOpts(
                 type_="value",
-                name="系数",
+                name="系数(%)",
                 position="right",
                 # splitline_opts=opts.SplitLineOpts(is_show=True),
-                min_=0,
+                axislabel_opts=opts.LabelOpts(formatter="{value} %"),
+                # min_=0,
             ),
             toolbox_opts=opts.ToolboxOpts(
                 is_show=True,  # 是否显示该工具
@@ -88,14 +90,14 @@ def top_page(plot_power_df):
     line1 = (
         Line()
         .add_xaxis(plot_power_df["turbine_code"].tolist())
-        .add_yaxis("能效系数", plot_power_df["performance_ratio"].tolist(),
+        .add_yaxis("能效系数", plot_power_df["Weighted_diff"].tolist(),
                    label_opts=opts.LabelOpts(is_show=False),
-                   is_symbol_show=False, is_smooth=True,
-                   z=1, z_level=1, yaxis_index=0)
-        .add_yaxis("实际发电量/理论发电量系数", plot_power_df["EBA_ratio"].tolist(),
+                   is_symbol_show=True, is_smooth=True, symbol_size=7,
+                   z=1, z_level=1, yaxis_index=0, linestyle_opts=opts.LineStyleOpts(width=4))
+        .add_yaxis("能量可利用率", plot_power_df["EBA_ratio"].tolist(),
                    label_opts=opts.LabelOpts(is_show=False),
-                   is_symbol_show=False, is_smooth=True,
-                   z=1, z_level=1, yaxis_index=0)
+                   is_symbol_show=True, is_smooth=True, symbol_size=7,
+                   z=1, z_level=1, yaxis_index=0, linestyle_opts=opts.LineStyleOpts(width=4))
     )
 
     page = bar.overlap(line1)
@@ -103,7 +105,7 @@ def top_page(plot_power_df):
 
 
 def page_simple_layout(plot_power_df):
-    page = Page(layout=Page.SimplePageLayout)
+    page = Page(layout=Page.SimplePageLayout, page_title=main_title)
     page.add(
         top_page(plot_power_df),
         sort_chart(plot_power_df),
