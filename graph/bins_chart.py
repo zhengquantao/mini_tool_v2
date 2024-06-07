@@ -52,7 +52,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
             toolbox_opts=opts.ToolboxOpts(
                 is_show=True,  # 是否显示该工具
                 # orient="horizontal",  # 工具栏 icon 的布局朝向
-                pos_left="80%",  # 工具栏组件离容器左侧的距离
+                pos_left="right",  # 工具栏组件离容器左侧的距离
                 feature={
                     "saveAsImage": opts.ToolBoxFeatureSaveAsImageOpts(background_color="#ffffff", title="保存图片"),
                     "restore": opts.ToolBoxFeatureRestoreOpts(),
