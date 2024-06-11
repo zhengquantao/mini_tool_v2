@@ -15,6 +15,7 @@
 </head>
 <body {% if chart.page_border_color != '' %}style="background-color: {{ chart.page_border_color }}"{% endif %} onresize="resizeFresh()">
     <style>.box { {{ chart.layout }} } </style>
+    <style>.box { height:100%; } </style>
     {% if chart.download_button %}
         <button onclick="downloadCfg()">Save Config</button>
     {% endif %}

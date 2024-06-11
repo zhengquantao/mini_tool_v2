@@ -344,10 +344,12 @@ class TreeCtrl(metaclass=Singleton):
             model_2 = sub_model_menu1.Append(wx.ID_ANY, '能效评估结果总览')
             model_3 = sub_model_menu1.Append(wx.ID_ANY, '能效排行总览')
             model_6 = sub_model_menu1.Append(wx.ID_ANY, '风资源对比总览')
+            model_12 = sub_model_menu1.Append(wx.ID_ANY, "赛马排行总览")
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_1(event, path), model_1)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_2(event, path), model_2)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_3(event, path), model_3)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_6(event, path), model_6)
+            self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_12(event, path), model_12)
             menu.AppendSubMenu(sub_model_menu1, '能效分析').SetBitmap(svg_to_bitmap(model1_svg, size=(13, 13)))
 
         elif path.endswith(".csv"):
@@ -589,6 +591,19 @@ class TreeCtrl(metaclass=Singleton):
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["power_genspeed"]))
         thread.start()
         self.gauge = GaugePanel(self.frame, "转速-功率分析", thread.ident)
+
+    def on_model_12(self, event, path):
+        """赛马排行总览"""
+        loggers.logger.info(f"能效评估结果总览 clicked, path: {path}")
+
+        if self.open_history_html_file(path, "赛马排行总览"):
+            return
+
+        # 能效评估结果总览
+        project_path = opening_dict[os.getpid()]["path"]
+        thread = Thread(target=self.async_model, args=(iec_main, path, project_path, False, True))
+        thread.start()
+        self.gauge = GaugePanel(self.frame, "赛马排行总览", thread.ident)
 
     def open_history_html_file(self, path, operation_type) -> bool:
         """

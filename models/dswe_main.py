@@ -7,7 +7,7 @@ coding:utf-8
 '''
 import os
 
-from graph import dswe_chart, power_sort_chart
+from graph import dswe_chart, power_sort_chart, table_chart
 from models.utils.AEP import aep_analysis
 from models.utils.Energy_compare import base_data_process
 from settings.settings import power_theoretical
@@ -23,7 +23,7 @@ IEC计算最后返回一个标杆风机
 # #IEC代码
 
 
-def iec_main(file_path, project_path, sort_only=False):
+def iec_main(file_path, project_path, sort_only=False, table=False):
     factor_name = project_path.split(os.sep)[-1]
     curve_line_path = os.path.join(project_path, power_theoretical)
     turbine_code = file_path.split(os.sep)[-1].split(".")[0]
@@ -43,7 +43,12 @@ def iec_main(file_path, project_path, sort_only=False):
     all_statistics = all_statistics.sort_values(by="turbine_code")
     all_statistics["Weighted_diff"] = data_result["Weighted_diff"]
     all_statistics.fillna(0, inplace=True)
-    file_paths, file_name = dswe_chart.build_html(project_path, turbine_code, all_statistics)
 
+    if table:
+        file_paths, file_name = dswe_chart.build_html(project_path, turbine_code, all_statistics)
+        file_paths, file_name = table_chart.build_html(project_path, turbine_code, all_statistics)
+    else:
+        file_paths, file_name = table_chart.build_html(project_path, turbine_code, all_statistics)
+        file_paths, file_name = dswe_chart.build_html(project_path, turbine_code, all_statistics)
     return file_paths, file_name
 
