@@ -216,7 +216,7 @@ class TreeCtrl(metaclass=Singleton):
         if not self.result_dir:
             self.result_dir = self.tree.AppendItem(self.root, result_dir, image=0, data=os.path.dirname(file_paths))
             self.tree.EnsureVisible(self.result_dir)
-        new_item = self.tree.AppendItem(self.result_dir, file_name, image=2, data=file_paths)
+        new_item = self.tree.AppendItem(self.result_dir, file_name, image=4, data=file_paths)
         self.tree.EnsureVisible(new_item)
 
     def update_file_tree(self, event, path=None):

@@ -105,7 +105,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
         )
     )
     page = scatter.overlap(line)
-    file_name = random_name(turbine_code, title.split("   ")[0])
+    file_name = random_name(turbine_code, title.split(" ")[0])
     file_path = create_dir(file_path)
     html_path = page.render(os.path.join(file_path, file_name))
 

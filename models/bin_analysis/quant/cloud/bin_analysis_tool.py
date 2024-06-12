@@ -409,7 +409,7 @@ def wind_speed_power_bin(dataset, turbine_code=None, file_path=None,
         # 功率
         xlabel = "风速/(m·s$^{-1}$)"
         ylabel = "功率/(kW)"
-        title = "风速-功率分析" + "   " + turbine_code
+        title = "风速-功率分析" + " " + turbine_code
         
         # 绘图和保存文件
         file_name = "wind_speed_power_{}.png".format(turbine_code)
@@ -548,7 +548,7 @@ def wind_speed_cp_bin(dataset, turbine_code=None, air_density_tag=None, dir_path
         # *** 风能利用系数-绘图并保存文件
         xlabel = "风速/(m·s$^{-1}$)"
         ylabel = "风能利用系数$C_p$"
-        title = "风速-风能利用系数分析" + "   " + turbine_code
+        title = "风速-风能利用系数分析" + " " + turbine_code
         
         file_name = "Speed_Cp_{}.png".format(turbine_code)
         full_path = os.path.join(dir_path, file_name)
@@ -567,7 +567,7 @@ def wind_speed_cp_bin(dataset, turbine_code=None, air_density_tag=None, dir_path
     else:
         xlabel = "风速/(m·s)"
         ylabel = "风能利用系数Cp"
-        title = "风速-风能利用系数分析" + "   " + turbine_code
+        title = "风速-风能利用系数分析" + " " + turbine_code
 
         # file_name = "Speed_Cp_{}.png".format(turbine_code)
         # full_path = os.path.join(dir_path, file_name)
@@ -954,7 +954,7 @@ def pitch_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_speed_l
     else:
         xlabel = "桨距角/(°)"
         ylabel = "功率/(kW)"
-        title = "桨距角-功率分析" + "   " + turbine_code
+        title = "桨距角-功率分析" + " " + turbine_code
 
         target_data = common_cut(target_data, wind_speed_label, wind_speed_bin_label, start=0, step=3)
         target_data[wind_speed_bin_label] = target_data[wind_speed_bin_label].astype('float').fillna(0)
