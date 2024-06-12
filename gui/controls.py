@@ -24,7 +24,8 @@ from models.compare_curve import compare_curve, compare_curve_all
 from models.dswe_main import iec_main
 from models.geo_main import geo_main
 # from settings.resources import overview
-from settings.settings import opening_dict, float_size, display_grid_count, model2_svg, model1_svg, result_dir
+from settings.settings import opening_dict, float_size, display_grid_count, model2_svg, model1_svg, result_dir, png_svg, \
+    csv_svg, html_svg
 
 
 class Singleton(type):
@@ -250,6 +251,10 @@ class TreeCtrl(metaclass=Singleton):
         icons = [wx.ART_FOLDER, wx.ART_FILE_OPEN, wx.ART_NORMAL_FILE]
         for icon in icons:
             imglist.Add(wx.ArtProvider.GetBitmap(icon, wx.ART_OTHER, wx.Size(16, 16)))
+        custom_icons = [csv_svg, html_svg, png_svg]
+        for icon in custom_icons:
+            imglist.Add(svg_to_bitmap(icon, size=(16, 16)))
+
         self.tree.AssignImageList(imglist)
         root_name = path.split(os.sep)[-1]
         self.now_file_list = get_file_info(path)
@@ -294,7 +299,14 @@ class TreeCtrl(metaclass=Singleton):
                 self.build_tree(item_path, new_item)
             else:
                 new_item = self.tree.AppendItem(parent_item, item)
-                self.tree.SetItemImage(new_item, 2)
+                if item.endswith(".csv"):
+                    self.tree.SetItemImage(new_item, 3)
+                elif item.endswith(".html"):
+                    self.tree.SetItemImage(new_item, 4)
+                elif item.endswith(".png") or item.endswith(".jpg") or item.endswith(".jpeg"):
+                    self.tree.SetItemImage(new_item, 5)
+                else:
+                    self.tree.SetItemImage(new_item, 2)
                 self.tree.SetItemData(new_item, item_path)
 
     def on_right_click_up(self, event):
@@ -404,7 +416,7 @@ class TreeCtrl(metaclass=Singleton):
             return
 
         loggers.logger.info(f"Open clicked, file path: {path}")
-        page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE, wx.ART_OTHER, wx.Size(16, 16))
+
         ctrl = self.notebook_ctrl.notebook_object
         file_name = path.split(os.sep)[-1]
         text = read_file(path)
@@ -413,20 +425,23 @@ class TreeCtrl(metaclass=Singleton):
         opening_dict[pid]["records"][file_name] = path
 
         if path.endswith(".html"):
-            ctrl.AddPage(self.html_ctrl.create_ctrl(parent=ctrl, path=path), file_name, True, page_bmp)
+            ctrl.AddPage(self.html_ctrl.create_ctrl(parent=ctrl, path=path), file_name, True,
+                         svg_to_bitmap(html_svg, size=(16, 16)))
 
         elif any([path.endswith(".csv"), path.endswith(".xlsx"), path.endswith(".xls")]):
             data_df = pd.read_csv(path, encoding=detect_encoding(path))
-            ctrl.AddPage(self.grid_ctrl.create_ctrl(ctrl, data_df), file_name, True, page_bmp)
+            ctrl.AddPage(self.grid_ctrl.create_ctrl(ctrl, data_df), file_name, True,
+                         svg_to_bitmap(csv_svg, size=(16, 16)))
 
         elif any([path.endswith(".png"), path.endswith(".jpg"), path.endswith(".jpeg")]):
             image = wx.Bitmap(path)
             # size = self.mgr.GetPaneByName("notebook_content").window.GetSize()
             # image = image.Rescale(size[0], size[1])
             image_ctrl = wx.StaticBitmap(ctrl, wx.ID_ANY, image)
-            ctrl.AddPage(image_ctrl, file_name, True, page_bmp)
+            ctrl.AddPage(image_ctrl, file_name, True, svg_to_bitmap(png_svg, size=(16, 16)))
 
         else:
+            page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE, wx.ART_OTHER, wx.Size(16, 16))
             page = wx.TextCtrl(ctrl, wx.ID_ANY, text, wx.DefaultPosition, wx.DefaultSize,
                                wx.TE_MULTILINE | wx.NO_BORDER)
             page.SetMargins(5, top=3)

@@ -138,13 +138,13 @@ class MainMenu:
         dlg.Destroy()
 
     def on_help(self, _event: wx.CommandEvent) -> None:
-        msg = "wx.aui Demo\nAn advanced library for wxWidgets"
+        msg = "Energy efficiency assistant \nAn advanced scientific analysis  tool for operations personnel"
         dlg = wx.MessageDialog(self.frame, msg, "Help You", wx.OK)
         dlg.ShowModal()
         dlg.Destroy()
 
     def on_contact(self, _event: wx.CommandEvent):
-        msg = "Website: https://www.baidu.com \nPhone :110 3423 3242\n Email: 123234224324@qq.com \n Address: 中国广东省深圳市南山区前海街道50034号4楼"
+        msg = "Website: https://www.quant-cloud.cn \nPhone :110 3423 3242\n Email: 123234224324@qq.com \n Address: 中国广东省深圳市南山区前海街道50034号4楼"
         dlg = wx.MessageDialog(self.frame, msg, "Contact Us", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()

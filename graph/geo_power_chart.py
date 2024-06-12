@@ -62,6 +62,7 @@ def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
                 # 'none': 什么都不触发
                 trigger="item",
                 # axis_pointer_type="cross",
+                formatter="{b} : {c} %",
             )))
 
     file_name = random_name(turbine, "能效等级总览")

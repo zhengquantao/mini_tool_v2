@@ -10,6 +10,7 @@ CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/"
 
 from pyecharts import options as opts
 from pyecharts.charts import Bar
+from pyecharts.commons.utils import JsCode
 
 
 def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
@@ -62,8 +63,14 @@ def sort_chart(plot_power_df):
                 # 'axis': 坐标轴触发，主要在柱状图，折线图等会使用类目轴的图表中使用。
                 # 'none': 什么都不触发
                 trigger="axis",
-                axis_pointer_type="cross",
-        )))
+                axis_pointer_type="shadow",
+                formatter=JsCode('''function (params) {
+                    let ret_val = params[0].name + '<br />';
+                    ret_val += params[0].seriesName + ': ' + params[0].value + ' kw <br />';
+                    ret_val += params[1].seriesName + ': ' + params[1].value + ' kw <br />';
+                    return ret_val;
+                }'''),
+            )))
 
     return bar
 

@@ -114,7 +114,7 @@ class FileManager:
                          aui.AuiPaneInfo().Name("ProjectTree").Caption(path).
                          CloseButton(False).MaximizeButton(False).
                          MinimizeButton(True).Movable(False).Floatable(False).
-                         Icon(svg_to_bitmap(cs.tree_svg, size=(20, 20))))
+                         Icon(svg_to_bitmap(cs.tree_svg, size=(13, 13))))
         self.mgr.Update()
 
         data = read_file(os.path.join(path, ".mini"))

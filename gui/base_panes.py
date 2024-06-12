@@ -228,6 +228,7 @@ class PaneManager:
         for menu_refid in self.themes:
             self.frame.Bind(wx.EVT_MENU, self.on_notebook_theme, menu_refid)
 
+        self.frame.Bind(wx.EVT_MENU, self.on_preview, id=mb_items["NotebookPreview"]["id"])
         # ctrl_key: str
         # for ctrl_key in content_ctrls.values():
         #     self.frame.Bind(wx.EVT_MENU, self.on_change_content_pane, id=self.mb_items[ctrl_key]["id"])
@@ -280,6 +281,10 @@ class PaneManager:
         # self.mgr.GetPane("test10").Show()
         self.mgr.GetPane("notebook_content").Show()
         self.mgr.Update()
+
+    def on_preview(self, _event: wx.CommandEvent) -> None:
+        nb: aui.AuiNotebook = self.mgr.GetPane("notebook_content").window
+        nb.NotebookPreview()
 
     def on_notebook_theme(self, event: wx.CommandEvent) -> None:
         """Update notebook theme (TabArt provider)."""

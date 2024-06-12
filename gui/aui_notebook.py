@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Type
 
 from aui2 import svg_to_bitmap
 
-from settings.settings import float_size, left_svg, top_svg, new_page_svg
+from settings.settings import float_size, left_svg, top_svg, new_page_svg, html_svg
 
 if TYPE_CHECKING:
     # If MainFrame subclasses wx.Frame, uncomment the following line
@@ -85,9 +85,6 @@ class Notebook:
 
         ctrl.SetArtProvider(arts[self.notebook_theme]())
 
-        page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE,
-                                                       wx.ART_OTHER, wx.Size(16, 16))
-
         # page = wx.TextCtrl(ctrl, wx.ID_ANY, overview, wx.DefaultPosition, wx.Size(*float_size),
         #                    wx.TE_MULTILINE | wx.NO_BORDER, name='Welcome to MINI-TOOL')
         # page.SetMargins(20)
@@ -97,7 +94,8 @@ class Notebook:
 
         file_path = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), "static", "js",
                                  "introduce.html")
-        ctrl.AddPage(self.html_ctrl.create_ctrl(path=file_path), "Welcome to MINI-TOOL", True, page_bmp)
+        ctrl.AddPage(self.html_ctrl.create_ctrl(path=file_path), "Welcome to MINI-TOOL", True,
+                     svg_to_bitmap(html_svg, size=(16, 16)))
 
         # panel: wx.Panel = wx.Panel(ctrl, wx.ID_ANY)
         # flex: wx.FlexGridSizer = wx.FlexGridSizer(rows=0, cols=2, vgap=2, hgap=2)

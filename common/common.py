@@ -15,8 +15,9 @@ import psutil
 import wx
 import wx.svg
 import wx.lib.agw.aui as aui
+from aui2 import svg_to_bitmap
 
-from settings.settings import opening_dict, cols_titles, result_dir
+from settings.settings import opening_dict, cols_titles, result_dir, html_svg
 
 
 def async_raise(thread_id, exctype, logger=logging):
@@ -136,11 +137,11 @@ def get_file_info(directory="."):
 
 
 def add_notebook_page(notebook_ctrl, html_ctrl, file_paths, file_name):
-    page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE, wx.ART_OTHER, wx.Size(16, 16))
     ctrl = notebook_ctrl.notebook_object
     pid = os.getpid()
     opening_dict[pid]["records"][file_name] = file_paths
-    ctrl.AddPage(html_ctrl.create_ctrl(parent=ctrl, path=file_paths), file_name, True, page_bmp)
+    ctrl.AddPage(html_ctrl.create_ctrl(parent=ctrl, path=file_paths), file_name, True,
+                 svg_to_bitmap(html_svg, size=(16, 16)))
     return ctrl
 
 
