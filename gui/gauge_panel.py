@@ -24,11 +24,11 @@ class GaugePanel(wx.GenericProgressDialog):
                 value += 1
                 self.Update(value, "加载中")
             elif value >= 50 and value < 98:
-                value += 0.02
+                value += 0.002
                 self.Update(value, "加载中")
 
             elif value >= 98 and value < 100:
-                value += 0.00002
+                value += 0.0000002
                 self.Update(value, "加载中")
             else:
                 wx.CallAfter(self.close)

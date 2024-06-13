@@ -43,12 +43,14 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
                 name=xlabel,
                 # type_="value",
                 splitline_opts=opts.SplitLineOpts(is_show=True),
-                min_=-5 if title.startswith("桨距角-功率分析") else 0,
+                min_=-5 if title.startswith("桨距角-功率分析") else str(data[col_x].min().round(1)),
             ),
             yaxis_opts=opts.AxisOpts(
                 name=ylabel,
                 type_="value",
-                splitline_opts=opts.SplitLineOpts(is_show=True)),
+                splitline_opts=opts.SplitLineOpts(is_show=True),
+                min_=str(data[col_y].min().round(1))
+            ),
             toolbox_opts=opts.ToolboxOpts(
                 is_show=True,  # 是否显示该工具
                 # orient="horizontal",  # 工具栏 icon 的布局朝向
@@ -76,7 +78,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
             # https://github.com/reed-hong/pyecharts/blob/5f01f2fb43d1602a46d77234721450008cbff7eb/example/graphic_example.py#L10
             graphic_opts=[
                 opts.GraphicGroup(
-                    graphic_item=opts.GraphicItem(right="right", top="43%"),
+                    graphic_item=opts.GraphicItem(right="2.5%", top="43%"),
                     children=[
                         opts.GraphicText(
                             graphic_textstyle_opts=opts.GraphicTextStyleOpts(

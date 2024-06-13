@@ -31,7 +31,7 @@ def sort_chart(plot_power_df):
         .add_yaxis("实际发电量", plot_power_df["iec_power(mWh)"].tolist())
         .reversal_axis()
         .set_global_opts(
-            title_opts=opts.TitleOpts(title="风机能效排行"),
+            title_opts=opts.TitleOpts(title="风机发电量排行"),
             toolbox_opts=opts.ToolboxOpts(
                 is_show=True,  # 是否显示该工具
                 orient="vertical",  # 工具栏 icon 的布局朝向

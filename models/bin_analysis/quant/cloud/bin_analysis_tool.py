@@ -407,8 +407,8 @@ def wind_speed_power_bin(dataset, turbine_code=None, file_path=None,
     # *** ---------- 4. 组装binning分仓曲线数据 ----------
     if plot_flag:
         # 功率
-        xlabel = "风速/(m·s$^{-1}$)"
-        ylabel = "功率/(kW)"
+        xlabel = "风速(m/s$^{-1}$)"
+        ylabel = "功率(kW)"
         title = "风速-功率分析" + " " + turbine_code
         
         # 绘图和保存文件
@@ -565,7 +565,7 @@ def wind_speed_cp_bin(dataset, turbine_code=None, air_density_tag=None, dir_path
                        title, full_path, cp_windspeed_bin_df,
                        hue=hue, size=air_density_tag)
     else:
-        xlabel = "风速/(m·s)"
+        xlabel = "风速(m/s)"
         ylabel = "风能利用系数Cp"
         title = "风速-风能利用系数分析" + " " + turbine_code
 
@@ -580,7 +580,7 @@ def wind_speed_cp_bin(dataset, turbine_code=None, air_density_tag=None, dir_path
                                           title, dir_path, cp_windspeed_bin_df,
                                           hue=air_density_bin_label,
                                           sizes=pd.unique(target_data[air_density_bin_label]),
-                                          turbine_code=turbine_code, beside_title=air_density_label)
+                                          turbine_code=turbine_code, beside_title="空气密度")
     
     return full_path, file_name
 
@@ -640,8 +640,8 @@ def wind_speed_pitch_bin(dataset, turbine_code=None, file_path=None, hue=power_l
 
     else:
         # ? 风速-桨距角
-        xlabel = "风速/(m·s)"
-        ylabel = "桨距角/(°)"
+        xlabel = "风速(m/s)"
+        ylabel = "桨距角(°)"
         title = "风速-桨距角分析" + " " + turbine_code
         # 功率分仓
         dataset = common_cut(dataset, power_label, power_bin_label, start=0, step=400)
@@ -651,7 +651,7 @@ def wind_speed_pitch_bin(dataset, turbine_code=None, file_path=None, hue=power_l
                                           title, file_path, pitch_windspeed_bin_df,
                                           hue=power_bin_label,
                                           sizes=pd.unique(dataset[power_bin_label]),
-                                          turbine_code=turbine_code, beside_title=power_label)
+                                          turbine_code=turbine_code, beside_title="功率")
 
     return full_path, file_name
 
@@ -707,8 +707,8 @@ def speed_wind_gen_bin(dataset, turbine_code=None, file_path=None, hue=power_lab
                        title, full_path, gen_wind_speed_bin_df,
                        hue=hue, size=power_label)
     else:
-        xlabel = "风速/(m·s)"
-        ylabel = "转速/(r·min)"
+        xlabel = "风速(m/s)"
+        ylabel = "转速(r/min)"
         title = "风速-转速分析" + " " + turbine_code
 
         dataset = common_cut(dataset, power_label, power_bin_label, start=0, step=400)
@@ -718,7 +718,7 @@ def speed_wind_gen_bin(dataset, turbine_code=None, file_path=None, hue=power_lab
                                           title, file_path, gen_wind_speed_bin_df,
                                           hue=power_bin_label,
                                           sizes=pd.unique(dataset[power_bin_label]),
-                                          turbine_code=turbine_code, beside_title=power_label)
+                                          turbine_code=turbine_code, beside_title="功率")
 
     return full_path, file_name
 
@@ -757,8 +757,8 @@ def gen_speed_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_spe
     # *** ---------- 4. 组装binning分仓曲线数据 ----------
     if plot_flag:
         # 转速-功率
-        xlabel = "转速/(r·min$^{-1}$)"
-        ylabel = "功率/(kW)"
+        xlabel = "转速(r/min$^{-1}$)"
+        ylabel = "功率(kW)"
         title = "转速-功率分析" + " " + turbine_code
         
         # 绘图和保存文件
@@ -774,8 +774,8 @@ def gen_speed_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_spe
                        title, full_path, power_genspeed_bin_df,
                        hue=hue, size=wind_speed_label)
     else:
-        xlabel = "转速/(r·min)"
-        ylabel = "功率/(kW)"
+        xlabel = "转速(r/min)"
+        ylabel = "功率(kW)"
         title = "转速-功率分析" + " " + turbine_code
 
         dataset = common_cut(dataset, wind_speed_label, wind_speed_bin_label, start=0, step=3)
@@ -785,7 +785,7 @@ def gen_speed_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_spe
                                           title, file_path, power_genspeed_bin_df,
                                           hue=wind_speed_bin_label,
                                           sizes=pd.unique(dataset[wind_speed_bin_label]),
-                                          turbine_code=turbine_code, beside_title=wind_speed_label)
+                                          turbine_code=turbine_code, beside_title="风速")
     
     return full_path, file_name
 
@@ -940,8 +940,8 @@ def pitch_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_speed_l
     # *** ---------- 4. 组装binning分仓曲线数据 ----------
     if plot_flag:
         #? 桨距角-功率
-        xlabel = "桨距角/(°)"
-        ylabel = "功率/(kW)"
+        xlabel = "桨距角(°)"
+        ylabel = "功率(kW)"
         title = "桨距角-功率分析" + "   " + turbine_code
         
         # 绘图和保存文件
@@ -952,8 +952,8 @@ def pitch_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_speed_l
                        title, full_path, power_pitch_bin_df,
                        hue=hue, size=wind_speed_label)
     else:
-        xlabel = "桨距角/(°)"
-        ylabel = "功率/(kW)"
+        xlabel = "桨距角(°)"
+        ylabel = "功率(kW)"
         title = "桨距角-功率分析" + " " + turbine_code
 
         target_data = common_cut(target_data, wind_speed_label, wind_speed_bin_label, start=0, step=3)
@@ -963,7 +963,7 @@ def pitch_power_bin(dataset, turbine_code=None, file_path=None, hue=wind_speed_l
                                           title, file_path, power_pitch_bin_df,
                                           hue=wind_speed_bin_label,
                                           sizes=pd.unique(target_data[wind_speed_bin_label]),
-                                          turbine_code=turbine_code, beside_title=wind_speed_label)
+                                          turbine_code=turbine_code, beside_title="风速")
     
     return full_path, file_name
 

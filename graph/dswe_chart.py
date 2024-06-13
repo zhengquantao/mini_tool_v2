@@ -33,7 +33,7 @@ def top_page(plot_power_df):
         .extend_axis(
             yaxis=opts.AxisOpts(
                 type_="value",
-                name="发电量(kw/h)",
+                name="发电量(kwh)",
                 min_=0,
                 position="left",
                 axislabel_opts=opts.LabelOpts(formatter="{value} kw"),
