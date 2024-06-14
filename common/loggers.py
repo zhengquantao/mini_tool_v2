@@ -1,4 +1,7 @@
 import logging
+import os
+from logging.handlers import RotatingFileHandler
+
 import wx
 
 from settings.settings import log_level
@@ -29,6 +32,13 @@ def init_log(frame=None):
     log = logging.getLogger()
     log_handler = RealTimeLogHandler(frame)
     log.addHandler(log_handler)
+
+    last_log_file = os.path.join(os.path.expanduser("~"), "mini_tool.log")
+    rotate_file_handler = RotatingFileHandler(last_log_file, maxBytes=1024*1024*1, backupCount=1)
+    rotate_file_handler.setFormatter(
+        logging.Formatter('%(asctime)s - %(filename)s:%(lineno)d - %(levelname)s - %(message)s'))
+    log.addHandler(rotate_file_handler)
+
     log.setLevel(log_level)
     return log
 

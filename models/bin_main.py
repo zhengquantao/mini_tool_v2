@@ -7,7 +7,7 @@ from scipy.optimize import minimize
 
 
 from common import loggers
-from common.common import read_csv_file, detect_encoding, data_cleaning_by_pitchangle
+from common.common import read_csv_file, detect_encoding, data_cleaning_by_pitchangle, ignore_files_func
 from settings.settings import power_theoretical, ignore_files
 
 # *** ---------- custom package ----------
@@ -70,7 +70,7 @@ def bin_main(file_path, project_path, img_mode=False, run_func_list=None):
         if not scada_file.endswith(".csv"):
             continue
 
-        if scada_file in ignore_files:
+        if ignore_files_func(scada_file):
             continue
 
         # *** ---------- 3 数据提取 ----------

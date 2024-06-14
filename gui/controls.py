@@ -1,5 +1,6 @@
 import datetime
 import os
+import traceback
 from threading import Thread
 
 import pandas as pd
@@ -664,9 +665,12 @@ class TreeCtrl(metaclass=Singleton):
         print("Selection changing")
 
     def async_model(self, callable_func, *args):
-        file_paths, file_name = callable_func(*args)
-        # 防止多线程操作主进程页面导致异常崩溃
-        wx.CallAfter(publisher.sendMessage, "add_page", msg=(file_paths, file_name))
+        try:
+            file_paths, file_name = callable_func(*args)
+            # 防止多线程操作主进程页面导致异常崩溃
+            wx.CallAfter(publisher.sendMessage, "add_page", msg=(file_paths, file_name))
+        except:
+            loggers.logger.error(traceback.format_exc())
 
 
 class HTMLCtrl(metaclass=Singleton):

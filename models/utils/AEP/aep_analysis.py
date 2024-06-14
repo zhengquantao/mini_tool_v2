@@ -34,7 +34,7 @@ import os
 import locale
 import pandas as pd
 
-from common.common import read_csv_file, detect_encoding
+from common.common import read_csv_file, detect_encoding, ignore_files_func
 from settings.settings import ignore_files
 from ..data_integration import extra_data
 
@@ -112,7 +112,7 @@ def aep_main(file_path, farm_name, real_time, wind_col, dirction_col, temperatur
             if not scada_file.endswith(".csv"):
                 continue
 
-            if scada_file in ignore_files:
+            if ignore_files_func(scada_file):
                 continue
 
             # *** ---------- 3 数据提取 ----------

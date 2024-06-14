@@ -50,4 +50,6 @@ class MainFrame:
         if dlg.ShowModal() != wx.ID_YES:
             return
         self.frame.Destroy()
+        import sys
+        sys.exit()
         # self.frame.Close(True)

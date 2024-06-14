@@ -115,14 +115,10 @@ def run_gui(project_path=None):
 
 
 def main():
-    try:
-        web = Process(target=run_server)
-        web.start()
-        Process(target=run_gui).start()
-        daemon_app(web)
-    except AttributeError as e:
-        print("-------------")
-        pass
+    web = Process(target=run_server)
+    web.start()
+    Process(target=run_gui).start()
+    daemon_app(web)
 
 
 if __name__ == "__main__":

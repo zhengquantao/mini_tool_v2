@@ -17,7 +17,7 @@ import wx.svg
 import wx.lib.agw.aui as aui
 from aui2 import svg_to_bitmap
 
-from settings.settings import opening_dict, cols_titles, result_dir, html_svg
+from settings.settings import opening_dict, cols_titles, result_dir, html_svg, ignore_files
 
 
 def async_raise(thread_id, exctype, logger=logging):
@@ -240,7 +240,16 @@ def data_cleaning_by_pitchangle(dataset, power_value):
     return dataset
 
 
+def ignore_files_func(file):
+    for i in ignore_files:
+        if i in file:
+            return True
+    return False
+
+
 def read_csv_file(file):
+    from common import loggers
+    loggers.logger.info(f"当前打开文件：{file}")
     cols_list = cols_titles.keys()
     data_frame = pd.read_csv(file, usecols=cols_list, encoding=detect_encoding(file))
     select_col_df = data_frame[cols_list]
