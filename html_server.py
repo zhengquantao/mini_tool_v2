@@ -23,7 +23,6 @@ def run_server(port=PORT):
             # print("Serving at port", port)
             httpd.serve_forever()
     except OSError as e:
-        print(e)
         pass
 
 
