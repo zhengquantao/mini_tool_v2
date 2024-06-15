@@ -5,7 +5,8 @@ from common.common import async_raise
 
 class GaugePanel(wx.GenericProgressDialog):
     def __init__(self, parent, title, thread_id=None,):
-        wx.GenericProgressDialog.__init__(self, title, "准备中", maximum=100, parent=parent,
+        self.maximum = 3278
+        wx.GenericProgressDialog.__init__(self, title, "准备中", maximum=self.maximum, parent=parent,
                                           style=wx.PD_APP_MODAL | wx.PD_CAN_ABORT)
         self.thread_id = thread_id
         self.timer = wx.Timer(self)
@@ -20,15 +21,14 @@ class GaugePanel(wx.GenericProgressDialog):
                 wx.CallAfter(self.close)
 
             value = self.GetValue()
-            if value < 50:
+            if value < self.maximum * 0.4:
+                value += 5
+                self.Update(value, "加载中")
+            elif value >= self.maximum * 0.4 and value < self.maximum * 0.98:
                 value += 1
                 self.Update(value, "加载中")
-            elif value >= 50 and value < 98:
-                value += 0.002
-                self.Update(value, "加载中")
 
-            elif value >= 98 and value < 100:
-                value += 0.0000002
+            elif value >= self.maximum * 0.98 and value < self.maximum:
                 self.Update(value, "加载中")
             else:
                 wx.CallAfter(self.close)

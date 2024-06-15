@@ -633,6 +633,7 @@ class TreeCtrl(metaclass=Singleton):
             name = path.split(os.sep)[-1]
 
         result_dir_path = os.path.join(project_path, result_dir)
+        os.makedirs(result_dir_path, exist_ok=True)
         results_path_lists = os.listdir(result_dir_path)
         file_name = ""
         for result_path in results_path_lists:
