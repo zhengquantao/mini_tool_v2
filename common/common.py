@@ -51,7 +51,7 @@ def new_app(path):
 
 def daemon_app(app):
     current_process = psutil.Process()
-    while len(current_process.children()) >= 3:
+    while len(current_process.children(recursive=True)) >= 3:
         time.sleep(3)
 
     app.terminate()
