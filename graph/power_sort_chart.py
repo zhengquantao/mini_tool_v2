@@ -15,7 +15,7 @@ from pyecharts.commons.utils import JsCode
 
 def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
 
-    file_name = random_name(turbine, "能效排行总览")
+    file_name = random_name(turbine, "发电量排行总览")
     factor_path = create_dir(factor_path)
     html_path = sort_chart(plot_power_df).render(os.path.join(factor_path, file_name))
 

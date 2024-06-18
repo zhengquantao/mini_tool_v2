@@ -1,7 +1,6 @@
 import json
 import os
 import shutil
-import sys
 
 import wx
 import wx.aui
@@ -9,7 +8,8 @@ import wx.lib.agw.aui as aui
 from aui2 import svg_to_bitmap
 
 from settings import settings as cs
-from common.common import read_file, new_app, save_mini_file
+from common import loggers
+from common.common import read_file, new_app
 from gui.controls import SizeReportCtrl, TextCtrl, TreeCtrl, HTMLCtrl, GridCtrl
 from gui.aui_notebook import Notebook
 from gui.main_menu import MainMenu
@@ -108,7 +108,7 @@ class FileManager:
 
     def open_project(self, path: str, init_project=False):
         pid = os.getpid()
-        print(f"当前进程号：{pid}")
+        loggers.logger.info(f"当前进程号：{pid}")
         opening_dict[pid] = {"path": path, "records": {}}
         self.mgr.AddPane(self.tree_ctrl.create_ctrl(path, init_project=init_project),
                          aui.AuiPaneInfo().Name("ProjectTree").Caption(path).
@@ -161,7 +161,7 @@ class FileManager:
             return
 
         path = os.path.join(select_dialog.GetPath(), directory_name)
-        print(f"Chosen directory: {path}")
+        loggers.logger.info(f"Chosen directory: {path}")
         os.makedirs(path)
         self.add_history(path)
 
@@ -174,7 +174,7 @@ class FileManager:
             return
 
         path = select_dialog.GetPath()
-        print(f"Chosen directory: {path}")
+        loggers.logger.info(f"Chosen directory: {path}")
         self.add_history(path)
         new_app(path)
 
@@ -190,7 +190,7 @@ class FileManager:
             return
 
         path = select_dialog.GetPath()
-        print(f"Chosen directory: {path}")
+        loggers.logger.info(f"Chosen directory: {path}")
         self.tree_ctrl.on_open(event, path)
 
     def on_save_project(self, event: wx.CommandEvent) -> None:
@@ -199,7 +199,7 @@ class FileManager:
             return
 
         path = select_dialog.GetPath()
-        print(f"Chosen directory: {path}")
+        loggers.logger.info(f"Chosen directory: {path}")
         filepath = self.project_path.split(os.sep)[-1]
         path = os.path.join(path, filepath)
         shutil.copytree(self.project_path, path, dirs_exist_ok=True)
@@ -214,12 +214,11 @@ class FileManager:
         # self.open_project(path)
 
     def on_exit(self, _event: wx.CommandEvent) -> None:
-        save_mini_file(self.mgr)
-        dlg = wx.MessageDialog(self.frame, f"你确认要退出吗？", "警告", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING)
-        if dlg.ShowModal() != wx.ID_YES:
-            return
-
-        self.frame.Destroy()
+        # save_mini_file(self.mgr)
+        # dlg = wx.MessageDialog(self.frame, f"你确认要退出吗？", "警告", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING)
+        # if dlg.ShowModal() != wx.ID_YES:
+        #     return
+        self.frame.Close(True)
 
     def on_timer(self, _event: wx.TimerEvent) -> None:
         try:

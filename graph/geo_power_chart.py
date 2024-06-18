@@ -27,7 +27,7 @@ def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
             #     )),
         )
         .set_global_opts(
-            title_opts=opts.TitleOpts(title=f"{turbine}能效等级总览"),
+            title_opts=opts.TitleOpts(title=f"{turbine}能效排行总览"),
             # xaxis_opts=opts.AxisOpts(is_show=False),
             toolbox_opts=opts.ToolboxOpts(
                 is_show=True,  # 是否显示该工具
@@ -65,7 +65,7 @@ def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
                 formatter="{b} : {c} %",
             )))
 
-    file_name = random_name(turbine, "能效等级总览")
+    file_name = random_name(turbine, "能效排行总览")
     factor_path = create_dir(factor_path)
     html_path = scatter.render(os.path.join(factor_path, file_name))
 

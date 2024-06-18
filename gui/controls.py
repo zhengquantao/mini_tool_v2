@@ -324,7 +324,6 @@ class TreeCtrl(metaclass=Singleton):
         self.current = item
 
         path = self.tree.GetItemData(item)
-        print(f"right clicked, path: {path}")
 
         menu = wx.Menu()
         open_item = menu.Append(wx.ID_ANY, '打开')
@@ -353,11 +352,11 @@ class TreeCtrl(metaclass=Singleton):
         sub_model_menu1 = wx.Menu()
         if os.path.isdir(path):
             menu.AppendSeparator()
-            model_1 = sub_model_menu1.Append(wx.ID_ANY, '能效等级总览')
-            model_2 = sub_model_menu1.Append(wx.ID_ANY, '能效评估结果总览')
-            model_3 = sub_model_menu1.Append(wx.ID_ANY, '能效排行总览')
+            model_12 = sub_model_menu1.Append(wx.ID_ANY, '赛马排行总览')
+            model_1 = sub_model_menu1.Append(wx.ID_ANY, '能效排行总览')
+            model_2 = sub_model_menu1.Append(wx.ID_ANY, '能效结果总览')
+            model_3 = sub_model_menu1.Append(wx.ID_ANY, '发电量排行总览')
             model_6 = sub_model_menu1.Append(wx.ID_ANY, '风资源对比总览')
-            model_12 = sub_model_menu1.Append(wx.ID_ANY, "赛马排行总览")
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_1(event, path), model_1)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_2(event, path), model_2)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_3(event, path), model_3)
@@ -368,7 +367,7 @@ class TreeCtrl(metaclass=Singleton):
         elif path.endswith(".csv"):
             menu.AppendSeparator()
             model_4 = sub_model_menu1.Append(wx.ID_ANY, '理论与实际功率对比分析')
-            model_5 = sub_model_menu1.Append(wx.ID_ANY, '风资源对比')
+            model_5 = sub_model_menu1.Append(wx.ID_ANY, '风资源分析')
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_4(event, path), model_4)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_5(event, path), model_5)
             menu.AppendSubMenu(sub_model_menu1, '能效分析').SetBitmap(svg_to_bitmap(model1_svg, size=(13, 13)))
@@ -478,42 +477,42 @@ class TreeCtrl(metaclass=Singleton):
         self.tree.SetPyData(self.current, os.sep.join(file_list))
 
     def on_model_1(self, event, path):
-        """能效等级总览"""
-        loggers.logger.info(f"能效等级总览 clicked, path: {path}")
-
-        if self.open_history_html_file(path, "能效等级总览"):
-            return
-
-        project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(geo_main, path, project_path))
-        thread.start()
-        self.gauge = GaugePanel(self.frame, "能效等级总览", thread.ident)
-
-    def on_model_2(self, event, path):
-        """能效评估结果总览"""
-        loggers.logger.info(f"能效评估结果总览 clicked, path: {path}")
-
-        if self.open_history_html_file(path, "能效评估结果总览"):
-            return
-
-        # 能效评估结果总览
-        project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(iec_main, path, project_path))
-        thread.start()
-        self.gauge = GaugePanel(self.frame, "能效评估结果总览", thread.ident)
-
-    def on_model_3(self, event, path):
         """能效排行总览"""
         loggers.logger.info(f"能效排行总览 clicked, path: {path}")
 
         if self.open_history_html_file(path, "能效排行总览"):
             return
 
-        # 能效评估结果总览
+        project_path = opening_dict[os.getpid()]["path"]
+        thread = Thread(target=self.async_model, args=(geo_main, path, project_path))
+        thread.start()
+        self.gauge = GaugePanel(self.frame, "能效排行总览", thread.ident)
+
+    def on_model_2(self, event, path):
+        """能效结果总览"""
+        loggers.logger.info(f"能效结果总览 clicked, path: {path}")
+
+        if self.open_history_html_file(path, "能效结果总览"):
+            return
+
+        # 能效结果总览
+        project_path = opening_dict[os.getpid()]["path"]
+        thread = Thread(target=self.async_model, args=(iec_main, path, project_path))
+        thread.start()
+        self.gauge = GaugePanel(self.frame, "能效结果总览", thread.ident)
+
+    def on_model_3(self, event, path):
+        """发电量排行总览"""
+        loggers.logger.info(f"发电量排行总览 clicked, path: {path}")
+
+        if self.open_history_html_file(path, "发电量排行总览"):
+            return
+
+        # 能效结果总览
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(iec_main, path, project_path, True))
         thread.start()
-        self.gauge = GaugePanel(self.frame, "能效排行总览", thread.ident)
+        self.gauge = GaugePanel(self.frame, "发电量排行总览", thread.ident)
 
     def on_model_4(self, event, path):
         """理论与实际功率对比分析"""
@@ -529,17 +528,17 @@ class TreeCtrl(metaclass=Singleton):
         self.gauge = GaugePanel(self.frame, "理论与实际功率对比分析", thread.ident)
 
     def on_model_5(self, event, path):
-        """风资源对比"""
-        loggers.logger.info(f"风资源对比 clicked, path: {path}")
+        """风资源分析"""
+        loggers.logger.info(f"风资源分析 clicked, path: {path}")
 
-        if self.open_history_html_file(path, "风资源对比"):
+        if self.open_history_html_file(path, "风资源分析"):
             return
 
         # 风资源对比
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(compare_curve, path, project_path, 1, True))
         thread.start()
-        self.gauge = GaugePanel(self.frame, "风资源对比", thread.ident)
+        self.gauge = GaugePanel(self.frame, "风资源分析", thread.ident)
 
     def on_model_6(self, event, path):
         """风资源对比总览"""
@@ -610,12 +609,12 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_12(self, event, path):
         """赛马排行总览"""
-        loggers.logger.info(f"能效评估结果总览 clicked, path: {path}")
+        loggers.logger.info(f"能效结果总览 clicked, path: {path}")
 
         if self.open_history_html_file(path, "赛马排行总览"):
             return
 
-        # 能效评估结果总览
+        # 能效结果总览
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(iec_main, path, project_path, False, True))
         thread.start()
@@ -654,16 +653,16 @@ class TreeCtrl(metaclass=Singleton):
         return True
 
     def on_item_expanded(self, event):
-        print("Item expanded!")
+        loggers.logger.info("Item expanded!")
 
     def on_item_collapsed(self, event):
-        print("Item collapsed!")
+        loggers.logger.info("Item collapsed!")
 
     def on_sel_changed(self, event):
-        print("Selection changed")
+        loggers.logger.info("Selection changed")
 
     def on_sel_changing(self, event):
-        print("Selection changing")
+        loggers.logger.info("Selection changing")
 
     def async_model(self, callable_func, *args):
         try:
@@ -704,7 +703,7 @@ class HTMLCtrl(metaclass=Singleton):
             parent = self.frame
         # wx.html2仅支持到echarts<=3.7.0的版本
         ctrl = wx.html2.WebView.New(parent, size=wx.Size(*float_size))
-        # print(ctrl.GetBackendVersionInfo().Name)
+        # loggers.logger.info(ctrl.GetBackendVersionInfo().Name)
         ctrl.LoadURL(f"file:///{path}")
         # ctrl = CefFrame(parent, f"file:///{path}")
         return ctrl

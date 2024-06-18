@@ -16,7 +16,7 @@ from pyecharts.commons.utils import JsCode
 def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
 
     page = page_simple_layout(plot_power_df)
-    file_name = random_name(turbine, "能效评估结果总览")
+    file_name = random_name(turbine, "能效结果总览")
     factor_path = create_dir(factor_path)
     html_path = page.render(os.path.join(factor_path, file_name))
 
@@ -43,7 +43,7 @@ def top_page(plot_power_df):
             ),
         )
         .set_global_opts(
-            title_opts=opts.TitleOpts(title="能效评估结果总览"),
+            title_opts=opts.TitleOpts(title="能效结果总览"),
             yaxis_opts=opts.AxisOpts(
                 type_="value",
                 name="系数(%)",

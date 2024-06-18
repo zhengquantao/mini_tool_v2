@@ -1,3 +1,4 @@
+import os
 import sys
 from multiprocessing import freeze_support, Process
 
@@ -118,7 +119,7 @@ def main():
     web = Process(target=run_server)
     web.start()
     Process(target=run_gui).start()
-    daemon_app(web)
+    daemon_app(web, ppid=os.getpid())
 
 
 if __name__ == "__main__":

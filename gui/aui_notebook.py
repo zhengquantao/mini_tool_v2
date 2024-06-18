@@ -145,8 +145,6 @@ class Notebook:
 
         page_index = event.GetSelection()
 
-        print(f"right clicked, tab_id: {page_index}")
-
         menu = wx.Menu()
         close_item = menu.Append(wx.ID_ANY, '关闭')
         all_close_item = menu.Append(wx.ID_ANY, '全部关闭')
