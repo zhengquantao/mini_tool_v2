@@ -65,14 +65,13 @@ class PaneManager:
     def __init__(self, frame: wx.Frame, mgr: aui.AuiManager, mb_items: dict,
                  item_ids: dict[wx.WindowIDRef, str], html_ctrl: HTMLCtrl,
                  text_ctrl: TextCtrl, tree_ctrl: TreeCtrl, grid_ctrl: GridCtrl,
-                 size_reporter: SizeReportCtrl, notebook_ctrl: Notebook) -> None:
+                 notebook_ctrl: Notebook) -> None:
         self.frame = frame
         self.mgr = mgr
         self.html_ctrl = html_ctrl
         self.text_ctrl = text_ctrl
         self.tree_ctrl = tree_ctrl
         self.grid_ctrl = grid_ctrl
-        self.size_reporter = size_reporter
         self.notebook_ctrl = notebook_ctrl
 
         # self.timer = wx.Timer(frame)
@@ -102,7 +101,6 @@ class PaneManager:
             menu_item.Check()
 
     def build_panes(self):
-        size_reporter: SizeReportCtrl = self.size_reporter
         tree_ctrl: TreeCtrl = self.tree_ctrl
         html_ctrl: HTMLCtrl = self.html_ctrl
         text_ctrl: TextCtrl = self.text_ctrl

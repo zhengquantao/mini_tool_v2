@@ -50,7 +50,7 @@ class FileManager:
 
     def __init__(self, frame: wx.Frame, mgr: aui.AuiManager, menubar: MainMenu, html_ctrl: HTMLCtrl,
                  text_ctrl: TextCtrl, tree_ctrl: TreeCtrl, grid_ctrl: GridCtrl, notebook_ctrl: Notebook,
-                 size_reporter: SizeReportCtrl, project_path=None) -> None:
+                 project_path=None) -> None:
         self.frame = frame
         self.mgr = mgr
         self.html_ctrl = html_ctrl
@@ -58,7 +58,6 @@ class FileManager:
         self.tree_ctrl = tree_ctrl
         self.grid_ctrl = grid_ctrl
         self.notebook_ctrl = notebook_ctrl
-        self.size_reporter = size_reporter
 
         # self.timer = wx.Timer(frame)
         # frame.Bind(wx.EVT_TIMER, self.on_timer)

@@ -60,8 +60,7 @@
          //窗口大小变化时候，进行刷新页面操作，防止样式混乱
          var x=window.innerWidth;
          function resizeFresh(){
-             if(x!=window.innerWidth)
-                 location.reload();
+             chart_{{ c.chart_id }}.resize();
          }
      </script>
 {%- endmacro %}

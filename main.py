@@ -59,11 +59,11 @@ class MainApp:
         menubar = MainMenu(frame, mgr)
         # 注释侧边栏
         tbman: ToolBarManager = ToolBarManager(frame, mgr)
-        popup: PopupMenu = PopupMenu(frame)
+        # popup: PopupMenu = PopupMenu(frame)
         # popup.bind_DropDownToolbarItem(tbman.items["DropDownToolbarItem"]["id"])
 
-        id_size_report_ctrl: wx.WindowIDRef = wx.WindowIDRef()
-        size_reporter: SizeReportCtrl = SizeReportCtrl(frame, mgr, id_size_report_ctrl)
+        # id_size_report_ctrl: wx.WindowIDRef = wx.WindowIDRef()
+        # size_reporter: SizeReportCtrl = SizeReportCtrl(frame, mgr, id_size_report_ctrl)
         id_text_ctrl: wx.WindowIDRef = wx.WindowIDRef()
         text_ctrl: TextCtrl = TextCtrl(frame, mgr, id_text_ctrl)
         id_html_ctrl: wx.WindowIDRef = wx.WindowIDRef()
@@ -76,7 +76,7 @@ class MainApp:
         tree_ctrl: TreeCtrl = TreeCtrl(frame, mgr, id_tree_ctrl, notebook_ctrl, html_ctrl, grid_ctrl)
 
         # init log
-        logger_frames = text_ctrl.create_ctrl()
+        logger_frames = text_ctrl.create_ctrl(frame)
         loggers.logger_frame = logger_frames
         loggers.logger = loggers.init_log(logger_frames)
         loggers.logger.info("正在运行中....")
@@ -90,7 +90,7 @@ class MainApp:
 
         paneman: PaneManager = PaneManager(
             frame, mgr, menubar.items, menubar.item_ids, html_ctrl, text_ctrl,
-            tree_ctrl, grid_ctrl, size_reporter, notebook_ctrl)
+            tree_ctrl, grid_ctrl, notebook_ctrl)
         paneman.build_panes()
         # paneman.request_menu()
         # layman: LayoutManager = LayoutManager(frame, mgr, menubar.items)
@@ -102,7 +102,7 @@ class MainApp:
 
         file_manager: FileManager = FileManager(
             frame, mgr, menubar, html_ctrl, text_ctrl,
-            tree_ctrl, grid_ctrl, notebook_ctrl, size_reporter, project_path)
+            tree_ctrl, grid_ctrl, notebook_ctrl, project_path)
 
         main_frame.init_man(mgr)
         frame.CenterOnScreen()

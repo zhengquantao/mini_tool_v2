@@ -697,7 +697,7 @@ class HTMLCtrl(metaclass=Singleton):
     def start_position(self) -> wx.Point:
         return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(2, 2) * self.__class__.counter)
 
-    def create_ctrl(self, parent: wx.Frame = None, path: str = "") -> wx.html2.WebView:
+    def create_ctrl(self, parent=None, path: str = "") -> wx.html2.WebView:
         self.__class__.counter += 1
         if not parent:
             parent = self.frame

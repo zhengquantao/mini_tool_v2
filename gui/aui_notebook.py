@@ -94,7 +94,7 @@ class Notebook:
 
         file_path = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), "static", "js",
                                  "introduce.html")
-        ctrl.AddPage(self.html_ctrl.create_ctrl(path=file_path), "Welcome to MINI-TOOL", True,
+        ctrl.AddPage(self.html_ctrl.create_ctrl(parent=ctrl, path=file_path), "Welcome to MINI-TOOL", True,
                      svg_to_bitmap(html_svg, size=(16, 16)))
 
         # panel: wx.Panel = wx.Panel(ctrl, wx.ID_ANY)

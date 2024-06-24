@@ -27,6 +27,18 @@ class ToolBarManager:
     toolbars: dict[str, dict]  # {"<key>": {"id": <ref_id>, "item": <aui.AuiToolBar>}}
     item_ids: dict[int, str]  # wx.NewRefId -> Control string id
     items: dict[str, dict]  # {"<key>": {"id": <ref_id>, "item": <aui.AuiToolBarItem>}}
+    # of_svg = svg_to_bitmap(cs.of_svg)
+    # op_svg = svg_to_bitmap(cs.op_svg)
+    # save_svg = svg_to_bitmap(cs.save_svg)
+    # back_svg = svg_to_bitmap(cs.back_svg)
+    # exit_svg = svg_to_bitmap(cs.exit_svg)
+    # copy_svg = svg_to_bitmap(cs.copy_svg)
+    # paste_svg = svg_to_bitmap(cs.paste_svg)
+    # cut_svg = svg_to_bitmap(cs.cut_svg)
+    tree_nav_svg = svg_to_bitmap(cs.tree_nav_svg, size=(13, 13))
+    # database_svg = svg_to_bitmap(cs.database_svg, size=(13, 13))
+    console_svg = svg_to_bitmap(cs.console_svg, size=(12, 12))
+    gripe_svg = svg_to_bitmap(cs.gripe_svg, size=(13, 13))
 
     # If MainFrame subclasses wx.Frame, replace the following line
     # def __init__(self, frame: "MainFrame", mgr: aui.AuiManager) -> None:
@@ -49,7 +61,7 @@ class ToolBarManager:
         # min size for the frame itself isn't completely done.
         # see the end up AuiManager.Update() for the test
         # code. For now, just hard code a frame minimum size
-        frame.SetMinSize(wx.Size(400, 300))
+        # frame.SetMinSize(wx.Size(400, 300))
 
         # prepare a few custom overflow elements for the toolbars' overflow buttons
         # append_items: list[aui.AuiToolBarItem] = []
@@ -70,9 +82,9 @@ class ToolBarManager:
         # Popup menu id
         # The same popup menu is displayed for multiple toolbars, so
         # a single ref_id is associated with multiple toolbar items.
-        item_id: int = wx.NewIdRef()
-        self.item_ids[item_id] = "DropDownToolbarItem"
-        self.items["DropDownToolbarItem"] = {"id": item_id, "item": None}
+        # item_id: int = wx.NewIdRef()
+        # self.item_ids[item_id] = "DropDownToolbarItem"
+        # self.items["DropDownToolbarItem"] = {"id": item_id, "item": None}
         # noinspection PyPep8Naming
         # ID_DropDownToolbarItem: int = item_id
 
@@ -93,29 +105,29 @@ class ToolBarManager:
         # tb1.Realize()
         # mgr.AddPane(tb1, aui.AuiPaneInfo().Name("tb1").Caption("Big Toolbar").ToolbarPane().Top())
 
-        tb_id: int = wx.NewIdRef()
-        tb2 = aui.AuiToolBar(frame, tb_id, wx.DefaultPosition, wx.DefaultSize,
-                             agwStyle=aui.AUI_TB_TEXT | aui.AUI_TB_VERTICAL | aui.AUI_TB_PLAIN_BACKGROUND)
-        self.toolbar_ids[tb_id] = "toolbar_top"
-        self.toolbars["toolbar_top"] = {"id": tb_id, "item": tb2}
-        tb2.SetToolBitmapSize(wx.Size(20, 20))
-        tb2.AddSimpleTool(wx.ID_FILE, "File", wx.Bitmap(svg_to_bitmap(cs.of_svg)), short_help_string="打开文件",)
-        # tb2.AddSpacer(5)
-        tb2.AddSimpleTool(wx.ID_OPEN, "Project", wx.Bitmap(svg_to_bitmap(cs.op_svg)), short_help_string="打开项目")
-        tb2.AddSimpleTool(wx.ID_SAVE, "Save", wx.Bitmap(svg_to_bitmap(cs.save_svg)), short_help_string="保存", )
-        tb2.AddSimpleTool(wx.ID_BACKWARD, "Back", wx.Bitmap(svg_to_bitmap(cs.back_svg)), short_help_string="返回", )
+        # tb_id: int = wx.NewIdRef()
+        # tb2 = aui.AuiToolBar(frame, tb_id, wx.DefaultPosition, wx.DefaultSize,
+        #                      agwStyle=aui.AUI_TB_TEXT | aui.AUI_TB_VERTICAL | aui.AUI_TB_PLAIN_BACKGROUND)
+        # self.toolbar_ids[tb_id] = "toolbar_top"
+        # self.toolbars["toolbar_top"] = {"id": tb_id, "item": tb2}
+        # tb2.SetToolBitmapSize(wx.Size(20, 20))
+        # tb2.AddSimpleTool(wx.ID_FILE, "File", self.of_svg, short_help_string="打开文件",)
+        # # tb2.AddSpacer(5)
+        # tb2.AddSimpleTool(wx.ID_OPEN, "Project", self.op_svg, short_help_string="打开项目")
+        # tb2.AddSimpleTool(wx.ID_SAVE, "Save", self.save_svg, short_help_string="保存", )
+        # tb2.AddSimpleTool(wx.ID_EXIT, "Exit", self.exit_svg, short_help_string="退出", )
 
-        tb2.AddSeparator()
-        tb2.AddSimpleTool(wx.ID_EXIT, "Exit", wx.Bitmap(svg_to_bitmap(cs.exit_svg)), short_help_string="退出",)
-        tb2.AddSimpleTool(wx.ID_COPY, "Copy", wx.Bitmap(svg_to_bitmap(cs.copy_svg)), short_help_string="复制",)
-        tb2.AddSimpleTool(wx.ID_PASTE, "Paste", wx.Bitmap(svg_to_bitmap(cs.paste_svg)), short_help_string="粘贴")
-        tb2.AddSimpleTool(wx.ID_CUT, "Cut", wx.Bitmap(svg_to_bitmap(cs.cut_svg)), short_help_string="剪切")
+        # tb2.AddSeparator()
+        # tb2.AddSimpleTool(wx.ID_BACKWARD, "Back", self.back_svg, short_help_string="返回", )
+        # tb2.AddSimpleTool(wx.ID_COPY, "Copy", self.copy_svg, short_help_string="复制",)
+        # tb2.AddSimpleTool(wx.ID_PASTE, "Paste", self.paste_svg, short_help_string="粘贴")
+        # tb2.AddSimpleTool(wx.ID_CUT, "Cut", self.cut_svg, short_help_string="剪切")
         # tb2.SetCustomOverflowItems([], append_items)
-        tb2.Realize()
-        tb2.EnableTool(wx.ID_BACKWARD, False)
+        # tb2.Realize()
+        # tb2.EnableTool(wx.ID_BACKWARD, False)
 
-        mgr.AddPane(tb2, aui.AuiPaneInfo().Name("toolbar_top").Caption("导航栏").ToolbarPane().Floatable(False)
-                    .Dockable(False).Top())
+        # mgr.AddPane(tb2, aui.AuiPaneInfo().Name("toolbar_top").Caption("导航栏").ToolbarPane().Floatable(False)
+        #             .Dockable(False).Top())
 
         # tb_id: int = wx.NewIdRef()
         # tb3 = aui.AuiToolBar(frame, tb_id, wx.DefaultPosition, wx.DefaultSize,
@@ -169,9 +181,10 @@ class ToolBarManager:
 
         self.toolbar_ids[project_tb_id] = "toolbar_left"
         self.toolbars["toolbar_left"] = {"id": project_tb_id, "item": tb5}
-        tb5.AddSimpleTool(project_tb_id, "Project", svg_to_bitmap(cs.tree_nav_svg, size=(13, 13)),)
+        tb5.AddSimpleTool(project_tb_id, "Project", self.tree_nav_svg,)
         # tb5.AddSeparator()
-        # tb5.AddSimpleTool(wx.NewIdRef(), "Test", wx.ArtProvider.GetBitmap(wx.ART_QUESTION))
+        gripe_tb_id: int = wx.NewIdRef()
+        tb5.AddSimpleTool(gripe_tb_id, "Gripe", self.gripe_svg)
         # tb5.AddSimpleTool(wx.NewIdRef(), "Test", wx.ArtProvider.GetBitmap(wx.ART_INFORMATION))
         # tb5.AddSimpleTool(wx.NewIdRef(), "Test", wx.ArtProvider.GetBitmap(wx.ART_WARNING))
         # tb5.AddSimpleTool(wx.NewIdRef(), "Test", wx.ArtProvider.GetBitmap(wx.ART_MISSING_IMAGE))
@@ -180,14 +193,14 @@ class ToolBarManager:
         mgr.AddPane(tb5, aui.AuiPaneInfo().Name("toolbar_left").Caption("左边栏").ToolbarPane().Floatable(False)
                     .Dockable(False).Left())
 
-        tb_id: int = wx.NewIdRef()
-        tb6 = aui.AuiToolBar(frame, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
-                             agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_VERT_TEXT | aui.AUI_TB_PLAIN_BACKGROUND)
-        self.toolbar_ids[tb_id] = "toolbar_right"
-        self.toolbars["toolbar_right"] = {"id": tb_id, "item": tb6}
-        tb6.SetToolBitmapSize(wx.Size(16, 16))
-        database: int = wx.NewIdRef()
-        tb6.AddSimpleTool(database, "Database", wx.Bitmap(svg_to_bitmap(cs.database_svg, size=(13, 13))))
+        # tb_id: int = wx.NewIdRef()
+        # tb6 = aui.AuiToolBar(frame, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
+        #                      agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_VERT_TEXT | aui.AUI_TB_PLAIN_BACKGROUND)
+        # self.toolbar_ids[tb_id] = "toolbar_right"
+        # self.toolbars["toolbar_right"] = {"id": tb_id, "item": tb6}
+        # tb6.SetToolBitmapSize(wx.Size(16, 16))
+        # database: int = wx.NewIdRef()
+        # tb6.AddSimpleTool(database, "Database", self.database_svg)
         # tb6.EnableTool(database, False)
         # tb6.AddSeparator()
         # tb6.AddSimpleTool(wx.NewIdRef(), "Clockwise 2",
@@ -196,9 +209,9 @@ class ToolBarManager:
         #                   wx.ArtProvider.GetBitmap(wx.ART_WARNING, wx.ART_OTHER, wx.Size(16, 16)))
         # tb6.SetCustomOverflowItems([], append_items)
         # tb6.SetToolDropDown(ID_DropDownToolbarItem, True)
-        tb6.Realize()
-        mgr.AddPane(tb6, aui.AuiPaneInfo().Name("toolbar_right").Caption("右边栏").
-                    ToolbarPane().Right().GripperTop().TopDockable(False).BottomDockable(False).Dockable(False))
+        # tb6.Realize()
+        # mgr.AddPane(tb6, aui.AuiPaneInfo().Name("toolbar_right").Caption("右边栏").
+        #             ToolbarPane().Right().TopDockable(False).Floatable(False).Dockable(False))
 
         # mgr.AddPane(wx.Button(frame, wx.ID_ANY, "Test Button"),
         #             aui.AuiPaneInfo().Name("tb7").ToolbarPane().Top().Row(2).Position(1))
@@ -215,18 +228,23 @@ class ToolBarManager:
                              agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_HORZ_TEXT | aui.AUI_TB_PLAIN_BACKGROUND)
         self.toolbar_ids[console_tb_id] = "toolbar_bottom"
         self.toolbars["toolbar_bottom"] = {"id": console_tb_id, "item": tb7}
-        tb7.AddSimpleTool(console_tb_id, "Console", svg_to_bitmap(cs.console_svg, size=(12, 12)), )
+        tb7.AddSimpleTool(console_tb_id, "Console", self.console_svg, )
         tb7.Realize()
         mgr.AddPane(tb7, aui.AuiPaneInfo().Name("toolbar_bottom").Caption("底边栏").ToolbarPane().Floatable(False)
                     .Dockable(False).Bottom())
 
         # "commit" all changes made to AuiManager
         frame.Bind(wx.EVT_MENU, self.on_project_nav, project_tb_id)
+        frame.Bind(wx.EVT_MENU, self.on_gripe_nav, gripe_tb_id)
         frame.Bind(wx.EVT_MENU, self.on_console_nav, console_tb_id)
-        self.mgr.Update()
+        # self.mgr.Update()
 
     def on_project_nav(self, _event: wx.CommandEvent):
         pane = self.mgr.GetPane("ProjectTree")
+        self.is_display(pane)
+
+    def on_gripe_nav(self, _event: wx.CommandEvent):
+        pane = self.mgr.GetPane("Gripe")
         self.is_display(pane)
 
     def on_console_nav(self, _event: wx.CommandEvent):
