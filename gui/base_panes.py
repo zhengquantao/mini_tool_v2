@@ -144,8 +144,8 @@ class PaneManager:
         #                  CloseButton(True).MaximizeButton(True).MinimizeButton(True))
 
         self.mgr.AddPane(loggers.logger_frame, aui.AuiPaneInfo().
-                         Name("Console").Caption("Console").FloatingSize(wx.Size(*float_size)).
-                         Bottom().Floatable(False).CloseButton(False).
+                         Name("Console").Caption("Console").Hide().
+                         Bottom().Layer(1).Position(1).Floatable(False).CloseButton(False).
                          MaximizeButton(False).MinimizeButton(True).Icon(svg_to_bitmap(cs.console_svg, size=(20, 18))))
 
         # wnd10 = text_ctrl.create_ctrl("This pane will prompt the user before hiding.")
@@ -180,7 +180,6 @@ class PaneManager:
 
         self.mgr.AddPane(notebook_ctrl.create_ctrl(), aui.AuiPaneInfo().Name("notebook_content").
                          CenterPane().PaneBorder(False).
-                         CloseButton(True).MaximizeButton(True).MinimizeButton(True).Movable(False).
                          FloatingSize(wx.Size(*float_size)).BestSize(*float_size).MinSize(*float_size))
 
         # Show how to add a control inside a tab

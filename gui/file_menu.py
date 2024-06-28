@@ -114,11 +114,11 @@ class FileManager:
         opening_dict[pid] = {"path": path, "records": {}}
         self.mgr.AddPane(self.tree_ctrl.create_ctrl(path, init_project=init_project),
                          aui.AuiPaneInfo().Name("ProjectTree").Caption(path).
-                         CloseButton(False).MaximizeButton(False).
+                         CloseButton(False).MaximizeButton(False).Layer(2).Position(1).
                          MinimizeButton(True).Movable(False).Floatable(False).
                          Icon(svg_to_bitmap(cs.tree_svg, size=(13, 13))))
         self.mgr.AddPane(self.graph_ctrl.create_ctrl(), aui.AuiPaneInfo().
-                         Name("Graph").Caption("Graph").
+                         Name("Graph").Caption("Graph").Layer(1).Position(1).
                          Left().Floatable(False).CloseButton(False).Hide().
                          MaximizeButton(False).MinimizeButton(True).Icon(svg_to_bitmap(cs.graph_svg, size=(13, 13))))
         self.mgr.Update()

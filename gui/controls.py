@@ -251,7 +251,7 @@ class TreeCtrl(metaclass=Singleton):
         self.__class__.counter += 1
         # self.tree: wx.TreeCtrl = wx.TreeCtrl(self.frame, wx.ID_ANY, wx.Point(0, 0), wx.Size(160, 250),
         #                                      wx.TR_DEFAULT_STYLE | wx.TR_TWIST_BUTTONS | wx.TR_NO_LINES | wx.NO_BORDER)
-        self.tree = CT.CustomTreeCtrl(self.frame, wx.ID_ANY, wx.Point(-1, -1), wx.Size(320, 500),
+        self.tree = CT.CustomTreeCtrl(self.frame, wx.ID_ANY, wx.Point(-1, -1), wx.Size(160, 500),
                                       agwStyle=wx.TR_HAS_BUTTONS | wx.TR_TWIST_BUTTONS | wx.TR_NO_LINES | wx.NO_BORDER)
         self.tree.SetDoubleBuffered(True)
 
