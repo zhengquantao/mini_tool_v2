@@ -1,5 +1,5 @@
 import random
-import keyboard
+# import keyboard
 import wx
 import wx.aui
 import wx.lib.agw.aui as aui
@@ -12,10 +12,10 @@ from wx.lib.agw.aui import aui_switcherdialog as asd
 # if TYPE_CHECKING:
 #     from gui.main_frame import MainFrame
 from common import loggers
-from common.common import add_notebook_page
-from graph import simple_chart
+# from common.common import add_notebook_page
+# from graph import simple_chart
 from gui.aui_notebook_options_res import agw_tabart_provider
-from gui.simple_dialog import SimpleDialog
+# from gui.simple_dialog import SimpleDialog
 from settings import resources as res
 from settings import settings as cs
 from gui.controls import SizeReportCtrl, TextCtrl, TreeCtrl, HTMLCtrl, GridCtrl
@@ -251,15 +251,15 @@ class PaneManager:
         # self.frame.Bind(wx.EVT_MENU, self.on_custom_pane_buttons, id=mb_items["CustomPaneButtons"]["id"])
         # self.frame.Bind(wx.EVT_MENU, self.on_switch_pane, id=mb_items["SwitchPane"]["id"])
 
-        self.frame.Bind(wx.EVT_MENU, self.on_delete, id=wx.ID_DELETE)
-        self.frame.Bind(wx.EVT_MENU, self.on_back, id=wx.ID_BACKWARD)
-        self.frame.Bind(wx.EVT_MENU, self.on_cut, id=wx.ID_CUT)
-        self.frame.Bind(wx.EVT_MENU, self.on_paste, id=wx.ID_PASTE)
-        self.frame.Bind(wx.EVT_MENU, self.on_copy, id=wx.ID_COPY)
+        # self.frame.Bind(wx.EVT_MENU, self.on_delete, id=wx.ID_DELETE)
+        # self.frame.Bind(wx.EVT_MENU, self.on_back, id=wx.ID_BACKWARD)
+        # self.frame.Bind(wx.EVT_MENU, self.on_cut, id=wx.ID_CUT)
+        # self.frame.Bind(wx.EVT_MENU, self.on_paste, id=wx.ID_PASTE)
+        # self.frame.Bind(wx.EVT_MENU, self.on_copy, id=wx.ID_COPY)
 
-        self.frame.Bind(wx.EVT_MENU, self.on_line_plot, id=mb_items["LinePlot"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.on_bar_plot, id=mb_items["BarPlot"]["id"])
-        self.frame.Bind(wx.EVT_MENU, self.on_scatter_plot, id=mb_items["ScatterPlot"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.on_line_plot, id=mb_items["LinePlot"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.on_bar_plot, id=mb_items["BarPlot"]["id"])
+        # self.frame.Bind(wx.EVT_MENU, self.on_scatter_plot, id=mb_items["ScatterPlot"]["id"])
 
     def default_layout(self):
         # all_panes: list[aui.AuiPaneInfo] = self.mgr.GetAllPanes()
@@ -298,50 +298,56 @@ class PaneManager:
             nb.Refresh()
             nb.Update()
 
-    def on_line_plot(self, _event: wx.CommandEvent):
-        self.echarts_show("Line Chart", "Line")
+    # def on_line_plot(self, _event: wx.CommandEvent):
+    #     self.echarts_show("Line Chart", "Line")
+    #
+    # def on_bar_plot(self, _event: wx.CommandEvent):
+    #     self.echarts_show("Bar Chart", "Bar")
+    #
+    # def on_scatter_plot(self, _event: wx.CommandEvent):
+    #     self.echarts_show("Scatter Chart", "Scatter")
 
-    def on_bar_plot(self, _event: wx.CommandEvent):
-        self.echarts_show("Bar Chart", "Bar")
-
-    def on_scatter_plot(self, _event: wx.CommandEvent):
-        self.echarts_show("Scatter Chart", "Scatter")
-
-    def echarts_show(self, title, echart_type, save_path=None):
-        dlg = SimpleDialog(self.frame, title=title)
-        result = dlg.ShowModal()
-        if result != wx.ID_OK:
-            dlg.Destroy()
-            return
-        y_list = dlg.ylist.GetSelections()
-        checks = dlg.ylist.GetCheckedItems()
-        x_num = dlg.xlist.GetSelection()
-        y_list.extend(checks)
-        selected_items = []
-        for sel in y_list:
-            # 使用GetStringSelection获取选中项的文本
-            selected_items.append(dlg.ylist.GetString(sel))
-        dlg.Destroy()
-
-        file_paths, file_name = simple_chart.build_html(x=dlg.data_df.iloc[:, x_num], y=dlg.data_df.iloc[:, y_list],
-                                                        title=title, echart_type=echart_type, save_path=save_path)
-        add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
-
-    def on_copy(self, _event: wx.CommandEvent) -> None:
-        # 模拟按键ctrl+c
-        keyboard.send('ctrl+c')
-
-    def on_paste(self, _event: wx.CommandEvent) -> None:
-        keyboard.send('ctrl+v')
-
-    def on_cut(self, _event: wx.CommandEvent) -> None:
-        keyboard.send('ctrl+x')
+    # def on_bar_plot(self, _event: wx.CommandEvent):
+    #     self.echarts_show("Bar Chart", "Bar")
+    #
+    # def on_scatter_plot(self, _event: wx.CommandEvent):
+    #     self.echarts_show("Scatter Chart", "Scatter")
+    #
+    # def echarts_show(self, title, echart_type, save_path=None):
+    #     dlg = SimpleDialog(self.frame, title=title)
+    #     result = dlg.ShowModal()
+    #     if result != wx.ID_OK:
+    #         dlg.Destroy()
+    #         return
+    #     y_list = dlg.ylist.GetSelections()
+    #     checks = dlg.ylist.GetCheckedItems()
+    #     x_num = dlg.xlist.GetSelection()
+    #     y_list.extend(checks)
+    #     selected_items = []
+    #     for sel in y_list:
+    #         # 使用GetStringSelection获取选中项的文本
+    #         selected_items.append(dlg.ylist.GetString(sel))
+    #     dlg.Destroy()
+    #
+    #     file_paths, file_name = simple_chart.build_html(x=dlg.data_df.iloc[:, x_num], y=dlg.data_df.iloc[:, y_list],
+    #                                                     title=title, echart_type=echart_type, save_path=save_path)
+    #     add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
+    #
+    # def on_copy(self, _event: wx.CommandEvent) -> None:
+    #     # 模拟按键ctrl+c
+    #     keyboard.send('ctrl+c')
+    #
+    # def on_paste(self, _event: wx.CommandEvent) -> None:
+    #     keyboard.send('ctrl+v')
+    #
+    # def on_cut(self, _event: wx.CommandEvent) -> None:
+    #     keyboard.send('ctrl+x')
 
     def on_delete(self, _event: wx.CommandEvent) -> None:
         pass
 
-    def on_back(self, _event: wx.CommandEvent) -> None:
-        keyboard.send('ctrl+z')
+    # def on_back(self, _event: wx.CommandEvent) -> None:
+    #     keyboard.send('ctrl+z')
 
     def on_change_content_pane(self, event: wx.CommandEvent) -> None:
         ctrl_key: str
@@ -353,7 +359,7 @@ class PaneManager:
 
     def on_pane_min(self, event: aui.AuiManagerEvent) -> None:
 
-        if event.pane.name in ["ProjectTree", "Console"]:
+        if event.pane.name in ["ProjectTree", "Console", "Graph"]:
             event.pane.Hide()
             self.mgr.Update()
             event.Veto()
@@ -365,7 +371,7 @@ class PaneManager:
         #     return
         # self.mgr.GetPane(event.GetPane().window)
         # self.mgr.Update()
-        if event.pane.name not in ["ProjectTree_min", "Console_min"]:
+        if event.pane.name not in ["ProjectTree_min", "Console_min", "Console_min"]:
             return
 
         # pane_info = event.GetPane()

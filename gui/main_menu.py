@@ -106,14 +106,14 @@ class MainMenu:
         self.items[item_key] = {"id": item_id, "type": item_type, "item": menu_item}
 
     def build_standard(self):
-        self.items["Edit"].Append(wx.ID_COPY, "Copy")
-        self.items["Edit"].Append(wx.ID_PASTE, "Paste")
-        self.items["Edit"].Append(wx.ID_CUT, "Cut")
-        self.items["Edit"].Append(wx.ID_BACKWARD, "Back")
-        self.items["Edit"].Enable(wx.ID_BACKWARD, False)
-        delete_menu = self.items["Edit"].Append(wx.ID_DELETE, "Delete")
-        delete_menu.SetBitmap(svg_to_bitmap(delete_svg, size=(16, 16)))
-        self.items["Edit"].Enable(wx.ID_DELETE, False)
+        # self.items["Edit"].Append(wx.ID_COPY, "Copy")
+        # self.items["Edit"].Append(wx.ID_PASTE, "Paste")
+        # self.items["Edit"].Append(wx.ID_CUT, "Cut")
+        # self.items["Edit"].Append(wx.ID_BACKWARD, "Back")
+        # self.items["Edit"].Enable(wx.ID_BACKWARD, False)
+        # delete_menu = self.items["Edit"].Append(wx.ID_DELETE, "Delete")
+        # delete_menu.SetBitmap(svg_to_bitmap(delete_svg, size=(16, 16)))
+        # self.items["Edit"].Enable(wx.ID_DELETE, False)
 
         self.items["Help"].Append(wx.ID_HELP)
         self.frame.Bind(wx.EVT_MENU, self.on_help, id=wx.ID_HELP)

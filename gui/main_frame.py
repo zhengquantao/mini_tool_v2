@@ -28,6 +28,7 @@ class MainFrame:
         # super().__init__(parent, win_id, title, pos, size, style)
         # If subclassing wx.Frame, remove the next line or set it to self
         self.frame = wx.Frame(parent, win_id, title, pos, size, style)
+        self.frame.Maximize(True)
         self.frame.Bind(wx.EVT_CLOSE, self.on_exit)
 
     def init_man(self, mgr: aui.AuiManager) -> None:

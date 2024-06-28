@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='mini-tool',
+    name='能效评估助手',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -35,5 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['static\\icon.png','static\\icon.png'],
+    icon=['static\\img\\icon.png','static\\img\\icon.png'],
 )

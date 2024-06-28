@@ -38,7 +38,7 @@ class ToolBarManager:
     tree_nav_svg = svg_to_bitmap(cs.tree_nav_svg, size=(13, 13))
     # database_svg = svg_to_bitmap(cs.database_svg, size=(13, 13))
     console_svg = svg_to_bitmap(cs.console_svg, size=(12, 12))
-    gripe_svg = svg_to_bitmap(cs.gripe_svg, size=(13, 13))
+    graph_svg = svg_to_bitmap(cs.graph_svg, size=(13, 13))
 
     # If MainFrame subclasses wx.Frame, replace the following line
     # def __init__(self, frame: "MainFrame", mgr: aui.AuiManager) -> None:
@@ -184,7 +184,7 @@ class ToolBarManager:
         tb5.AddSimpleTool(project_tb_id, "Project", self.tree_nav_svg,)
         # tb5.AddSeparator()
         gripe_tb_id: int = wx.NewIdRef()
-        tb5.AddSimpleTool(gripe_tb_id, "Gripe", self.gripe_svg)
+        tb5.AddSimpleTool(gripe_tb_id, "Graph", self.graph_svg)
         # tb5.AddSimpleTool(wx.NewIdRef(), "Test", wx.ArtProvider.GetBitmap(wx.ART_INFORMATION))
         # tb5.AddSimpleTool(wx.NewIdRef(), "Test", wx.ArtProvider.GetBitmap(wx.ART_WARNING))
         # tb5.AddSimpleTool(wx.NewIdRef(), "Test", wx.ArtProvider.GetBitmap(wx.ART_MISSING_IMAGE))
@@ -235,7 +235,7 @@ class ToolBarManager:
 
         # "commit" all changes made to AuiManager
         frame.Bind(wx.EVT_MENU, self.on_project_nav, project_tb_id)
-        frame.Bind(wx.EVT_MENU, self.on_gripe_nav, gripe_tb_id)
+        frame.Bind(wx.EVT_MENU, self.on_graph_nav, gripe_tb_id)
         frame.Bind(wx.EVT_MENU, self.on_console_nav, console_tb_id)
         # self.mgr.Update()
 
@@ -243,8 +243,8 @@ class ToolBarManager:
         pane = self.mgr.GetPane("ProjectTree")
         self.is_display(pane)
 
-    def on_gripe_nav(self, _event: wx.CommandEvent):
-        pane = self.mgr.GetPane("Gripe")
+    def on_graph_nav(self, _event: wx.CommandEvent):
+        pane = self.mgr.GetPane("Graph")
         self.is_display(pane)
 
     def on_console_nav(self, _event: wx.CommandEvent):

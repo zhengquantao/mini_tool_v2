@@ -8,6 +8,7 @@ from aui2 import svg_to_bitmap
 
 from common.common import daemon_app
 from common import loggers
+from gui.graph_panel import GraphPanel
 from html_server import run_server
 from gui.context_menu import PopupMenu
 from gui.toolbars import ToolBarManager
@@ -73,8 +74,8 @@ class MainApp:
         id_notebook_ctrl: wx.WindowIDRef = wx.WindowIDRef()
         notebook_ctrl: Notebook = Notebook(frame, mgr, id_notebook_ctrl, html_ctrl)
         id_tree_ctrl: wx.WindowIDRef = wx.WindowIDRef()
-        tree_ctrl: TreeCtrl = TreeCtrl(frame, mgr, id_tree_ctrl, notebook_ctrl, html_ctrl, grid_ctrl)
-
+        graph_ctrl = GraphPanel(frame, notebook_ctrl, html_ctrl)
+        tree_ctrl: TreeCtrl = TreeCtrl(frame, mgr, id_tree_ctrl, notebook_ctrl, html_ctrl, grid_ctrl, graph_ctrl)
         # init log
         logger_frames = text_ctrl.create_ctrl(frame)
         loggers.logger_frame = logger_frames
@@ -102,7 +103,7 @@ class MainApp:
 
         file_manager: FileManager = FileManager(
             frame, mgr, menubar, html_ctrl, text_ctrl,
-            tree_ctrl, grid_ctrl, notebook_ctrl, project_path)
+            tree_ctrl, grid_ctrl, notebook_ctrl, graph_ctrl, project_path)
 
         main_frame.init_man(mgr)
         frame.CenterOnScreen()

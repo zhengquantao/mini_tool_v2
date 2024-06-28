@@ -3,7 +3,7 @@ import os
 from pyecharts.globals import CurrentConfig
 
 from common.common import random_name, create_dir
-from settings.settings import float_size, opening_dict, main_title
+from settings.settings import opening_dict, main_title
 
 CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/"
 
@@ -13,16 +13,39 @@ from pyecharts.charts import Bar, Line, Scatter
 
 Echarts_Type = {
     "Bar": Bar,
+    "BarStack": Bar,
+    "BarReversal": Bar,
+    "BarStackReversal": Bar,
     "Line": Line,
+    "LineGap": Line,
     "Scatter": Scatter,
 }
 
 
 def build_html(x, y, title, echart_type="bar", save_path=None):
     echarts = Echarts_Type.get(echart_type, Bar)
-    obj = echarts(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title))
+    obj = echarts(init_opts=opts.InitOpts(page_title=main_title))
     obj.add_xaxis(x.to_list())
-    add_yaxis(obj, y)
+    if echart_type == "BarStack":
+        add_yaxis(obj, y, stack="stack1")
+    elif echart_type == "BarReversal":
+        add_yaxis(obj, y)
+        obj.reversal_axis()
+        obj.set_series_opts(label_opts=opts.LabelOpts(position="right"))
+    elif echart_type == "LineGap":
+        add_yaxis(obj, y)
+        obj.set_series_opts(
+            areastyle_opts=opts.AreaStyleOpts(opacity=0.5),
+            label_opts=opts.LabelOpts(is_show=False))
+        obj.set_global_opts(
+            xaxis_opts=opts.AxisOpts(
+                axistick_opts=opts.AxisTickOpts(is_align_with_label=True),
+                is_scale=False,
+                boundary_gap=False,
+            ),)
+    else:
+        add_yaxis(obj, y)
+
     obj.set_global_opts(
         title_opts=opts.TitleOpts(title=title),
         toolbox_opts=opts.ToolboxOpts(
@@ -44,7 +67,9 @@ def build_html(x, y, title, echart_type="bar", save_path=None):
         datazoom_opts=opts.DataZoomOpts(
             is_show=True,  # 是否显示 组件。如果设置为 false，不会显示，但是数据过滤的功能还存在
             type_="slider",  # 组件类型，可选 "slider", "inside"
-            orient="horizontal"  # 可选值为：'horizontal', 'vertical'
+            orient="horizontal",  # 可选值为：'horizontal', 'vertical'
+            range_start=0,
+            range_end=5,
         ),
         # 提示
         tooltip_opts=opts.TooltipOpts(
@@ -63,6 +88,6 @@ def build_html(x, y, title, echart_type="bar", save_path=None):
     return html_path, file_name
 
 
-def add_yaxis(bar, y):
+def add_yaxis(bar, y, **kwargs):
     for column_name in y.columns:
-        bar.add_yaxis(column_name, y[column_name].to_list(), label_opts=opts.LabelOpts(is_show=False))
+        bar.add_yaxis(column_name, y[column_name].to_list(), label_opts=opts.LabelOpts(is_show=False), **kwargs)

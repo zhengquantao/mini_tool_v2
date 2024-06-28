@@ -23,10 +23,10 @@ main_menu_items = {
             "SaveProject": {"label": "Save &Project", "id": wx.ID_SAVE},
         }
     },
-    "Edit": {
-        "label": "&Edit",
-        "children": {}
-    },
+    # "Edit": {
+    #     "label": "&Edit",
+    #     "children": {}
+    # },
     # "View": {
     #     "label": "&View",
     #     "children": {
@@ -47,14 +47,14 @@ main_menu_items = {
     #         "SwitchPane":           {"label": f"S&witch Window...\t{switcher_accel}"}
     #     }
     # },
-    "Graph": {
-        "label": "&Graph",
-        "children": {
-            "LinePlot":           {"label": "&Line Plot", "icon": line_svg},
-            "BarPlot":           {"label": "&Bar Plot", "icon": bar_svg},
-            "ScatterPlot":           {"label": "&Scatter Plot", "icon": scatter_svg},
-        }
-    },
+    # "Graph": {
+    #     "label": "&Graph",
+    #     "children": {
+    #         "LinePlot":           {"label": "&Line Plot", "icon": line_svg},
+    #         "BarPlot":           {"label": "&Bar Plot", "icon": bar_svg},
+    #         "ScatterPlot":           {"label": "&Scatter Plot", "icon": scatter_svg},
+    #     }
+    # },
     "Options": {
         "label": "&Options",
         "children": {

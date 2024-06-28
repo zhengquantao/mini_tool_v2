@@ -17,7 +17,8 @@ from pubsub import pub as publisher
 #     from gui.main_frame import MainFrame
 from aui2 import svg_to_bitmap
 
-from common.common import read_file, remove_file, rename_file, get_file_info, add_notebook_page, detect_encoding
+from common.common import read_file, remove_file, rename_file, get_file_info, add_notebook_page, detect_encoding, \
+    close_first_window
 from common import loggers
 from gui.gauge_panel import GaugePanel
 from models.bin_main import bin_main
@@ -192,17 +193,19 @@ class TreeCtrl(metaclass=Singleton):
     # def __init__(self, frame: "MainFrame", mgr: aui.AuiManager,
     #              create_menu_id: wx.WindowIDRef) -> None:
     def __init__(self, frame: wx.Frame, mgr: aui.AuiManager,
-                 create_menu_id: wx.WindowIDRef, notebook_ctrl=None, html_ctrl=None, grid_ctrl=None) -> None:
+                 create_menu_id: wx.WindowIDRef, notebook_ctrl=None, html_ctrl=None, grid_ctrl=None,
+                 graph_ctrl=None) -> None:
         self.frame = frame
         self.mgr = mgr
         self.create_menu_id = create_menu_id
         self.notebook_ctrl = notebook_ctrl
         self.html_ctrl = html_ctrl
         self.grid_ctrl = grid_ctrl
+        self.graph_ctrl = graph_ctrl
         self.now_file_list = []
         frame.Bind(wx.EVT_MENU, self.on_create, id=self.create_menu_id)
         publisher.subscribe(self.add_page, "add_page")
-
+        publisher.subscribe(self.set_data_df, "set_data_df")
         self.result_dir = None
         self.gauge = None
 
@@ -219,6 +222,13 @@ class TreeCtrl(metaclass=Singleton):
             self.tree.EnsureVisible(self.result_dir)
         new_item = self.tree.AppendItem(self.result_dir, file_name, image=4, data=file_paths)
         self.tree.EnsureVisible(new_item)
+
+    def set_data_df(self, data_df):
+        self.graph_ctrl.set_data(data_df)
+        pane = self.mgr.GetPane("Graph")
+        if not pane.IsShown():
+            pane.Show(True)
+            self.mgr.Update()
 
     def update_file_tree(self, event, path=None):
         project_path = opening_dict[os.getpid()]["path"]
@@ -241,7 +251,7 @@ class TreeCtrl(metaclass=Singleton):
         self.__class__.counter += 1
         # self.tree: wx.TreeCtrl = wx.TreeCtrl(self.frame, wx.ID_ANY, wx.Point(0, 0), wx.Size(160, 250),
         #                                      wx.TR_DEFAULT_STYLE | wx.TR_TWIST_BUTTONS | wx.TR_NO_LINES | wx.NO_BORDER)
-        self.tree = CT.CustomTreeCtrl(self.frame, wx.ID_ANY, wx.Point(-1, -1), wx.Size(160, 500),
+        self.tree = CT.CustomTreeCtrl(self.frame, wx.ID_ANY, wx.Point(-1, -1), wx.Size(320, 500),
                                       agwStyle=wx.TR_HAS_BUTTONS | wx.TR_TWIST_BUTTONS | wx.TR_NO_LINES | wx.NO_BORDER)
         self.tree.SetDoubleBuffered(True)
 
@@ -429,7 +439,9 @@ class TreeCtrl(metaclass=Singleton):
                          svg_to_bitmap(html_svg, size=(16, 16)))
 
         elif any([path.endswith(".csv"), path.endswith(".xlsx"), path.endswith(".xls")]):
-            data_df = pd.read_csv(path, encoding=detect_encoding(path))
+            data_df = pd.read_csv(path, encoding=detect_encoding(path), index_col=0)
+            # 防止多线程操作主进程页面导致异常崩溃
+            wx.CallAfter(publisher.sendMessage, "set_data_df", data_df=data_df)
             ctrl.AddPage(self.grid_ctrl.create_ctrl(ctrl, data_df), file_name, True,
                          svg_to_bitmap(csv_svg, size=(16, 16)))
 
@@ -448,6 +460,8 @@ class TreeCtrl(metaclass=Singleton):
             font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
             page.SetFont(font)
             ctrl.AddPage(page, file_name, True, page_bmp)
+
+        close_first_window(ctrl)
 
     def on_new_dir(self, event, path):
         dlg = wx.TextEntryDialog(self.frame, "请输入文件夹名称:", "新建文件夹")
@@ -620,15 +634,24 @@ class TreeCtrl(metaclass=Singleton):
         thread.start()
         self.gauge = GaugePanel(self.frame, "赛马排行总览", thread.ident)
 
+    def csv_max_getmtime(self, path):
+        last_updated_time = 0
+        for file in os.listdir(path):
+            if not file.endswith(".csv"):
+                continue
+            last_updated_time = max(os.path.getmtime(file), last_updated_time)
+        return last_updated_time
+
     def open_history_html_file(self, path, operation_type) -> bool:
         """
         当前打开的文件已经存在结果，且文件最后编辑时间<结果创建时间，则直接打开结果
         """
-        last_updated_time = os.path.getmtime(path)
         project_path = opening_dict[os.getpid()]["path"]
         if os.path.isfile(path):
+            last_updated_time = os.path.getmtime(path)
             name = path.split(os.sep)[-1][:-4]
         else:
+            last_updated_time = self.csv_max_getmtime(path)
             name = path.split(os.sep)[-1]
 
         result_dir_path = os.path.join(project_path, result_dir)
@@ -636,15 +659,18 @@ class TreeCtrl(metaclass=Singleton):
         results_path_lists = os.listdir(result_dir_path)
         file_name = ""
         for result_path in results_path_lists:
-            # result_path: 30057008-风速-桨距角分析 30057008-20240524103450.html
-            if not result_path.startswith(f"{name}-{operation_type}") or not result_path.endswith(".html"):
-                continue
-            file_time = result_path.split("-")[-1].split(".")[0]
-            create_time = datetime.datetime.strptime(file_time, "%Y%m%d%H%M%S").timestamp()
-            if create_time < last_updated_time:
-                continue
-            file_name = result_path
-            break
+            try:
+                # result_path: 30057008-风速-桨距角分析 30057008-20240524103450.html
+                if not result_path.startswith(f"{name}-{operation_type}") or not result_path.endswith(".html"):
+                    continue
+                file_time = result_path.split("-")[-1].split(".")[0]
+                create_time = datetime.datetime.strptime(file_time, "%Y%m%d%H%M%S").timestamp()
+                if create_time < last_updated_time:
+                    continue
+                file_name = result_path
+                break
+            except Exception as e:
+                loggers.logger.info(f"result file: {result_path} err:{e}")
 
         if not file_name:
             return False

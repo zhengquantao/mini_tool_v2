@@ -136,12 +136,18 @@ def get_file_info(directory="."):
     return res
 
 
+def close_first_window(notebook_object):
+    if notebook_object.GetPageCount() > 10:
+        notebook_object.DeletePage(0)
+
+
 def add_notebook_page(notebook_ctrl, html_ctrl, file_paths, file_name):
     ctrl = notebook_ctrl.notebook_object
     pid = os.getpid()
     opening_dict[pid]["records"][file_name] = file_paths
     ctrl.AddPage(html_ctrl.create_ctrl(parent=ctrl, path=file_paths), file_name, True,
                  svg_to_bitmap(html_svg, size=(16, 16)))
+    close_first_window(ctrl)
     return ctrl
 
 

@@ -7,6 +7,7 @@ import wx.aui
 import wx.lib.agw.aui as aui
 from aui2 import svg_to_bitmap
 
+from gui.graph_panel import GraphPanel
 from settings import settings as cs
 from common import loggers
 from common.common import read_file, new_app
@@ -50,6 +51,7 @@ class FileManager:
 
     def __init__(self, frame: wx.Frame, mgr: aui.AuiManager, menubar: MainMenu, html_ctrl: HTMLCtrl,
                  text_ctrl: TextCtrl, tree_ctrl: TreeCtrl, grid_ctrl: GridCtrl, notebook_ctrl: Notebook,
+                 graph_ctrl: GraphPanel,
                  project_path=None) -> None:
         self.frame = frame
         self.mgr = mgr
@@ -57,6 +59,7 @@ class FileManager:
         self.text_ctrl = text_ctrl
         self.tree_ctrl = tree_ctrl
         self.grid_ctrl = grid_ctrl
+        self.graph_ctrl = graph_ctrl
         self.notebook_ctrl = notebook_ctrl
 
         # self.timer = wx.Timer(frame)
@@ -114,6 +117,10 @@ class FileManager:
                          CloseButton(False).MaximizeButton(False).
                          MinimizeButton(True).Movable(False).Floatable(False).
                          Icon(svg_to_bitmap(cs.tree_svg, size=(13, 13))))
+        self.mgr.AddPane(self.graph_ctrl.create_ctrl(), aui.AuiPaneInfo().
+                         Name("Graph").Caption("Graph").
+                         Left().Floatable(False).CloseButton(False).Hide().
+                         MaximizeButton(False).MinimizeButton(True).Icon(svg_to_bitmap(cs.graph_svg, size=(13, 13))))
         self.mgr.Update()
 
         data = read_file(os.path.join(path, ".mini"))
