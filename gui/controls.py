@@ -7,7 +7,7 @@ import pandas as pd
 import wx
 import wx.grid
 import wx.html2
-import wx.lib.agw.customtreectrl as CT
+# import wx.lib.agw.customtreectrl as CT
 import wx.lib.agw.aui as aui
 from pubsub import pub as publisher
 
@@ -27,7 +27,7 @@ from models.dswe_main import iec_main
 from models.geo_main import geo_main
 # from settings.resources import overview
 from settings.settings import opening_dict, float_size, display_grid_count, model2_svg, model1_svg, result_dir, png_svg, \
-    csv_svg, html_svg
+    csv_svg, html_svg, console_svg
 
 
 class Singleton(type):
@@ -74,7 +74,7 @@ class GridCtrl(metaclass=Singleton):
         grid = wx.grid.Grid(panel, wx.ID_ANY, wx.Point(0, 0), size=wx.Size(*float_size),
                             style=wx.NO_BORDER)
 
-        grid.CreateGrid(100, 50)  # 创建一个n行n列的表格
+        grid.CreateGrid(50, 50)  # 创建一个n行n列的表格
         grid.EnableScrolling(True, True)
         # 边框颜色
         grid.SetGridLineColour(wx.LIGHT_GREY)
@@ -104,8 +104,8 @@ class GridCtrl(metaclass=Singleton):
         additional_cols = data.shape[1] - num_cols
 
         # Append additional rows and columns if needed
-        if additional_rows > 0:
-            grid.AppendRows(additional_rows)
+        # if additional_rows > 0:
+        #     grid.AppendRows(additional_rows)
         if additional_cols > 0:
             grid.AppendCols(additional_cols)
 
@@ -165,6 +165,7 @@ class TextCtrl(metaclass=Singleton):
             font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
         ctrl.SetMargins(8)
         ctrl.SetFont(font)
+        ctrl.Enable(False)
         return ctrl
 
     def on_create(self, _event: wx.CommandEvent) -> None:
@@ -174,8 +175,6 @@ class TextCtrl(metaclass=Singleton):
                          FloatingPosition(self.start_position()).MinimizeButton(True))
         self.mgr.Update()
         ctrl.Refresh()
-
-        self.mgr.Update()
 
 
 class TreeCtrl(metaclass=Singleton):
@@ -247,12 +246,13 @@ class TreeCtrl(metaclass=Singleton):
     def start_position(self) -> wx.Point:
         return self.frame.ClientToScreen(wx.Point(0, 0)) + (wx.Point(2, 2) * self.__class__.counter)
 
-    def create_ctrl(self, path="./", init_project=False) -> CT.CustomTreeCtrl:
+    def create_ctrl(self, path="./", init_project=False):
         self.__class__.counter += 1
-        # self.tree: wx.TreeCtrl = wx.TreeCtrl(self.frame, wx.ID_ANY, wx.Point(0, 0), wx.Size(160, 250),
-        #                                      wx.TR_DEFAULT_STYLE | wx.TR_TWIST_BUTTONS | wx.TR_NO_LINES | wx.NO_BORDER)
-        self.tree = CT.CustomTreeCtrl(self.frame, wx.ID_ANY, wx.Point(-1, -1), wx.Size(160, 500),
-                                      agwStyle=wx.TR_HAS_BUTTONS | wx.TR_TWIST_BUTTONS | wx.TR_NO_LINES | wx.NO_BORDER)
+        panel = wx.Panel(self.frame, wx.ID_ANY)
+        self.tree: wx.TreeCtrl = wx.TreeCtrl(panel, wx.ID_ANY, wx.Point(0, 0), wx.Size(160, 250),
+                                             wx.TR_DEFAULT_STYLE | wx.TR_TWIST_BUTTONS | wx.TR_NO_LINES | wx.NO_BORDER)
+        # self.tree = CT.CustomTreeCtrl(self.frame, wx.ID_ANY, wx.Point(-1, -1), wx.Size(160, 500),
+        #                               agwStyle=wx.TR_HAS_BUTTONS | wx.TR_TWIST_BUTTONS | wx.TR_NO_LINES | wx.NO_BORDER)
         self.tree.SetDoubleBuffered(True)
 
         if init_project:
@@ -283,11 +283,15 @@ class TreeCtrl(metaclass=Singleton):
         self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.on_sel_changed)
         self.tree.Bind(wx.EVT_TREE_SEL_CHANGING, self.on_sel_changing)
         self.tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.on_open)
-
-        return self.tree
+        # 设置panel自适应屏幕
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        # 1 自动铺满窗口
+        sizer.Add(self.tree, 1, wx.ALL | wx.EXPAND, 0)
+        panel.SetSizer(sizer)
+        return panel
 
     def on_create(self, _event: wx.CommandEvent) -> None:
-        ctrl: CT.CustomTreeCtrl = self.create_ctrl()
+        ctrl = self.create_ctrl()
         caption = "Tree Control"
         self.mgr.AddPane(ctrl, aui.AuiPaneInfo().Caption(caption).
                          FloatingPosition(self.start_position()).CloseButton(False).
@@ -324,10 +328,6 @@ class TreeCtrl(metaclass=Singleton):
         item = event.GetItem()
 
         if not item:
-            event.Skip()
-            return
-
-        if not self.tree.IsItemEnabled(item):
             event.Skip()
             return
 
@@ -639,7 +639,7 @@ class TreeCtrl(metaclass=Singleton):
         for file in os.listdir(path):
             if not file.endswith(".csv"):
                 continue
-            last_updated_time = max(os.path.getmtime(file), last_updated_time)
+            last_updated_time = max(os.path.getmtime(os.path.join(path, file)), last_updated_time)
         return last_updated_time
 
     def open_history_html_file(self, path, operation_type) -> bool:
@@ -831,3 +831,22 @@ class SizeReportCtrl(metaclass=Singleton):
         s = f"Proportion: {pi.dock_proportion}"
         w, h = dc.GetTextExtent(s)
         dc.DrawText(s, (size.x - w) // 2, (size.y - height * 5) // 2 + height * 4)
+
+
+class LogCtrl(metaclass=Singleton):
+    def __init__(self, parent, mgr, text="", style=wx.TE_MULTILINE):
+        panel = wx.Panel(parent, wx.ID_ANY)
+        self.logger = wx.TextCtrl(panel, wx.ID_ANY, text, wx.DefaultPosition, wx.Size(100, 100), style=style)
+
+        font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
+        self.logger.SetMargins(8)
+        self.logger.SetFont(font)
+        # 设置panel自适应屏幕
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        # 1 自动铺满窗口
+        sizer.Add(self.logger, 1, wx.ALL | wx.EXPAND, 0)
+        panel.SetSizer(sizer)
+        mgr.AddPane(panel, aui.AuiPaneInfo().
+                    Name("Console").Caption("Console").Hide().Minimize().
+                    Bottom().Layer(2).Position(1).Floatable(False).CloseButton(False).
+                    MaximizeButton(False).MinimizeButton(True).Icon(svg_to_bitmap(console_svg, size=(20, 18))))

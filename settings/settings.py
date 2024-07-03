@@ -42,37 +42,6 @@ sea_svg = """<svg t="1719480681909" class="icon" viewBox="0 0 1024 1024" version
 inp_close_svg = """<svg t="1719544450907" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4238" width="16" height="16"><path d="M512 1024C229.701818 1024 0 794.298182 0 512S229.701818 0 512 0c282.321455 0 512 229.701818 512 512S794.344727 1024 512 1024zM512 44.520727C254.231273 44.520727 44.544 254.208 44.544 512c0 257.768727 209.710545 467.479273 467.479273 467.479273 257.792 0 467.479273-209.733818 467.479273-467.479273C979.502545 254.208 769.792 44.520727 512 44.520727z" fill="#414042" p-id="4239"></path><path d="M666.693818 692.177455c-5.701818 0-11.403636-2.164364-15.755636-6.493091L342.690909 377.390545c-8.704-8.704-8.704-22.784 0-31.488 8.704-8.704 22.784-8.704 31.488 0L682.426182 654.196364c8.704 8.680727 8.704 22.784 0 31.488C678.097455 690.013091 672.418909 692.177455 666.693818 692.177455z" fill="#414042" p-id="4240"></path><path d="M354.048 692.200727c-5.701818 0-11.380364-2.187636-15.732364-6.493091-8.704-8.704-8.704-22.784 0-31.488L654.196364 338.338909c8.704-8.704 22.784-8.704 31.488 0 8.680727 8.704 8.680727 22.784 0 31.488L369.803636 685.707636C365.451636 690.013091 359.749818 692.200727 354.048 692.200727z" fill="#414042" p-id="4241"></path></svg>"""
 inp_setting_svg = """<svg t="1719538362602" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="43805" width="64" height="64"><path d="M519.9 647.4c-44.8 7.4-90.4-6.9-122.5-38.3-32.1-31.4-46.6-76.2-39-120 9.4-56.8 56.2-102.7 114.2-112.1 44.9-7.6 90.7 6.7 122.9 38.2 32.2 31.6 46.7 76.5 38.9 120.4-9.7 56.9-56.5 102.6-114.5 111.8M848.4 559l66-40.4c10.5-6.4 15.6-18.6 12.9-30.4L895 349.3c-2.7-11.8-12.8-20.6-25.1-21.9l-77.5-8.4c-7.7-0.8-14.7-4.6-19.5-10.5l-13-16c-4.8-5.9-7-13.5-6.1-21l8.9-75.7c1.4-12-5.1-23.6-16.2-28.9l-131-61.8c-11.1-5.2-24.4-3-33.2 5.5l-55 54c-5.4 5.3-12.8 8.4-20.6 8.4H486c-7.7 0-15.1-3-20.6-8.4l-55-54c-8.7-8.6-22-10.8-33.2-5.5l-130.9 61.8c-11.1 5.3-17.6 16.8-16.2 28.9l8.9 75.8c0.9 7.5-1.3 15-6.1 21L220 308.4c-4.8 5.9-11.8 9.7-19.5 10.5l-77.5 8.5c-12.3 1.3-22.3 10.1-25.1 21.9L65.5 488.1c-2.7 11.8 2.4 24 12.9 30.4l66 40.5c6.5 4 11.2 10.4 12.9 17.8l4.6 19.9c1.7 7.4 0.4 15.1-3.7 21.5l-41.6 64.5c-6.6 10.2-5.8 23.4 1.9 32.9l90.7 111.3c7.7 9.5 20.7 13.1 32.3 9.1l73.5-25.3c7.3-2.5 15.3-2.1 22.2 1.2l18.7 8.8c7 3.3 12.3 9.1 14.8 16.3l25.6 72c4.1 11.4 15.1 19.1 27.4 19.1H569c12.4 0 23.4-7.7 27.4-19.1l25.6-72c2.5-7.1 7.9-13 14.8-16.3l18.7-8.8c6.9-3.3 14.9-3.7 22.2-1.2l73.5 25.3c11.7 4 24.6 0.4 32.3-9.1l90.7-111.3c7.7-9.5 8.4-22.7 1.9-32.9l-41.6-64.5c-4.1-6.4-5.5-14.1-3.8-21.5l4.6-19.8c1.9-7.5 6.5-13.9 13.1-17.9" fill="" p-id="43806"></path></svg>"""
 
-# init1_svg = "./static/img/init1_svg.png"
-# init2_svg = "./static/img/init2_svg.png"
-# tree_svg = "./static/img/tree_svg.png"
-# console_svg = "./static/img/tree_svg.png"
-# line_svg = "./static/img/line_svg.png"
-# bar_svg = "./static/img/bar_svg.png"
-# scatter_svg = "./static/img/scatter_svg.png"
-# open_svg = "./static/img/open_svg.png"
-# model1_svg = "./static/img/model1_svg.png"
-# model2_svg = "./static/img/model2_svg.png"
-# delete_svg = "./static/img/delete_svg.png"
-# contact_svg = "./static/img/contact_svg.png"
-# web_svg = "./static/img/web_svg.png"
-# tree_nav_svg = "./static/img/tree_nav_svg.png"
-# database_svg = "./static/img/database_svg.png"
-# left_svg = "./static/img/left_svg.png"
-# top_svg = "./static/img/top_svg.png"
-# new_win_svg = "./static/img/new_win_svg.png"
-# new_page_svg = "./static/img/new_page_svg.png"
-# csv_svg = "./static/img/csv_svg.png"
-# html_svg = "./static/img/html_svg.png"
-# png_svg = "./static/img/png_svg.png"
-# graph_svg = "./static/img/graph_svg.png"
-# line2_svg = "./static/img/line2_svg.png"
-# bar2_svg = "./static/img/bar2_svg.png"
-# bar3_svg = "./static/img/bar3_svg.png"
-# sign_svg = "./static/img/sign_svg.png"
-# sea_svg = "./static/img/sea_svg.png"
-# inp_close_svg = "./static/img/inp_close_svg.png"
-# inp_setting_svg = "./static/img/inp_setting_svg.png"
-
 main_title = "能效评估助手"
 __version__ = 0.2
 opening_dict = {}
@@ -85,7 +54,7 @@ float_size = (800, 600)
 log_level = "INFO"
 
 # 单个表格展示数据条数
-display_grid_count = 100
+display_grid_count = 50
 
 # 理论功率曲线
 power_theoretical = "power_theoretical.csv"

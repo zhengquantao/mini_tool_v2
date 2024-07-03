@@ -16,7 +16,7 @@ from settings import settings as cs
 from gui.file_menu import FileManager
 from gui.main_frame import MainFrame
 from gui.main_menu import MainMenu
-from gui.controls import SizeReportCtrl, TextCtrl, TreeCtrl, HTMLCtrl, GridCtrl
+from gui.controls import SizeReportCtrl, TextCtrl, TreeCtrl, HTMLCtrl, GridCtrl, LogCtrl
 from gui.aui_notebook import Notebook
 # from gui.aui_notebook_options import NotebookOptions
 # from gui.aui_manager_options import ManagerOptions
@@ -77,9 +77,7 @@ class MainApp:
         graph_ctrl = GraphPanel(frame, notebook_ctrl, html_ctrl)
         tree_ctrl: TreeCtrl = TreeCtrl(frame, mgr, id_tree_ctrl, notebook_ctrl, html_ctrl, grid_ctrl, graph_ctrl)
         # init log
-        logger_frames = text_ctrl.create_ctrl(frame)
-        loggers.logger_frame = logger_frames
-        loggers.logger = loggers.init_log(logger_frames)
+        loggers.logger = loggers.init_log(LogCtrl(frame, mgr))
         loggers.logger.info("正在运行中....")
 
         # _notebook_options: NotebookOptions = NotebookOptions(

@@ -19,13 +19,14 @@ class SettingsPanel:
     def __init__(self, frame: wx.Frame, mgr: aui.AuiManager) -> None:
         self.frame = frame
         self.mgr = mgr
-        self.panel = wx.Panel(frame, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize)
+        # self.panel = wx.Panel(frame, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize)
         self.sizers = []
         self.set_color()
 
     def set_color(self):
         for ctrl_name in cids:
             self.art_provider().SetColour(cids[ctrl_name]["aui_id"], cids[ctrl_name]["color"])
+        self.mgr.Update()
 
     def build_panel(self, mb_items: dict) -> None:
         panel: wx.Panel = self.panel

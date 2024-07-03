@@ -23,7 +23,7 @@ class MainFrame:
 
     def __init__(self, parent: wx.Window, win_id: wx.WindowIDRef = wx.ID_ANY,
                  title: str = "", pos: wx.Point = wx.DefaultPosition, size: wx.Size = wx.DefaultSize,
-                 style: int = wx.DEFAULT_FRAME_STYLE | wx.SUNKEN_BORDER) -> None:
+                 style: int = wx.DEFAULT_FRAME_STYLE) -> None:
         # If subclassing wx.Frame, uncomment the next line
         # super().__init__(parent, win_id, title, pos, size, style)
         # If subclassing wx.Frame, remove the next line or set it to self
@@ -35,6 +35,7 @@ class MainFrame:
         assert not self.initialized
         self.initialized = True
         self.mgr = mgr
+        self.frame.Bind(wx.EVT_SIZE, self.on_size)
 
         # ----- STATUSBAR ----- #
         # If subclassing wx.Frame, remove .frame, if self.frame is not set to self
@@ -42,6 +43,12 @@ class MainFrame:
         statusbar.SetStatusWidths([-2, -3])
         statusbar.SetStatusText("Ready", 0)
         statusbar.SetStatusText("Welcome To MINI-TOOL!", 1)
+
+    def on_size(self, event):
+        wx.CallLater(100, self.frame.Update)
+        wx.CallLater(200, self.mgr.GetPane("notebook_content").window.Update)
+        # event.Skip(False)
+        return
 
     # If subclassing wx.Frame, uncomment the following lines and
     # remove .frame, if self.frame is not set to self

@@ -119,7 +119,7 @@ class FileManager:
                          Icon(svg_to_bitmap(cs.tree_svg, size=(13, 13))))
         self.mgr.AddPane(self.graph_ctrl.create_ctrl(), aui.AuiPaneInfo().
                          Name("Graph").Caption("Graph").Layer(1).Position(1).
-                         Left().Floatable(False).CloseButton(False).Hide().
+                         Left().Floatable(False).CloseButton(False).Hide().Minimize().
                          MaximizeButton(False).MinimizeButton(True).Icon(svg_to_bitmap(cs.graph_svg, size=(13, 13))))
         self.mgr.Update()
 

@@ -1,5 +1,5 @@
-import logging
 import os
+import logging
 from logging.handlers import RotatingFileHandler
 
 import wx
@@ -16,21 +16,13 @@ class RealTimeLogHandler(logging.Handler):
 
     def emit(self, record):
         message = self.format(record)
-        # if log_level == "DEBUG":
-        #     self.text_ctrl.SetStyle(wx.TextAttr(wx.BLUE))
-        # elif log_level == "INFO":
-        #     self.text_ctrl.SetStyle(wx.TextAttr(wx.BLACK))
-        # elif log_level == "WARNING":
-        #     self.text_ctrl.SetStyle(wx.TextAttr(wx.YELLOW))
-        # elif log_level == "ERROR":
-        #     self.text_ctrl.SetStyle(0, 5, wx.TextAttr(wx.RED))
         # 安全地在UI主线程中更新TextCtrl
         wx.CallAfter(self.text_ctrl.AppendText, message + '\n')
 
 
 def init_log(frame=None):
     log = logging.getLogger()
-    log_handler = RealTimeLogHandler(frame)
+    log_handler = RealTimeLogHandler(frame.logger)
     log.addHandler(log_handler)
 
     last_log_file = os.path.join(os.path.expanduser("~"), "mini_tool.log")
@@ -43,5 +35,4 @@ def init_log(frame=None):
     return log
 
 
-logger_frame = None
 logger = None

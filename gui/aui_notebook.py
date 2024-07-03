@@ -138,6 +138,7 @@ class Notebook:
         # ctrl.SetPageTextColour(1, wx.BLUE)
         # ctrl.SetRenamable(1, True)
         ctrl.Bind(aui.EVT_AUINOTEBOOK_TAB_RIGHT_DOWN, self.on_right_click_up)
+        ctrl.Bind(aui.EVT_AUINOTEBOOK_PAGE_CLOSED, self.on_closed)
         self.notebook_object = ctrl
         return ctrl
 
@@ -165,12 +166,18 @@ class Notebook:
         self.notebook_object.Bind(wx.EVT_MENU, lambda event: self.on_float(event, page_index), float_item)
         self.notebook_object.PopupMenu(menu)
 
+    def on_closed(self, event):
+        page_index = event.GetSelection()
+        self.on_close(event, page_index)
+
     def on_close(self, event, page_index):
         self.notebook_object.DeletePage(page_index)
+        self.notebook_object.Refresh()
 
     def on_all_close(self, event, page_index):
         while self.notebook_object.GetPageCount() > 0:
             self.notebook_object.DeletePage(0)
+        self.notebook_object.Refresh()
 
     def on_left_split(self, event, page_index):
         self.notebook_object.Split(page_index, wx.LEFT)
