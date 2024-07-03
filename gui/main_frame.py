@@ -56,8 +56,9 @@ class MainFrame:
         save_mini_file(self.mgr)
         dlg = wx.MessageDialog(self.frame, f"你确认要退出吗？", "警告", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING)
         if dlg.ShowModal() != wx.ID_YES:
+            _event.Veto()
             return
         self.frame.Destroy()
-        import sys
-        sys.exit()
+        # import sys
+        # sys.exit()
         # self.frame.Close(True)

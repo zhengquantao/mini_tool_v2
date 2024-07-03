@@ -43,18 +43,27 @@ def async_raise(thread_id, exctype, logger=logging):
 
 
 def new_app(path):
-    from multiprocessing import Process
+    from multiprocessing import Process, freeze_support
     from main import run_gui
+    freeze_support()
     app = Process(target=run_gui, args=(path,))
     app.start()
 
 
 def daemon_app(app, ppid=None):
     current_process = psutil.Process(ppid)
-    while len(current_process.children(recursive=True)) > 2:
+    while children_process_cnt(current_process) > 1:
         time.sleep(3)
 
     app.terminate()
+
+
+def children_process_cnt(current_process):
+    cnt = 0
+    for process in current_process.children(recursive=True):
+        if process.name() == current_process.name():
+            cnt += 1
+    return cnt
 
 
 def random_name(turbine, desc, f_type="html"):

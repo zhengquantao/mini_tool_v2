@@ -1,5 +1,4 @@
 import os
-import sys
 from multiprocessing import freeze_support, Process
 
 import wx
