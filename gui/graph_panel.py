@@ -97,7 +97,6 @@ class GraphPanel(wx.Panel):
         button.SetBitmapLabel(svg_to_bitmap(cs.sea_svg, size=(20, 20)))
         button.Bind(wx.EVT_BUTTON, self.on_click)
         panel4.SetBackgroundColour("white")
-
         sizer2.Add(panel2, 0, wx.ALL, 1)
 
         sizer.Add(sizer1, 0, wx.ALL, 0)
