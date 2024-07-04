@@ -9,7 +9,6 @@ from common.common import daemon_app
 from common import loggers
 from gui.graph_panel import GraphPanel
 from html_server import run_server
-from gui.context_menu import PopupMenu
 from gui.toolbars import ToolBarManager
 from settings import settings as cs
 from gui.file_menu import FileManager

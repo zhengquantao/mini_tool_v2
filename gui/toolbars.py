@@ -12,8 +12,6 @@ class ToolBarManager:
     frame: wx.Frame
 
     mgr: aui.AuiManager
-    toolbar_ids: dict[int, str]  # wx.NewRefId -> Toolbar string id
-    toolbars: dict[str, dict]  # {"<key>": {"id": <ref_id>, "item": <aui.AuiToolBar>}}
     item_ids: dict[int, str]  # wx.NewRefId -> Control string id
     items: dict[str, dict]  # {"<key>": {"id": <ref_id>, "item": <aui.AuiToolBarItem>}}
 
@@ -22,8 +20,6 @@ class ToolBarManager:
     def __init__(self, frame: wx.Frame, mgr: aui.AuiManager) -> None:
         self.frame = frame
         self.mgr = mgr
-        self.toolbar_ids = {}
-        self.toolbars = {}
         self.item_ids = {}
         self.items = {}
         self.init_toolbars()
@@ -64,8 +60,6 @@ class ToolBarManager:
                              agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_VERTICAL | aui.AUI_TB_VERT_TEXT |
                                       aui.AUI_TB_PLAIN_BACKGROUND)
 
-        self.toolbar_ids[project_tb_id] = "toolbar_left"
-        self.toolbars["toolbar_left"] = {"id": project_tb_id, "item": tb5}
         tb5.AddSimpleTool(project_tb_id, "Project", svg_to_bitmap(cs.tree_nav_svg, size=(13, 13)),)
         # tb5.AddSeparator()
         gripe_tb_id: int = wx.NewIdRef()
@@ -74,18 +68,15 @@ class ToolBarManager:
         mgr.AddPane(tb5, aui.AuiPaneInfo().Name("toolbar_left").Caption("左边栏").ToolbarPane().Floatable(False)
                     .Dockable(False).Left())
 
-        # tb_id: int = wx.NewIdRef()
-        # tb6 = aui.AuiToolBar(frame, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
-        #                      agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_VERT_TEXT | aui.AUI_TB_PLAIN_BACKGROUND)
-        # self.toolbar_ids[tb_id] = "toolbar_right"
-        # self.toolbars["toolbar_right"] = {"id": tb_id, "item": tb6}
-        # tb6.SetToolBitmapSize(wx.Size(16, 16))
-        # database: int = wx.NewIdRef()
-        # tb6.AddSimpleTool(database, "Database", self.database_svg)
-        # tb6.EnableTool(database, False)
-        # tb6.Realize()
-        # mgr.AddPane(tb6, aui.AuiPaneInfo().Name("toolbar_right").Caption("右边栏").
-        #             ToolbarPane().Right().TopDockable(False).Floatable(False).Dockable(False))
+        tb6 = aui.AuiToolBar(frame, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
+                             agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_VERT_TEXT | aui.AUI_TB_PLAIN_BACKGROUND)
+        tb6.SetToolBitmapSize(wx.Size(16, 16))
+        database: int = wx.NewIdRef()
+        tb6.AddSimpleTool(database, "Database", svg_to_bitmap(cs.database_svg, size=(13, 13)))
+        tb6.EnableTool(database, False)
+        tb6.Realize()
+        mgr.AddPane(tb6, aui.AuiPaneInfo().Name("toolbar_right").Caption("右边栏").
+                    ToolbarPane().Right().TopDockable(False).Floatable(False).Dockable(False))
 
         # Show how to get a custom minimizing behaviour, i.e., to minimize a pane
         # inside an existing AuiToolBar
@@ -97,8 +88,6 @@ class ToolBarManager:
         console_tb_id: int = wx.NewIdRef()
         tb7 = aui.AuiToolBar(frame, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
                              agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_HORZ_TEXT | aui.AUI_TB_PLAIN_BACKGROUND)
-        self.toolbar_ids[console_tb_id] = "toolbar_bottom"
-        self.toolbars["toolbar_bottom"] = {"id": console_tb_id, "item": tb7}
         tb7.AddSimpleTool(console_tb_id, "Console", svg_to_bitmap(cs.console_svg, size=(12, 12)), )
         tb7.Realize()
         mgr.AddPane(tb7, aui.AuiPaneInfo().Name("toolbar_bottom").Caption("底边栏").ToolbarPane().Floatable(False)

@@ -44,7 +44,8 @@ def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
                     "brush": None,
                 }),
             visualmap_opts=opts.VisualMapOpts(max_=plot_power_df["Weighted_diff"].max(),
-                                              min_=plot_power_df["Weighted_diff"].min()),
+                                              min_=plot_power_df["Weighted_diff"].min(),
+                                              pos_right="10", pos_bottom="50",),
             # # 区域缩放
             # datazoom_opts=opts.DataZoomOpts(
             #     is_show=True,  # 是否显示 组件。如果设置为 false，不会显示，但是数据过滤的功能还存在
