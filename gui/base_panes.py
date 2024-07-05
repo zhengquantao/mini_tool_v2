@@ -9,9 +9,7 @@ import wx.lib.agw.aui as aui
 
 from gui.aui_notebook_options_res import agw_tabart_provider
 
-from gui.controls import SizeReportCtrl, TextCtrl, TreeCtrl, HTMLCtrl, GridCtrl
 from gui.aui_notebook import Notebook
-from gui.progress import ProgressGauge
 from gui.base_panes_res import content_ctrls
 
 
@@ -22,39 +20,10 @@ from settings.settings import float_size
 class PaneManager:
     """Creates default panes."""
 
-    # If MainFrame subclasses wx.Frame, replace the following line
-    # frame: "MainFrame"
-    frame: wx.Frame
-
-    mgr: aui.AuiManager
-    html_ctrl: HTMLCtrl
-    text_ctrl: TextCtrl
-    tree_ctrl: TreeCtrl
-    grid_ctrl: GridCtrl
-    size_reporter: SizeReportCtrl
-    notebook_ctrl: Notebook
-    timer: wx.Timer
-    gauge: ProgressGauge
-    min_mode: int = aui.AUI_MINIMIZE_POS_SMART
-    veto_tree: bool = False
-    veto_text: bool = False
-    transparency: int = 255
-    snapped: bool = False
-    captions: dict
-    req_pane_ids: dict[wx.WindowIDRef, str]
-    flags: dict[wx.WindowIDRef, int]     # <menu_ref_id> -> min mode flag
-    mb_items: dict                       # menubar.items
-    item_ids: dict[wx.WindowIDRef, str]  # menubar.item_ids
-
-    # If MainFrame subclasses wx.Frame, replace the following line
-    # def __init__(self, frame: "MainFrame", mgr: aui.AuiManager,
-    #              menu_ids: dict[str, wx.WindowIDRef], html_ctrl: HTMLCtrl,
-    #              text_ctrl: TextCtrl, tree_ctrl: TreeCtrl, grid_ctrl: GridCtrl,
-    #              size_reporter: SizeReportCtrl, notebook_ctrl: Notebook) -> None:
     def __init__(self, frame: wx.Frame, mgr: aui.AuiManager, mb_items: dict,
-                 item_ids: dict[wx.WindowIDRef, str], html_ctrl: HTMLCtrl,
-                 text_ctrl: TextCtrl, tree_ctrl: TreeCtrl, grid_ctrl: GridCtrl,
-                 notebook_ctrl: Notebook) -> None:
+                 item_ids: dict[wx.WindowIDRef, str], html_ctrl,
+                 text_ctrl, tree_ctrl, grid_ctrl,
+                 notebook_ctrl) -> None:
         self.frame = frame
         self.mgr = mgr
         self.html_ctrl = html_ctrl

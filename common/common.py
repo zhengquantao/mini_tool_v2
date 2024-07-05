@@ -13,7 +13,6 @@ import numpy as np
 import pandas as pd
 import psutil
 import wx
-import wx.svg
 import wx.lib.agw.aui as aui
 from aui2 import svg_to_bitmap
 

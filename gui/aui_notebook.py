@@ -4,7 +4,7 @@ import wx
 import wx.aui
 import wx.lib.agw.aui as aui
 
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING
 
 from aui2 import svg_to_bitmap
 
@@ -30,17 +30,8 @@ class Singleton(type):
 class Notebook:
     """Factory for a notebook control."""
 
-    # If MainFrame subclasses wx.Frame, replace the following line
-    # frame: "MainFrame"
-    frame: wx.Frame
-
-    mgr: aui.AuiManager
-    create_menu_id: wx.WindowIDRef
-    html_ctrl: "HTMLCtrl"
     notebook_style: int = aui.AUI_NB_DEFAULT_STYLE | aui.AUI_NB_TAB_EXTERNAL_MOVE | wx.NO_BORDER | aui.AUI_NB_TAB_FLOAT
-    notebook_theme: int = 0
     custom_tab_buttons: bool
-    main_notebook: aui.AuiNotebook
     counter: int = 0
 
     # If MainFrame subclasses wx.Frame, replace the following line
@@ -76,15 +67,11 @@ class Notebook:
         self.__class__.counter += 1
 
         # create the notebook off-window to avoid flicker
-        client_size: wx.Size = frame.GetClientSize()
+        # client_size: wx.Size = frame.GetClientSize()
         ctrl: aui.AuiNotebook = aui.AuiNotebook(frame, wx.ID_ANY, wx.DefaultPosition,
-                                                wx.Size(*client_size), agwStyle=self.notebook_style)
-        # type: list[Type[wx.aui.AuiTabArt]]
-        arts = [aui.AuiDefaultTabArt, aui.AuiSimpleTabArt, aui.VC71TabArt,
-                aui.FF2TabArt, aui.VC8TabArt, aui.ChromeTabArt]
+                                                wx.DefaultSize, agwStyle=self.notebook_style)
 
-        ctrl.SetArtProvider(arts[self.notebook_theme]())
-
+        ctrl.SetArtProvider(aui.AuiDefaultTabArt())
         # page = wx.TextCtrl(ctrl, wx.ID_ANY, overview, wx.DefaultPosition, wx.Size(*float_size),
         #                    wx.TE_MULTILINE | wx.NO_BORDER, name='Welcome to MINI-TOOL')
         # page.SetMargins(20)

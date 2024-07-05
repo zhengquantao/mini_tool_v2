@@ -7,16 +7,7 @@ from settings import settings as cs
 
 
 class ToolBarManager:
-    # If MainFrame subclasses wx.Frame, replace the following line
-    # frame: "MainFrame"
-    frame: wx.Frame
 
-    mgr: aui.AuiManager
-    item_ids: dict[int, str]  # wx.NewRefId -> Control string id
-    items: dict[str, dict]  # {"<key>": {"id": <ref_id>, "item": <aui.AuiToolBarItem>}}
-
-    # If MainFrame subclasses wx.Frame, replace the following line
-    # def __init__(self, frame: "MainFrame", mgr: aui.AuiManager) -> None:
     def __init__(self, frame: wx.Frame, mgr: aui.AuiManager) -> None:
         self.frame = frame
         self.mgr = mgr
@@ -76,7 +67,7 @@ class ToolBarManager:
         tb6.EnableTool(database, False)
         tb6.Realize()
         mgr.AddPane(tb6, aui.AuiPaneInfo().Name("toolbar_right").Caption("右边栏").
-                    ToolbarPane().Right().TopDockable(False).Floatable(False).Dockable(False))
+                    ToolbarPane().Right().Floatable(False).Dockable(False))
 
         # Show how to get a custom minimizing behaviour, i.e., to minimize a pane
         # inside an existing AuiToolBar
@@ -97,7 +88,7 @@ class ToolBarManager:
         frame.Bind(wx.EVT_MENU, self.on_project_nav, project_tb_id)
         frame.Bind(wx.EVT_MENU, self.on_graph_nav, gripe_tb_id)
         frame.Bind(wx.EVT_MENU, self.on_console_nav, console_tb_id)
-        # self.mgr.Update()
+        mgr.Update()
 
     def on_project_nav(self, _event: wx.CommandEvent):
         pane = self.mgr.GetPane("ProjectTree")

@@ -15,11 +15,6 @@ from common.common import save_mini_file
 
 
 class MainFrame:
-    initialized: bool = False
-    mgr: aui.AuiManager
-    # If subclassing wx.Frame [class MainFrame(wx.Frame):], remove the next line
-    # or set it to self.
-    frame: wx.Frame
 
     def __init__(self, parent: wx.Window, win_id: wx.WindowIDRef = wx.ID_ANY,
                  title: str = "", pos: wx.Point = wx.DefaultPosition, size: wx.Size = wx.DefaultSize,
@@ -32,8 +27,6 @@ class MainFrame:
         self.frame.Bind(wx.EVT_CLOSE, self.on_exit)
 
     def init_man(self, mgr: aui.AuiManager) -> None:
-        assert not self.initialized
-        self.initialized = True
         self.mgr = mgr
         self.frame.Bind(wx.EVT_SIZE, self.on_size)
 
@@ -47,6 +40,7 @@ class MainFrame:
     def on_size(self, event):
         wx.CallLater(100, self.frame.Update)
         wx.CallLater(200, self.mgr.GetPane("notebook_content").window.Update)
+        wx.CallLater(300, self.mgr.Update)
         # event.Skip(False)
         return
 

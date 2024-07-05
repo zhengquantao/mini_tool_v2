@@ -21,17 +21,6 @@ from settings.settings import main_title, __version__, icon_svg, delete_svg, con
 
 # noinspection PyPep8Naming
 class MainMenu:
-    initialized: bool = False
-    # If MainFrame subclasses wx.Frame, replace the following line
-    # frame: "MainFrame"
-    frame: wx.Frame
-
-    mgr: aui.AuiManager
-    menubar: wx.MenuBar
-    # wx.NewRefId -> Item string id
-    item_ids: dict[wx.WindowIDRef, str]
-    # {"<key>": Union[{"id": "<ref_id>", "type": "<type>", "item": "<wx.MenuItem>"}, "<wx.Menu>"]}
-    items: dict
 
     # If MainFrame subclasses wx.Frame, replace the following line
     # def __init__(self, frame: "MainFrame", mgr: aui.AuiManager) -> None:
@@ -48,9 +37,6 @@ class MainMenu:
         return self.mgr.GetArtProvider()
 
     def build(self) -> wx.MenuBar:
-        assert not self.initialized
-        self.initialized = True
-
         menubar = self.menubar
         for child_key, child in main_menu_items.items():
             menu = self.build_menu(child["children"])

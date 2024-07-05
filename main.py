@@ -14,7 +14,7 @@ from settings import settings as cs
 from gui.file_menu import FileManager
 from gui.main_frame import MainFrame
 from gui.main_menu import MainMenu
-from gui.controls import SizeReportCtrl, TextCtrl, TreeCtrl, HTMLCtrl, GridCtrl, LogCtrl
+from gui.controls import TextCtrl, TreeCtrl, HTMLCtrl, GridCtrl, LogCtrl
 from gui.aui_notebook import Notebook
 # from gui.aui_notebook_options import NotebookOptions
 # from gui.aui_manager_options import ManagerOptions
@@ -25,13 +25,8 @@ from gui.gui import SettingsPanel
 
 
 class MainApp:
-    # If subclassing wx.App [class MainApp(wx.App):], remove the next line.
-    app: wx.App
 
     def __init__(self, project_path=None):
-        # If subclassing wx.App, uncomment the next line.
-        # super().__init__(redirect=False)
-        # If subclassing wx.App, remove the next two lines.
         self.app = wx.App(False)
         self.on_init(project_path)
 
@@ -77,7 +72,6 @@ class MainApp:
         # init log
         loggers.logger = loggers.init_log(LogCtrl(frame, mgr))
         loggers.logger.info("正在运行中....")
-
         # _notebook_options: NotebookOptions = NotebookOptions(
         #     frame, mgr, notebook_ctrl, menubar.items, menubar.item_ids)
         # _manager_options: ManagerOptions = ManagerOptions(
@@ -92,7 +86,7 @@ class MainApp:
         # paneman.request_menu()
         # layman: LayoutManager = LayoutManager(frame, mgr, menubar.items)
         # layman.save("All Panes")
-        paneman.default_layout()
+        # paneman.default_layout()
         # layman.save("Default Startup")
         setman: SettingsPanel = SettingsPanel(frame, mgr)
         # setman.build_panel(menubar.items)

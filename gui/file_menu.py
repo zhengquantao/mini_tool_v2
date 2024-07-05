@@ -7,14 +7,9 @@ import wx.aui
 import wx.lib.agw.aui as aui
 from aui2 import svg_to_bitmap
 
-from gui.graph_panel import GraphPanel
 from settings import settings as cs
 from common import loggers
 from common.common import read_file, new_app
-from gui.controls import SizeReportCtrl, TextCtrl, TreeCtrl, HTMLCtrl, GridCtrl
-from gui.aui_notebook import Notebook
-from gui.main_menu import MainMenu
-from gui.progress import ProgressGauge
 
 
 # noinspection PyPep8Naming
@@ -24,35 +19,8 @@ from settings.settings import opening_dict
 class FileManager:
     """Creates default panes."""
 
-    # If MainFrame subclasses wx.Frame, replace the following line
-    # frame: "MainFrame"
-    frame: wx.Frame
-
-    mgr: aui.AuiManager
-    html_ctrl: HTMLCtrl
-    text_ctrl: TextCtrl
-    tree_ctrl: TreeCtrl
-    grid_ctrl: GridCtrl
-    size_reporter: SizeReportCtrl
-    notebook_ctrl: Notebook
-    timer: wx.Timer
-    gauge: ProgressGauge
-    min_mode: int = aui.AUI_MINIMIZE_POS_SMART
-    veto_tree: bool = False
-    veto_text: bool = False
-    transparency: int = 255
-    snapped: bool = False
-    captions: dict
-    req_pane_ids: dict[wx.WindowIDRef, str]
-    flags: dict[wx.WindowIDRef, int]     # <menu_ref_id> -> min mode flag
-    menubar: MainMenu
-    mb_items: dict                       # menubar.items
-    item_ids: dict[wx.WindowIDRef, str]  # menubar.item_ids
-
-    def __init__(self, frame: wx.Frame, mgr: aui.AuiManager, menubar: MainMenu, html_ctrl: HTMLCtrl,
-                 text_ctrl: TextCtrl, tree_ctrl: TreeCtrl, grid_ctrl: GridCtrl, notebook_ctrl: Notebook,
-                 graph_ctrl: GraphPanel,
-                 project_path=None) -> None:
+    def __init__(self, frame: wx.Frame, mgr: aui.AuiManager, menubar, html_ctrl,
+                 text_ctrl, tree_ctrl, grid_ctrl, notebook_ctrl, graph_ctrl, project_path=None) -> None:
         self.frame = frame
         self.mgr = mgr
         self.html_ctrl = html_ctrl

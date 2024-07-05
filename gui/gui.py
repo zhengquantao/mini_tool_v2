@@ -7,14 +7,6 @@ from gui.resources import sids, cids, pallet_from_color, pallets_from_color
 
 # noinspection PyPep8Naming
 class SettingsPanel:
-    frame: wx.Frame
-    mgr: aui.AuiManager
-    panel: wx.Panel
-    mb_items: dict  # menubar.items
-    sizers: list[wx.Sizer]
-    sid_ctrls: dict[wx.WindowIDRef, str]
-    cid_ctrls: dict[wx.WindowIDRef, str]
-    sash_grip: dict
 
     def __init__(self, frame: wx.Frame, mgr: aui.AuiManager) -> None:
         self.frame = frame
@@ -29,7 +21,7 @@ class SettingsPanel:
         self.mgr.Update()
 
     def build_panel(self, mb_items: dict) -> None:
-        panel: wx.Panel = self.panel
+        panel: wx.Panel = wx.Panel()
         label: str
         sizer: wx.Sizer
         spinner: wx.SpinCtrl
