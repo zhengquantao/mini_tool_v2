@@ -11,9 +11,6 @@ import scipy.stats as stats
 from sklearn.neighbors import KernelDensity
 
 
-np.random.seed(8)
-
-
 def fit_plot_line(x=[], y=[], ci=95):
     import seaborn as sns
     import matplotlib.pyplot as plt

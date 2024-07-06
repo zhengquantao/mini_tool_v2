@@ -33,7 +33,7 @@ import numpy as np
 
 import pandas as pd
 
-import logging
+# import logging
 
 #
 import warnings
@@ -59,7 +59,7 @@ from models.utils.wind_base_tool import mark_label
 
 # *** ---------- 日志 ----------
 # logger
-logger = logging.getLogger()
+# logger = logging.getLogger()
 
 # --------------------------------------------------------------------
 # ***

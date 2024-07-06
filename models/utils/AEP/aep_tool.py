@@ -33,7 +33,7 @@ import numpy as np
 
 import pandas as pd
 
-import logging
+# import logging
 
 #
 from .wind_base_tool import power_label, wind_speed_label, generator_speed_label
@@ -48,7 +48,7 @@ from .power_curve_tool import actual_power_label, theory_power_label
 
 # *** ---------- 日志 ----------
 # logger1
-logger = logging.getLogger()
+# logger = logging.getLogger()
 
 
 # --------------------------------------------------------------------

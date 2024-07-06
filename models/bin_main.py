@@ -1,27 +1,22 @@
 import os
 import math
-import numpy as np
 import pandas as pd
-
-from scipy.optimize import minimize
-
 
 from common import loggers
 from common.common import read_csv_file, detect_encoding, data_cleaning_by_pitchangle, ignore_files_func
-from settings.settings import power_theoretical, ignore_files
+from settings.settings import power_theoretical
 
 # *** ---------- custom package ----------
 
-from models.bin_analysis.quant.cloud.wind_base_tool import rule_removal, wind_speed_binning, windspeed_binning_proc
+from models.bin_analysis.quant.cloud.wind_base_tool import windspeed_binning_proc
 from models.bin_analysis.quant.cloud.wind_base_tool import wind_speed_label, power_label, gen_speed_label, \
     air_density_label
 
 from models.bin_analysis.quant.cloud.pitch_analysis import pitch_label
 from models.bin_analysis.quant.cloud.tsr_tool import tsr_calc, tsr_label
 
-from models.bin_analysis.quant.cloud.bin_analysis_tool import dict_df_merge, dict_curve_plot
-from models.bin_analysis.quant.cloud.bin_analysis_tool import bin_curve_analysis, month_bin_curve_analysis, \
-    power_curve_bin
+# from models.bin_analysis.quant.cloud.bin_analysis_tool import dict_df_merge, dict_curve_plot
+from models.bin_analysis.quant.cloud.bin_analysis_tool import bin_curve_analysis
 
 
 def bin_main(file_path, project_path, img_mode=False, run_func_list=None):

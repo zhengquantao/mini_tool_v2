@@ -28,7 +28,7 @@
 # 加载包 (import package)
 # ***
 # --------------------------------------------------------------------
-import logging
+# import logging
 
 import os
 import calendar
@@ -57,7 +57,7 @@ from models.bin_analysis.quant.cloud.pitch_analysis import pitch1_label, pitch2_
 
 # *** ---------- 日志 ----------
 # logger
-logger = logging.getLogger()
+# logger = logging.getLogger()
 
 
 # --------------------------------------------------------------------

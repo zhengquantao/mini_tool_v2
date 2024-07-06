@@ -43,7 +43,7 @@ def async_raise(thread_id, exctype, logger=logging):
 
 def new_app(path):
     from multiprocessing import Process, freeze_support
-    from main import run_gui
+    from server.gui_server import run_gui
     freeze_support()
     app = Process(target=run_gui, args=(path,))
     app.start()

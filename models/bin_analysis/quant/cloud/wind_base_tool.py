@@ -29,7 +29,7 @@
 # ***
 # --------------------------------------------------------------------
 import os
-import logging
+# import logging
 
 import numpy as np
 import pandas as pd
@@ -48,7 +48,7 @@ warnings.filterwarnings("ignore")
 
 # *** ---------- 日志 ----------
 # logger
-logger = logging.getLogger()
+# logger = logging.getLogger()
 
 
 # --------------------------------------------------------------------
@@ -234,7 +234,7 @@ def cut_speed(dataset):
         if len(index_list) > 0:
             dataset.loc[index_list, wind_speed_bin_label] = speed_item
         else:
-            logger.info("风速分仓数据为空：{}".format(speed_item))
+            print("风速分仓数据为空：{}".format(speed_item))
     
     #! 小于2.25特殊处理
     dataset.loc[dataset[wind_speed_label] < 2.25, wind_speed_bin_label] = -1

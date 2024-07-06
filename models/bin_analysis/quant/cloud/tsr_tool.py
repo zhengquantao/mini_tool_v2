@@ -31,7 +31,7 @@
 import os
 import math
 
-import logging
+# import logging
 
 import numpy as np
 import pandas as pd
@@ -49,7 +49,7 @@ from models.bin_analysis.quant.cloud.file_dir_tool import create_dir
 from models.bin_analysis.quant.cloud.wind_base_tool import power_label, wind_speed_label, gen_speed_label
 from models.bin_analysis.quant.cloud.wind_base_tool import air_density_label, wind_speed_bin_label, mark_label
 
-from models.bin_analysis.quant.cloud.plot_tool import curve_plot, scatter_plot, hue_scatter_plot
+# from models.bin_analysis.quant.cloud.plot_tool import curve_plot, scatter_plot, hue_scatter_plot
 
 
 
@@ -61,7 +61,7 @@ from models.bin_analysis.quant.cloud.plot_tool import curve_plot, scatter_plot, 
 
 # *** ---------- 日志 ----------
 # logger
-logger = logging.getLogger()
+# logger = logging.getLogger()
 
 
 # --------------------------------------------------------------------

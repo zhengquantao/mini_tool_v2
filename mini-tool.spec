@@ -19,8 +19,8 @@ pyz = PYZ(a.pure)
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    a.datas,
+    # a.binaries,
+    # a.datas,
     [],
     name='能效评估助手',
     debug=False,
@@ -38,12 +38,12 @@ exe = EXE(
     icon=['./static/icon.png','./static/icon.png'],
 )
 
-#coll = COLLECT(
-#    exe,
-#    a.binaries,
-#    a.datas,
-#    strip=False,
-#    upx=True,
-#    upx_exclude=[],
-#    name='test2',
-#)
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name='mini_tool',
+)

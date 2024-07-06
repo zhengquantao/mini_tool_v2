@@ -44,7 +44,7 @@
 # ***
 # --------------------------------------------------------------------
 import os
-import logging
+# import logging
 
 import math
 import numpy as np
@@ -58,16 +58,16 @@ import warnings
 warnings.filterwarnings("ignore")
 
 #
-from models.bin_analysis.quant.cloud.file_dir_tool import create_dir
-from models.bin_analysis.quant.cloud.plot_tool import curve_plot, bin_curve_plot, scatter_plot, hue_scatter_plot
+# from models.bin_analysis.quant.cloud.file_dir_tool import create_dir
+# from models.bin_analysis.quant.cloud.plot_tool import curve_plot, bin_curve_plot, scatter_plot, hue_scatter_plot
 
 from models.bin_analysis.quant.cloud.wind_base_tool import binning_proc, plot_save, cp_label
 from models.bin_analysis.quant.cloud.wind_base_tool import power_label, wind_speed_label, wind_direction_label, gen_speed_label
 from models.bin_analysis.quant.cloud.wind_base_tool import wind_speed_bin_label, gen_speed_bin_label, power_bin_label
 from models.bin_analysis.quant.cloud.wind_base_tool import wind_direction_bin_label, air_density_bin_label
-from models.bin_analysis.quant.cloud.wind_base_tool import air_density_label, mark_label, turbine_code_label
+from models.bin_analysis.quant.cloud.wind_base_tool import air_density_label, turbine_code_label
 
-from models.bin_analysis.quant.cloud.power_curve_tool import calc_actual_power_curve, theory_curve_prep, scatter_curve
+from models.bin_analysis.quant.cloud.power_curve_tool import calc_actual_power_curve
 
 from models.bin_analysis.quant.cloud.pitch_analysis import pitch_label, pitch1_label, pitch2_label, pitch3_label, pitch_bin_label
 from models.bin_analysis.quant.cloud.pitch_analysis import speed_pitch_plot_x, power_pitch_plot, pitch_power_plot_x
@@ -84,7 +84,7 @@ from models.bin_analysis.quant.cloud.tsr_tool import tsr_label, tsr_calc
 
 # *** ---------- 日志 ----------
 # logger
-logger = logging.getLogger()
+# logger = logging.getLogger()
 
 
 # --------------------------------------------------------------------

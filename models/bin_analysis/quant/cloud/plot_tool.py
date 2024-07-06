@@ -27,7 +27,7 @@
 # 加载包 (import package)
 # ***
 # --------------------------------------------------------------------
-import logging
+# import logging
 
 #
 from models.bin_analysis.quant.cloud.wind_base_tool import power_label, wind_speed_label, gen_speed_label
@@ -43,7 +43,7 @@ from models.bin_analysis.quant.cloud.wind_base_tool import plot_save
 
 # *** ---------- 日志 ----------
 # logger
-logger = logging.getLogger()
+# logger = logging.getLogger()
 
 
 # --------------------------------------------------------------------

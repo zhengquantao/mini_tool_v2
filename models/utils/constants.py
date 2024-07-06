@@ -4,13 +4,13 @@ coding:utf-8
 @Time:2023/8/25 16:49
 @Author: Natsu
 '''
-import os
+# import os
 
 # 日志配置
 
 log_dir = 'logs'
 log_name = 'aep_log'
-root_dir = os.getcwd()
+# root_dir = os.getcwd()
 
 farm_name = "guazhouMY1.5"
 

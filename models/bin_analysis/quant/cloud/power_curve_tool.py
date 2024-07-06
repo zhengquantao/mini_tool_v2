@@ -29,7 +29,7 @@
 # ***
 # --------------------------------------------------------------------
 import os
-import logging
+# import logging
 
 import math
 import numpy as np
@@ -83,7 +83,7 @@ from models.bin_analysis.quant.cloud.wind_base_tool import air_density_label, wi
 
 # *** ---------- 日志 ----------
 # logger
-logger = logging.getLogger()
+# logger = logging.getLogger()
 
 
 # --------------------------------------------------------------------
@@ -285,7 +285,8 @@ def curve_fitting(data, wind_speed_list):
     try:
         data = data.reset_index(drop=True)
     except Exception as e:
-        logger.info("无需执行此步骤！")
+        # logger.info("无需执行此步骤！")
+        print("无需执行此步骤！")
     
     #? p0：函数参数的初始值，从而减少计算机的计算量
     p0 = [data[power_label].max(), data[wind_speed_label].mean(), 1, data[power_label].min()]

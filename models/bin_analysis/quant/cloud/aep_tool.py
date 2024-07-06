@@ -31,7 +31,7 @@
 # 加载包 (import package)
 # ***
 # --------------------------------------------------------------------
-import logging
+# import logging
 
 import math
 import numpy as np
@@ -52,7 +52,7 @@ from models.bin_analysis.quant.cloud.power_curve_tool import actual_power_label,
 
 # *** ---------- 日志 ----------
 # logger
-logger = logging.getLogger()
+# logger = logging.getLogger()
 
 
 # --------------------------------------------------------------------

@@ -16,7 +16,7 @@ class SimpleHTTPRequestHandlerWithDirectory(http.server.SimpleHTTPRequestHandler
         pass
 
 
-def run_server(port=PORT):
+def run_file(port=PORT):
     # 创建并启动服务器
     try:
         with socketserver.TCPServer(("", port), SimpleHTTPRequestHandlerWithDirectory) as httpd:
@@ -32,4 +32,4 @@ if __name__ == '__main__':
     #     sys.stdout = open(os.devnull, "w")
     # if sys.stderr is None:
     #     sys.stderr = open(os.devnull, "w")
-    run_server()
+    run_file()

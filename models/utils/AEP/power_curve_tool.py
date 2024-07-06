@@ -33,7 +33,7 @@ import numpy as np
 
 import pandas as pd
 
-import logging
+# import logging
 
 # import matplotlib.pyplot as plt
 # import seaborn as sns
@@ -54,7 +54,7 @@ from .wind_base_tool import air_density_label, wind_speed_bin_label, mark_label
 
 # *** ---------- 日志 ----------
 # logger
-logger = logging.getLogger()
+# logger = logging.getLogger()
 
 # --------------------------------------------------------------------
 # ***

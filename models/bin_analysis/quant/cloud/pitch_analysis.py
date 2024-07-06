@@ -29,7 +29,7 @@
 # ***
 # --------------------------------------------------------------------
 import os
-import logging
+# import logging
 
 import numpy as np
 import pandas as pd
@@ -59,7 +59,7 @@ from models.bin_analysis.quant.cloud.wind_base_tool import air_density_label, tu
 
 # *** ---------- 日志 ----------
 # logger
-logger = logging.getLogger()
+# logger = logging.getLogger()
 
 
 # --------------------------------------------------------------------

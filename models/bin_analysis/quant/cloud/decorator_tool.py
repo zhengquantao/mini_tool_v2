@@ -34,7 +34,7 @@
 # ***
 # --------------------------------------------------------------------
 
-import logging
+# import logging
 
 import time
 
@@ -46,7 +46,7 @@ import time
 
 # *** ---------- 日志 ----------
 # logger
-logger = logging.getLogger()
+# logger = logging.getLogger()
 
 
 # --------------------------------------------------------------------

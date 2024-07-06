@@ -35,12 +35,12 @@ import locale
 import pandas as pd
 
 from common.common import read_csv_file, detect_encoding, ignore_files_func
-from settings.settings import ignore_files
+
 from ..data_integration import extra_data
 
 locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 from .wind_base_tool import wind_speed_binning
-from .power_curve_tool import calc_actual_power_curve, scatter_curve
+from .power_curve_tool import calc_actual_power_curve
 from .aep_tool import aep_calc
 from ..data_cleansing import *
 
