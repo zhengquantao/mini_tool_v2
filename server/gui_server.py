@@ -17,13 +17,13 @@ from gui.aui_notebook import Notebook
 from gui.base_panes import PaneManager
 # from gui.perspective import LayoutManager
 from gui.gui import SettingsPanel
-from settings.settings import main_title, window_size, icon_svg
+from settings.settings import main_title, window_size, icon_svg, log_path
 
 
 class MainApp:
 
     def __init__(self, project_path=None):
-        self.app = wx.App(False)
+        self.app = wx.App(True, log_path)
         self.on_init(project_path)
 
     # If subclassing wx.App, remove this method.
