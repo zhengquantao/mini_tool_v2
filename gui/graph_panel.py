@@ -93,6 +93,8 @@ class GraphPanel(wx.Panel):
 
         wx.StaticText(panel4, pos=(5, 58), label='Y轴：')
         self.tc2 = wx.CheckListBox(panel4, pos=(5, 78), size=(150, 145), choices=self.columns, style=wx.TC_MULTILINE)
+        self.tc2.Bind(wx.EVT_LISTBOX, self.on_item_clicked)
+        self.tc2.Bind(wx.EVT_LISTBOX_DCLICK, self.on_item_clicked)
         button = wx.Button(panel4, -1, '浏 览', pos=(75, 231))
         button.SetBitmapLabel(svg_to_bitmap(cs.sea_svg, size=(20, 20)))
         button.Bind(wx.EVT_BUTTON, self.on_click)
@@ -105,6 +107,10 @@ class GraphPanel(wx.Panel):
         self.SetSizer(sizer)
         self.Layout()
         return self
+
+    def on_item_clicked(self, event):
+        index = event.GetSelection()
+        self.tc2.Check(index, not self.tc2.IsChecked(index))
 
     def set_data(self, data):
         self.data = data
