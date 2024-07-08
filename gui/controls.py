@@ -232,7 +232,12 @@ class TreeCtrl(metaclass=Singleton):
         self.tree.SetDoubleBuffered(True)
 
         if init_project:
-            return self.tree
+            # 设置panel自适应屏幕
+            sizer = wx.BoxSizer(wx.VERTICAL)
+            # 1 自动铺满窗口
+            sizer.Add(self.tree, 1, wx.ALL | wx.EXPAND, 0)
+            panel.SetSizer(sizer)
+            return panel
 
         imglist: wx.ImageList = wx.ImageList(16, 16, True, 2)
         icons = [wx.ART_FOLDER, wx.ART_FILE_OPEN, wx.ART_NORMAL_FILE]
@@ -414,7 +419,7 @@ class TreeCtrl(metaclass=Singleton):
                          svg_to_bitmap(html_svg, size=(16, 16)))
 
         elif any([path.endswith(".csv"), path.endswith(".xlsx"), path.endswith(".xls")]):
-            data_df = pd.read_csv(path, encoding=detect_encoding(path), index_col=0)
+            data_df = pd.read_csv(path, encoding=detect_encoding(path), low_memory=False)
             # 防止多线程操作主进程页面导致异常崩溃
             wx.CallAfter(publisher.sendMessage, "set_data_df", data_df=data_df)
             ctrl.AddPage(self.grid_ctrl.create_ctrl(ctrl, data_df), file_name, True,
