@@ -2,7 +2,7 @@ import os
 import http.server
 import socketserver
 
-DIRECTORY = os.path.join(os.path.abspath(os.path.dirname(__file__)), "static", "js")
+DIRECTORY = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), "static", "js")
 PORT = 38121
 
 
