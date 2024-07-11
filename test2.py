@@ -1,6 +1,7 @@
 
 import wx
 from aui2 import svg_to_bitmap
+from pyecharts.commons.utils import JsCode
 
 
 class MyPanel(wx.Panel):
@@ -101,6 +102,14 @@ def main():
     app.MainLoop()
 
 
-if __name__ == "__main__" :
-    main()
+if __name__ == "__main__":
+    # main()
+    filehistory = wx.FileHistory(1)
+    config = wx.Config("能效评估助手", style=wx.CONFIG_USE_LOCAL_FILE)
+    filehistory.Load(config)
+    print(filehistory.GetCount())
+    for i in range(1):
+        filehistory.RemoveFileFromHistory(0)
+    filehistory.Save(config)
+    config.Flush()
 

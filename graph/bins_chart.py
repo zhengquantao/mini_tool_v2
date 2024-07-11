@@ -1,6 +1,5 @@
 import os
 
-
 from pyecharts.globals import CurrentConfig
 CurrentConfig.ONLINE_HOST = "http://127.0.0.1:38121/"
 

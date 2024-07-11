@@ -40,7 +40,8 @@ class FileManager:
         # self.init_maps()
         # self.init_ui_state()
         self.bind_menu()
-        self.load_recent_project(project_path)
+        wx.CallLater(500, self.load_recent_project, project_path)
+        # self.load_recent_project(project_path)
 
     # def __del__(self):
     #     self.timer.Stop()

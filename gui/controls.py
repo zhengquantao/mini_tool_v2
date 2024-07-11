@@ -343,6 +343,7 @@ class TreeCtrl(metaclass=Singleton):
         sub_model_menu1 = wx.Menu()
         if os.path.isdir(path):
             menu.AppendSeparator()
+            model_14 = sub_model_menu1.Append(wx.ID_ANY, '偏航对风分析总览')
             model_12 = sub_model_menu1.Append(wx.ID_ANY, '赛马排行总览')
             model_1 = sub_model_menu1.Append(wx.ID_ANY, '能效排行总览')
             model_2 = sub_model_menu1.Append(wx.ID_ANY, '能效结果总览')
@@ -353,14 +354,17 @@ class TreeCtrl(metaclass=Singleton):
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_3(event, path), model_3)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_6(event, path), model_6)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_12(event, path), model_12)
+            self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_14(event, path), model_14)
             menu.AppendSubMenu(sub_model_menu1, '能效分析').SetBitmap(svg_to_bitmap(model1_svg, size=(13, 13)))
 
         elif path.endswith(".csv"):
             menu.AppendSeparator()
+            model_13 = sub_model_menu1.Append(wx.ID_ANY, '偏航对风分析')
             model_4 = sub_model_menu1.Append(wx.ID_ANY, '理论与实际功率对比分析')
             model_5 = sub_model_menu1.Append(wx.ID_ANY, '风资源分析')
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_4(event, path), model_4)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_5(event, path), model_5)
+            self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_13(event, path), model_13)
             menu.AppendSubMenu(sub_model_menu1, '能效分析').SetBitmap(svg_to_bitmap(model1_svg, size=(13, 13)))
 
     def menu_model2(self, menu, path):
@@ -627,6 +631,30 @@ class TreeCtrl(metaclass=Singleton):
         thread.start()
         self.gauge = GaugePanel(self.frame, "赛马排行总览", thread.ident)
 
+    def on_model_13(self, event, path):
+        """偏航对风分析"""
+        loggers.logger.info(f"偏航对风分析 clicked, path: {path}")
+
+        if self.open_history_html_file(path, "偏航对风分析"):
+            return
+        from models.yaw_main import yaw_main
+        project_path = opening_dict[os.getpid()]["path"]
+        thread = Thread(target=self.async_model, args=(yaw_main, path, project_path, "偏航对风分析"))
+        thread.start()
+        self.gauge = GaugePanel(self.frame, "偏航对风分析", thread.ident)
+
+    def on_model_14(self, event, path):
+        """偏航对风分析总览"""
+        loggers.logger.info(f"偏航对风分析总览 clicked, path: {path}")
+
+        if self.open_history_html_file(path, "偏航对风分析总览"):
+            return
+        from models.yaw_main import yaw_main
+        project_path = opening_dict[os.getpid()]["path"]
+        thread = Thread(target=self.async_model, args=(yaw_main, path, project_path, "偏航对风分析总览"))
+        thread.start()
+        self.gauge = GaugePanel(self.frame, "偏航对风分析总览", thread.ident)
+
     def csv_max_getmtime(self, path):
         last_updated_time = 0
         for file in os.listdir(path):
@@ -815,18 +843,27 @@ class SizeReportCtrl(metaclass=Singleton):
 
 class LogCtrl(metaclass=Singleton):
     def __init__(self, parent, mgr, text="", style=wx.TE_MULTILINE):
-        panel = wx.Panel(parent, wx.ID_ANY)
-        self.logger = wx.TextCtrl(panel, wx.ID_ANY, text, wx.DefaultPosition, wx.Size(100, 100), style=style)
+        self.parent = parent
+        self.mgr = mgr
+        self.text = text
+        self.style = style
+        wx.CallLater(100,  loggers.init_log, self.create_ctrl)
+
+    def create_ctrl(self):
+
+        panel = wx.Panel(self.parent, wx.ID_ANY)
+        logger = wx.TextCtrl(panel, wx.ID_ANY, self.text, wx.DefaultPosition, wx.Size(100, 100), style=self.style)
 
         font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
-        self.logger.SetMargins(8)
-        self.logger.SetFont(font)
+        logger.SetMargins(8)
+        logger.SetFont(font)
         # 设置panel自适应屏幕
         sizer = wx.BoxSizer(wx.VERTICAL)
         # 1 自动铺满窗口
-        sizer.Add(self.logger, 1, wx.ALL | wx.EXPAND, 0)
+        sizer.Add(logger, 1, wx.ALL | wx.EXPAND, 0)
         panel.SetSizer(sizer)
-        mgr.AddPane(panel, aui.AuiPaneInfo().
-                    Name("Console").Caption("Console").Hide().Minimize().
-                    Bottom().Layer(2).Position(1).Floatable(False).CloseButton(False).
-                    MaximizeButton(False).MinimizeButton(True).Icon(svg_to_bitmap(console_svg, size=(20, 18))))
+        self.mgr.AddPane(panel, aui.AuiPaneInfo().
+                         Name("Console").Caption("Console").Hide().Minimize().
+                         Bottom().Layer(2).Position(1).Floatable(False).CloseButton(False).
+                         MaximizeButton(False).MinimizeButton(True).Icon(svg_to_bitmap(console_svg, size=(20, 18))))
+        return logger

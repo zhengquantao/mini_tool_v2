@@ -36,6 +36,7 @@ class PaneManager:
         self.item_ids = item_ids
 
         self.bind_menu()
+        wx.CallLater(300, self.build_panes)
 
     def build_panes(self):
         notebook_ctrl: Notebook = self.notebook_ctrl

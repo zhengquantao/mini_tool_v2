@@ -5,6 +5,8 @@ import wx
 
 from settings.settings import log_level, log_path
 
+logger = None
+
 
 class RealTimeLogHandler(logging.Handler):
     def __init__(self, text_ctrl):
@@ -19,19 +21,18 @@ class RealTimeLogHandler(logging.Handler):
         wx.CallAfter(self.text_ctrl.AppendText, message + '\n')
 
 
-def init_log(frame=None):
-    log = logging.getLogger()
-    log_handler = RealTimeLogHandler(frame.logger)
-    log.addHandler(log_handler)
+def init_log(create_ctrl=None):
+    global logger
+    logger = logging.getLogger()
+    log_handler = RealTimeLogHandler(create_ctrl())
+    logger.addHandler(log_handler)
 
     last_log_file = log_path
     rotate_file_handler = RotatingFileHandler(last_log_file, maxBytes=1024*1024*1, backupCount=1)
     rotate_file_handler.setFormatter(
         logging.Formatter('%(asctime)s - %(filename)s:%(lineno)d - %(levelname)s - %(message)s'))
-    log.addHandler(rotate_file_handler)
+    logger.addHandler(rotate_file_handler)
 
-    log.setLevel(log_level)
-    return log
-
-
-logger = None
+    logger.setLevel(log_level)
+    logger.info("正在运行中....")
+    return logger

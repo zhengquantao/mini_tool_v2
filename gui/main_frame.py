@@ -39,7 +39,6 @@ class MainFrame:
 
     def on_size(self, event):
         wx.CallLater(100, self.frame.Update)
-        wx.CallLater(200, self.mgr.GetPane("notebook_content").window.Update)
         wx.CallLater(300, self.mgr.Update)
         # event.Skip(False)
         return
