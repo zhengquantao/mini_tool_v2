@@ -26,6 +26,13 @@ from gui.gauge_panel import GaugePanel
 from settings.settings import opening_dict, float_size, display_grid_count, model2_svg, model1_svg, result_dir, png_svg, \
     csv_svg, html_svg, console_svg
 
+from models.compare_curve import compare_curve
+from models.geo_main import geo_main
+from models.dswe_main import iec_main
+from models.compare_curve import compare_curve_all
+from models.bin_main import bin_main
+from models.yaw_main import yaw_main
+
 
 class Singleton(type):
     """Singleton metaclass."""
@@ -482,7 +489,6 @@ class TreeCtrl(metaclass=Singleton):
         if self.open_history_html_file(path, "能效排行总览"):
             return
 
-        from models.geo_main import geo_main
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(geo_main, path, project_path))
         thread.start()
@@ -496,7 +502,6 @@ class TreeCtrl(metaclass=Singleton):
             return
 
         # 能效结果总览
-        from models.dswe_main import iec_main
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(iec_main, path, project_path))
         thread.start()
@@ -510,7 +515,6 @@ class TreeCtrl(metaclass=Singleton):
             return
 
         # 能效结果总览
-        from models.dswe_main import iec_main
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(iec_main, path, project_path, True))
         thread.start()
@@ -524,7 +528,6 @@ class TreeCtrl(metaclass=Singleton):
             return
 
         # 理论和实际功率曲线对比
-        from models.compare_curve import compare_curve
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(compare_curve, path, project_path))
         thread.start()
@@ -538,7 +541,6 @@ class TreeCtrl(metaclass=Singleton):
             return
 
         # 风资源对比
-        from models.compare_curve import compare_curve
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(compare_curve, path, project_path, 1, True))
         thread.start()
@@ -551,7 +553,6 @@ class TreeCtrl(metaclass=Singleton):
         if self.open_history_html_file(path, "风资源对比总览"):
             return
 
-        from models.compare_curve import compare_curve_all
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(compare_curve_all, path, project_path, 1, True))
         thread.start()
@@ -563,7 +564,6 @@ class TreeCtrl(metaclass=Singleton):
         if self.open_history_html_file(path, "风速-风能利用系数分析"):
             return
 
-        from models.bin_main import bin_main
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["cp_windspeed"]))
         thread.start()
@@ -575,7 +575,6 @@ class TreeCtrl(metaclass=Singleton):
         if self.open_history_html_file(path, "风速-桨距角分析"):
             return
 
-        from models.bin_main import bin_main
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["pitch_windspeed"]))
         thread.start()
@@ -587,7 +586,6 @@ class TreeCtrl(metaclass=Singleton):
         if self.open_history_html_file(path, "桨距角-功率分析"):
             return
 
-        from models.bin_main import bin_main
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["power_pitch"]))
         thread.start()
@@ -599,7 +597,6 @@ class TreeCtrl(metaclass=Singleton):
         if self.open_history_html_file(path, "风速-转速分析"):
             return
 
-        from models.bin_main import bin_main
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["gen_wind_speed"]))
         thread.start()
@@ -611,7 +608,6 @@ class TreeCtrl(metaclass=Singleton):
         if self.open_history_html_file(path, "转速-功率分析"):
             return
 
-        from models.bin_main import bin_main
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["power_genspeed"]))
         thread.start()
@@ -625,7 +621,6 @@ class TreeCtrl(metaclass=Singleton):
             return
 
         # 能效结果总览
-        from models.dswe_main import iec_main
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(iec_main, path, project_path, False, True))
         thread.start()
@@ -637,7 +632,7 @@ class TreeCtrl(metaclass=Singleton):
 
         if self.open_history_html_file(path, "偏航对风分析"):
             return
-        from models.yaw_main import yaw_main
+
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(yaw_main, path, project_path, "偏航对风分析"))
         thread.start()
@@ -649,7 +644,7 @@ class TreeCtrl(metaclass=Singleton):
 
         if self.open_history_html_file(path, "偏航对风分析总览"):
             return
-        from models.yaw_main import yaw_main
+
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(yaw_main, path, project_path, "偏航对风分析总览"))
         thread.start()
