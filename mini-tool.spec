@@ -5,7 +5,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[(f'{HOMEPATH}/wx/WebView2Loader.dll', '.')],
-    datas=[('./static/datasets', 'pyecharts/datasets/'), ('./static/templates', 'pyecharts/render/templates/'), ('./static/js', 'static/js/')],
+    datas=[('./static/datasets', 'pyecharts/datasets/'), ('./static/templates', 'pyecharts/render/templates/'), ('./static/js', 'static/js/'), ('./report/bin', 'report/bin/')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
