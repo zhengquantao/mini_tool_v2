@@ -14,3 +14,7 @@ aui2==0.1.4
 # sqlalchemy==2.0.25
 # PyMySQL==1.1.0
 # cefpython3==66.1
+docxcompose==1.4.0
+docxtpl==0.16.8
+requests==2.21.0
+blinker==1.6.3

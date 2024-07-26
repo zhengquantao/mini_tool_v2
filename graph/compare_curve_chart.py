@@ -15,7 +15,8 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
                power_line, *args, **kwargs):
 
     scatter1 = (
-        Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title))
+        Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title,
+                                        bg_color="white"))
         .add_xaxis(abnormal_scatter[0].tolist())
         .add_yaxis(abnormal_scatter[2], abnormal_scatter[1].tolist(), label_opts=opts.LabelOpts(is_show=False),
                    color="#ffb48d")

@@ -17,14 +17,15 @@ from pubsub import pub as publisher
 #     from gui.main_frame import MainFrame
 from aui2 import svg_to_bitmap
 
-from common.common import read_file, remove_file, rename_file, get_file_info, add_notebook_page, detect_encoding, \
+from common.common import remove_file, rename_file, get_file_info, add_notebook_page, detect_encoding, \
     close_first_window
 from common import loggers
 from gui.gauge_panel import GaugePanel
 
 # from settings.resources import overview
+from report.main import report_main
 from settings.settings import opening_dict, float_size, display_grid_count, model2_svg, model1_svg, result_dir, png_svg, \
-    csv_svg, html_svg, console_svg
+    csv_svg, html_svg, console_svg, docx_svg
 
 from models.compare_curve import compare_curve
 from models.geo_main import geo_main
@@ -187,6 +188,7 @@ class TreeCtrl(metaclass=Singleton):
         self.now_file_list = []
         frame.Bind(wx.EVT_MENU, self.on_create, id=self.create_menu_id)
         publisher.subscribe(self.add_page, "add_page")
+        publisher.subscribe(self.add_window, "add_window")
         publisher.subscribe(self.set_data_df, "set_data_df")
         self.result_dir = None
         self.gauge = None
@@ -194,16 +196,28 @@ class TreeCtrl(metaclass=Singleton):
     def add_page(self, msg):
         file_paths, file_name = msg
         add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
-        if not self.gauge:
-            return
-        self.gauge.destroy()
-        self.gauge = None
+        self.insert_tree_node(msg, image=4)
+
+    def add_window(self, msg):
+
+        self.insert_tree_node(msg, image=6)
+        msgs = f"报告导出成功！ \n报告路径为：{msg}"
+        dlg = wx.MessageDialog(self.frame, msgs, "提示", wx.OK)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    def insert_tree_node(self, child_path, image=6):
+        if self.gauge:
+            self.gauge.destroy()
+            self.gauge = None
 
         if not self.result_dir:
-            self.result_dir = self.tree.AppendItem(self.root, result_dir, image=0, data=os.path.dirname(file_paths))
+            self.result_dir = self.tree.AppendItem(self.root, result_dir, image=0, data=os.path.dirname(child_path))
             self.tree.EnsureVisible(self.result_dir)
-        new_item = self.tree.AppendItem(self.result_dir, file_name, image=4, data=file_paths)
+
+        new_item = self.tree.AppendItem(self.result_dir, child_path.split(os.sep)[-1], image=image, data=child_path)
         self.tree.EnsureVisible(new_item)
+        self.tree.SetFocusedItem(new_item)
 
     def set_data_df(self, data_df):
         self.graph_ctrl.set_data(data_df)
@@ -250,7 +264,7 @@ class TreeCtrl(metaclass=Singleton):
         icons = [wx.ART_FOLDER, wx.ART_FILE_OPEN, wx.ART_NORMAL_FILE]
         for icon in icons:
             imglist.Add(wx.ArtProvider.GetBitmap(icon, wx.ART_OTHER, wx.Size(16, 16)))
-        custom_icons = [csv_svg, html_svg, png_svg]
+        custom_icons = [csv_svg, html_svg, png_svg, docx_svg]
         for icon in custom_icons:
             imglist.Add(svg_to_bitmap(icon, size=(16, 16)))
 
@@ -308,6 +322,8 @@ class TreeCtrl(metaclass=Singleton):
                     self.tree.SetItemImage(new_item, 4)
                 elif item.endswith(".png") or item.endswith(".jpg") or item.endswith(".jpeg"):
                     self.tree.SetItemImage(new_item, 5)
+                elif item.endswith(".docx"):
+                    self.tree.SetItemImage(new_item, 6)
                 else:
                     self.tree.SetItemImage(new_item, 2)
                 self.tree.SetItemData(new_item, item_path)
@@ -356,12 +372,15 @@ class TreeCtrl(metaclass=Singleton):
             model_2 = sub_model_menu1.Append(wx.ID_ANY, '能效结果总览')
             model_3 = sub_model_menu1.Append(wx.ID_ANY, '发电量排行总览')
             model_6 = sub_model_menu1.Append(wx.ID_ANY, '风资源对比总览')
+
+            report_1 = menu.Append(wx.ID_ANY, '生成报告')
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_1(event, path), model_1)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_2(event, path), model_2)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_3(event, path), model_3)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_6(event, path), model_6)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_12(event, path), model_12)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_14(event, path), model_14)
+            self.tree.Bind(wx.EVT_MENU, lambda event: self.on_report_1(event, path), report_1)
             menu.AppendSubMenu(sub_model_menu1, '能效分析').SetBitmap(svg_to_bitmap(model1_svg, size=(13, 13)))
 
         elif path.endswith(".csv"):
@@ -444,14 +463,8 @@ class TreeCtrl(metaclass=Singleton):
             ctrl.AddPage(image_ctrl, file_name, True, svg_to_bitmap(png_svg, size=(16, 16)))
 
         else:
-            text = read_file(path)
-            page_bmp: wx.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE, wx.ART_OTHER, wx.Size(16, 16))
-            page = wx.TextCtrl(ctrl, wx.ID_ANY, text, wx.DefaultPosition, wx.DefaultSize,
-                               wx.TE_MULTILINE | wx.NO_BORDER)
-            page.SetMargins(5, top=3)
-            font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
-            page.SetFont(font)
-            ctrl.AddPage(page, file_name, True, page_bmp)
+            wx.LaunchDefaultApplication(path)
+            return
 
         close_first_window(ctrl)
 
@@ -486,7 +499,7 @@ class TreeCtrl(metaclass=Singleton):
         """能效排行总览"""
         loggers.logger.info(f"能效排行总览 clicked, path: {path}")
 
-        if self.open_history_html_file(path, "能效排行总览"):
+        if self.open_history_file(path, "能效排行总览"):
             return
 
         project_path = opening_dict[os.getpid()]["path"]
@@ -498,7 +511,7 @@ class TreeCtrl(metaclass=Singleton):
         """能效结果总览"""
         loggers.logger.info(f"能效结果总览 clicked, path: {path}")
 
-        if self.open_history_html_file(path, "能效结果总览"):
+        if self.open_history_file(path, "能效结果总览"):
             return
 
         # 能效结果总览
@@ -511,7 +524,7 @@ class TreeCtrl(metaclass=Singleton):
         """发电量排行总览"""
         loggers.logger.info(f"发电量排行总览 clicked, path: {path}")
 
-        if self.open_history_html_file(path, "发电量排行总览"):
+        if self.open_history_file(path, "发电量排行总览"):
             return
 
         # 能效结果总览
@@ -524,7 +537,7 @@ class TreeCtrl(metaclass=Singleton):
         """理论与实际功率对比分析"""
         loggers.logger.info(f"理论与实际功率对比分析 clicked, path: {path}")
 
-        if self.open_history_html_file(path, "理论与实际功率对比分析"):
+        if self.open_history_file(path, "理论与实际功率对比分析"):
             return
 
         # 理论和实际功率曲线对比
@@ -537,7 +550,7 @@ class TreeCtrl(metaclass=Singleton):
         """风资源分析"""
         loggers.logger.info(f"风资源分析 clicked, path: {path}")
 
-        if self.open_history_html_file(path, "风资源分析"):
+        if self.open_history_file(path, "风资源分析"):
             return
 
         # 风资源对比
@@ -550,7 +563,7 @@ class TreeCtrl(metaclass=Singleton):
         """风资源对比总览"""
         loggers.logger.info(f"风资源对比总览 clicked, path: {path}")
 
-        if self.open_history_html_file(path, "风资源对比总览"):
+        if self.open_history_file(path, "风资源对比总览"):
             return
 
         project_path = opening_dict[os.getpid()]["path"]
@@ -561,7 +574,7 @@ class TreeCtrl(metaclass=Singleton):
     def on_model_7(self, event, path):
         """风速-风能利用系数分析"""
         loggers.logger.info(f"风速-风能利用系数分析 clicked, path: {path}")
-        if self.open_history_html_file(path, "风速-风能利用系数分析"):
+        if self.open_history_file(path, "风速-风能利用系数分析"):
             return
 
         project_path = opening_dict[os.getpid()]["path"]
@@ -572,7 +585,7 @@ class TreeCtrl(metaclass=Singleton):
     def on_model_8(self, event, path):
         """风速-桨距角分析"""
         loggers.logger.info(f"风速-桨距角分析 clicked, path: {path}")
-        if self.open_history_html_file(path, "风速-桨距角分析"):
+        if self.open_history_file(path, "风速-桨距角分析"):
             return
 
         project_path = opening_dict[os.getpid()]["path"]
@@ -583,7 +596,7 @@ class TreeCtrl(metaclass=Singleton):
     def on_model_9(self, event, path):
         """桨距角-功率分析"""
         loggers.logger.info(f"桨距角-功率分析 clicked, path: {path}")
-        if self.open_history_html_file(path, "桨距角-功率分析"):
+        if self.open_history_file(path, "桨距角-功率分析"):
             return
 
         project_path = opening_dict[os.getpid()]["path"]
@@ -594,7 +607,7 @@ class TreeCtrl(metaclass=Singleton):
     def on_model_10(self, event, path):
         """风速-转速分析"""
         loggers.logger.info(f"风速-转速分析 clicked, path: {path}")
-        if self.open_history_html_file(path, "风速-转速分析"):
+        if self.open_history_file(path, "风速-转速分析"):
             return
 
         project_path = opening_dict[os.getpid()]["path"]
@@ -605,7 +618,7 @@ class TreeCtrl(metaclass=Singleton):
     def on_model_11(self, event, path):
         """转速-功率分析"""
         loggers.logger.info(f"转速-功率分析 clicked, path: {path}")
-        if self.open_history_html_file(path, "转速-功率分析"):
+        if self.open_history_file(path, "转速-功率分析"):
             return
 
         project_path = opening_dict[os.getpid()]["path"]
@@ -617,7 +630,7 @@ class TreeCtrl(metaclass=Singleton):
         """赛马排行总览"""
         loggers.logger.info(f"能效结果总览 clicked, path: {path}")
 
-        if self.open_history_html_file(path, "赛马排行总览"):
+        if self.open_history_file(path, "赛马排行总览"):
             return
 
         # 能效结果总览
@@ -630,7 +643,7 @@ class TreeCtrl(metaclass=Singleton):
         """偏航对风分析"""
         loggers.logger.info(f"偏航对风分析 clicked, path: {path}")
 
-        if self.open_history_html_file(path, "偏航对风分析"):
+        if self.open_history_file(path, "偏航对风分析"):
             return
 
         project_path = opening_dict[os.getpid()]["path"]
@@ -642,13 +655,25 @@ class TreeCtrl(metaclass=Singleton):
         """偏航对风分析总览"""
         loggers.logger.info(f"偏航对风分析总览 clicked, path: {path}")
 
-        if self.open_history_html_file(path, "偏航对风分析总览"):
+        if self.open_history_file(path, "偏航对风分析总览"):
             return
 
         project_path = opening_dict[os.getpid()]["path"]
         thread = Thread(target=self.async_model, args=(yaw_main, path, project_path, "偏航对风分析总览"))
         thread.start()
         self.gauge = GaugePanel(self.frame, "偏航对风分析总览", thread.ident)
+
+    def on_report_1(self, event, path):
+        """报告"""
+        loggers.logger.info(f"报告 clicked, path: {path}")
+        title = "报告"
+        if self.open_history_file(path, title, file_type=".docx"):
+            return
+
+        project_path = opening_dict[os.getpid()]["path"]
+        thread = Thread(target=self.async_report, args=(report_main, path, project_path, title))
+        thread.start()
+        self.gauge = GaugePanel(self.frame, title, thread.ident)
 
     def csv_max_getmtime(self, path):
         last_updated_time = 0
@@ -658,7 +683,7 @@ class TreeCtrl(metaclass=Singleton):
             last_updated_time = max(os.path.getmtime(os.path.join(path, file)), last_updated_time)
         return last_updated_time
 
-    def open_history_html_file(self, path, operation_type) -> bool:
+    def open_history_file(self, path, operation_type, file_type=".html") -> bool:
         """
         当前打开的文件已经存在结果，且文件最后编辑时间<结果创建时间，则直接打开结果
         """
@@ -677,7 +702,7 @@ class TreeCtrl(metaclass=Singleton):
         for result_path in results_path_lists:
             try:
                 # result_path: 30057008-风速-桨距角分析 30057008-20240524103450.html
-                if not result_path.startswith(f"{name}-{operation_type}") or not result_path.endswith(".html"):
+                if not result_path.startswith(f"{name}-{operation_type}") or not result_path.endswith(file_type):
                     continue
                 file_time = result_path.split("-")[-1].split(".")[0]
                 create_time = datetime.datetime.strptime(file_time, "%Y%m%d%H%M%S").timestamp()
@@ -690,7 +715,9 @@ class TreeCtrl(metaclass=Singleton):
 
         if not file_name:
             return False
-
+        if file_type == ".docx":
+            wx.CallAfter(publisher.sendMessage, "add_window", msg=os.path.join(result_dir_path, file_name))
+            return True
         self.on_open(wx.Event, os.path.join(result_dir_path, file_name))
         return True
 
@@ -711,6 +738,14 @@ class TreeCtrl(metaclass=Singleton):
             file_paths, file_name = callable_func(*args)
             # 防止多线程操作主进程页面导致异常崩溃
             wx.CallAfter(publisher.sendMessage, "add_page", msg=(file_paths, file_name))
+        except:
+            loggers.logger.error(traceback.format_exc())
+
+    def async_report(self, callable_func, *args):
+        try:
+            file_paths = callable_func(*args)
+            # 防止多线程操作主进程页面导致异常崩溃
+            wx.CallAfter(publisher.sendMessage, "add_window", msg=file_paths["docx_output"])
         except:
             loggers.logger.error(traceback.format_exc())
 

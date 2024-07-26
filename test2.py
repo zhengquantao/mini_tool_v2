@@ -1,7 +1,6 @@
 
 import wx
 from aui2 import svg_to_bitmap
-from pyecharts.commons.utils import JsCode
 
 
 class MyPanel(wx.Panel):
@@ -58,12 +57,12 @@ class MyPanel(wx.Panel):
 
     def build_bitmap_button(self, panel3):
         self.bp_btn_dict = {
-            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(self.bar_svg), pos=(2, 2), size=(49, 49), name='Line'): "Line",
+            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(self.line_svg), pos=(2, 2), size=(49, 49), name='Line'): "Line",
             wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(self.bar_svg), pos=(2, 52), size=(49, 49), name='Bar'): "Bar",
-            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(self.bar_svg), pos=(53, 2), size=(49, 49), name='Scatter'): "Scatter",
-            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(self.bar_svg), pos=(53, 52), size=(49, 49), name='BarStack'): "BarStack",
+            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(self.scatter_svg), pos=(53, 2), size=(49, 49), name='Scatter'): "Scatter",
+            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(self.line_svg), pos=(53, 52), size=(49, 49), name='BarStack'): "BarStack",
             wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(self.bar_svg), pos=(104, 2), size=(49, 49), name='BarReversal'): "BarReversal",
-            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(self.bar_svg), pos=(104, 52), size=(49, 49), name='LineGap'): "LineGap",
+            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(self.scatter_svg), pos=(104, 52), size=(49, 49), name='LineGap'): "LineGap",
         }
         for btn in self.bp_btn_dict.keys():
             panel3.Bind(wx.EVT_BUTTON, self.on_dpclick, btn)

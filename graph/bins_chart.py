@@ -34,7 +34,8 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
     colors = ["#EBDEF0", "#D7BDE2", "#C39BD3", "#AF7AC5", "#9B59B6", "#884EA0", "#76448A"]
     colors_size = len(colors)
     scatter = (
-        Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title))
+        Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title,
+                                        bg_color="white"))
         .set_global_opts(
             title_opts=opts.TitleOpts(title=title),
             legend_opts=opts.LegendOpts(pos_right="right", pos_top="45%", border_width=0),  # 将图例放在右边

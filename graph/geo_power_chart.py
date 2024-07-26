@@ -15,7 +15,8 @@ from pyecharts.charts import Scatter
 def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
 
     scatter = (
-        Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title))
+        Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title,
+                                        bg_color="white"))
         .add_xaxis(plot_power_df["turbine_code"].to_list())
         .add_yaxis(
             series_name="",

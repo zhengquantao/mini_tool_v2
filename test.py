@@ -58,7 +58,7 @@ class Map2D:
         self.data[start.x][start.y] = "🟥"
         self.data[end.x][end.y] = "🟥"
 
-    def obstacle_generate(self, ratio: int) -> None:
+    def obstacle_generate(self, ratio: float) -> None:
         # 随机放置障碍物
         obstacle_cells = int((self.height * self.width) * ratio)  # 障碍物占据40%的格子
         for _ in range(obstacle_cells):

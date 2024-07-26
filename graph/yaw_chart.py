@@ -34,7 +34,8 @@ def build_page(data):
     colors = ["#EBDEF0", "#D7BDE2", "#C39BD3", "#AF7AC5", "#9B59B6", "#884EA0", "#76448A"]
     colors_size = len(colors)
     scatter = (
-        Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title))
+        Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title,
+                                        bg_color="white"))
         .set_global_opts(
             title_opts=opts.TitleOpts(pos_left="25%",
                                       title=f"{data['turbine_code']} 偏航对风误差：{data['yaw_err_mean']}  "
@@ -80,7 +81,7 @@ def build_page(data):
 
     bar = add_bar(data)
     grid = (
-        Grid()
+        Grid(init_opts=opts.InitOpts(bg_color="white"))
         .add(scatter, grid_opts=opts.GridOpts(pos_left="5%", width="80%"))
         .add(bar, grid_opts=opts.GridOpts(pos_left="90%", width="3%"))
     )
@@ -143,7 +144,7 @@ def add_scatter(scatter, data, color=None):
 
 
 def add_bar(data):
-    bar = Bar()
+    bar = Bar(init_opts=opts.InitOpts(bg_color="white"))
     bar.add_xaxis([item['power'] for item in data['yaw_turbine_list']])
     bar.add_yaxis('', [10] * len(data['yaw_turbine_list']), category_gap="0%",
                   label_opts=opts.LabelOpts(is_show=False),

@@ -52,3 +52,22 @@ def iec_main(file_path, project_path, sort_only=False, table=False):
         file_paths, file_name = dswe_chart.build_html(project_path, turbine_code, all_statistics)
     return file_paths, file_name
 
+
+def iec_main_export(file_path, project_path):
+    factor_name = project_path.split(os.sep)[-1]
+    curve_line_path = os.path.join(project_path, power_theoretical)
+    base_turbine, all_statistics = aep_analysis.aep_main(file_path, factor_name, ["real_time"], ["wind_speed"],
+                                                         ["wind_direction"],
+                                                         ["nacelle_temperature"], ["air_density"], ["power"],
+                                                         curve_line_path,  # ["air_density"]
+                                                         confidence_num=0.8, logger=loggers.logger)
+
+    data_result = base_data_process(file_path, base_turbine, result_path=None,
+                                    flag=1, feature_columns=["wind_speed", "wind_direction"], target_columns=["power"],
+                                    wind_col=["wind_speed"], confidence=0.8, logger=loggers.logger,
+                                    farm_name=factor_name)
+    data_result = data_result[["turbine_code", "Weighted_diff"]].sort_values(by="turbine_code")
+    all_statistics = all_statistics.sort_values(by="turbine_code")
+    all_statistics["Weighted_diff"] = data_result["Weighted_diff"]
+    all_statistics.fillna(0, inplace=True)
+    return all_statistics

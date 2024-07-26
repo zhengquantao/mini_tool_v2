@@ -30,15 +30,23 @@ def build_page(plot_power_df, name):
     wind_speed_count = len(plot_power_df["wind_speed2"])
     grouped_mean = plot_power_df[plot_power_df["groups"] > 0].groupby("groups").agg(
         {"power": "mean", "wind_speed": "size", "air_density": "mean", "wind_speed2": "sum"})
+    grouped_mean = grouped_mean.fillna(0)
+    grouped_mean["wind_power_density"] = grouped_mean.apply(
+        lambda row: row["air_density"] * row["wind_speed2"] / wind_speed_count / 2, axis=1)
     bar = (
-        Bar(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title))
+        Bar(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title,
+                                    bg_color="white"))
         .add_xaxis(grouped_mean.index.tolist())
-        .add_yaxis("风频", (grouped_mean["wind_speed"]/wind_speed_count).tolist(), color="#ffc084")
+        .add_yaxis("风频", (grouped_mean["wind_speed"]/wind_speed_count*100).tolist(), color="#ffc084")
+        .add_yaxis("风功率密度", grouped_mean["wind_power_density"].tolist(),
+                   color="#239B56", yaxis_index=2, xaxis_index=0, )
         .extend_axis(
             yaxis=opts.AxisOpts(
                 name="功率(kw)",
                 min_=0,
                 position="right",
+                name_gap=40,
+                name_location="middle",
                 splitline_opts=opts.SplitLineOpts(is_show=False),
             ),
             xaxis=opts.AxisOpts(
@@ -53,6 +61,8 @@ def build_page(plot_power_df, name):
                 min_=0,
                 position="right",
                 offset=70,
+                name_gap=40,
+                name_location="middle",
                 splitline_opts=opts.SplitLineOpts(is_show=False),
             ),
             xaxis=opts.AxisOpts(
@@ -68,13 +78,17 @@ def build_page(plot_power_df, name):
                 name="风速(m/s)",
                 # type_="value",
                 splitline_opts=opts.SplitLineOpts(is_show=True),
+                name_location="middle",
+                name_gap=35,
                 # min_=0,
                 # max_=max(xticks),
             ),
             yaxis_opts=opts.AxisOpts(
-                name="频率",
+                name="频率(%)",
                 position="left",
                 min_=0,
+                name_gap=40,
+                name_location="middle",
                 splitline_opts=opts.SplitLineOpts(is_show=True),
             ),
             toolbox_opts=opts.ToolboxOpts(
@@ -112,9 +126,7 @@ def build_page(plot_power_df, name):
             # )
             )
     )
-    grouped_mean = grouped_mean.fillna(0)
-    grouped_mean["wind_power_density"] = grouped_mean.apply(
-        lambda row: row["air_density"] * row["wind_speed2"] / wind_speed_count / 2, axis=1)
+
     # 创建Line图
     line1 = (
         Line()
@@ -124,12 +136,6 @@ def build_page(plot_power_df, name):
                    is_symbol_show=False, color="#1f77b4", is_smooth=True,
                    z=1, z_level=1, linestyle_opts=opts.LineStyleOpts(width=4),
                    yaxis_index=1, xaxis_index=1,
-                   )
-        .add_yaxis("风功率密度", grouped_mean["wind_power_density"].tolist(),
-                   label_opts=opts.LabelOpts(is_show=False),
-                   is_symbol_show=False, color="#239B56", is_smooth=True,
-                   z=1, z_level=1, linestyle_opts=opts.LineStyleOpts(width=4),
-                   yaxis_index=2, xaxis_index=2,
                    )
     )
 

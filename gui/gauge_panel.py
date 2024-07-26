@@ -5,7 +5,7 @@ from common.common import async_raise
 
 class GaugePanel(wx.GenericProgressDialog):
     def __init__(self, parent, title, thread_id=None,):
-        self.maximum = 3278
+        self.maximum = 19668
         wx.GenericProgressDialog.__init__(self, title, "准备中", maximum=self.maximum, parent=parent,
                                           style=wx.PD_APP_MODAL | wx.PD_CAN_ABORT | wx.PD_CAN_SKIP)
         self.thread_id = thread_id
@@ -20,7 +20,7 @@ class GaugePanel(wx.GenericProgressDialog):
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.update_progress)
         self.Bind(wx.EVT_CLOSE, self.on_close)
-        self.timer.Start(600)
+        self.timer.Start(100)
 
     def on_close(self, event):
         self.close()

@@ -24,7 +24,7 @@ Echarts_Type = {
 
 def build_html(x, y, title, echart_type="bar", save_path=None):
     echarts = Echarts_Type.get(echart_type, Bar)
-    obj = echarts(init_opts=opts.InitOpts(page_title=main_title))
+    obj = echarts(init_opts=opts.InitOpts(page_title=main_title, bg_color="white"))
     obj.add_xaxis(x.to_list())
     if echart_type == "BarStack":
         add_yaxis(obj, y, stack="stack1")

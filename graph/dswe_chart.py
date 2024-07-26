@@ -26,7 +26,7 @@ def build_html(factor_path, turbine, plot_power_df, *args, **kwargs):
 def top_page(plot_power_df):
     plot_power_df = plot_power_df.sort_values(by="Weighted_diff")
     bar = (
-        Bar(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px"))
+        Bar(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", bg_color="white"))
         .add_xaxis(plot_power_df["turbine_code"].tolist())
         .add_yaxis("理论发电量", plot_power_df["pdf_power(mWh)"].tolist(), yaxis_index=1)
         .add_yaxis("实际发电量", plot_power_df["iec_power(mWh)"].tolist(), yaxis_index=1)
@@ -99,7 +99,7 @@ def top_page(plot_power_df):
     line1 = (
         Line()
         .add_xaxis(plot_power_df["turbine_code"].tolist())
-        .add_yaxis("能效系数", plot_power_df["Weighted_diff"].tolist(),
+        .add_yaxis("能效偏差率", plot_power_df["Weighted_diff"].tolist(),
                    label_opts=opts.LabelOpts(is_show=False),
                    is_symbol_show=True, is_smooth=True, symbol_size=7,
                    z=1, z_level=1, yaxis_index=0, linestyle_opts=opts.LineStyleOpts(width=4))

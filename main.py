@@ -1,6 +1,6 @@
 import os
 from multiprocessing import freeze_support, Process
-from common.common import daemon_app
+from common.common import daemon_app, is_program_running
 
 
 def gui_server():
@@ -14,6 +14,7 @@ def file_server():
 
 
 def main():
+    is_program_running()
     Process(target=gui_server).start()
     web = Process(target=file_server)
     web.start()

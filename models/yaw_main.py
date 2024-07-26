@@ -31,6 +31,16 @@ def yaw_main(file_path, project_path, title):
     return full_path, file_name
 
 
+def yaw_main_export(file_path, project_path, title):
+    ret_yaw_dict = {}
+    yaw_turbine_lists, results_all, str_code = yaw(file_path, project_path)
+    for yaw_turbine in yaw_turbine_lists:
+        full_path, file_name = build_html([yaw_turbine], title, project_path, yaw_turbine["turbine_code"])
+        ret_yaw_dict[yaw_turbine["turbine_code"]] = full_path
+
+    return results_all, ret_yaw_dict
+
+
 def yaw(file_path, project_path):
     if os.path.isfile(file_path):
         scada_files = [file_path]
@@ -160,7 +170,7 @@ def build_yam_mean(yaw_err_dic, yaw_turbine_dict, turbine_code, results_all):
         status = '正常'
 
     if status != '正常':
-        comment = '对风偏差异常！'
+        comment = '对风偏差异常!留意风向仪对0偏差'
         description = f'对风偏差角度{yaw_err_mean}'
     else:
         comment = ''

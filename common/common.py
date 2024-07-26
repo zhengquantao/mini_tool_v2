@@ -57,6 +57,29 @@ def daemon_app(app, ppid=None):
     app.terminate()
 
 
+def is_program_running():
+    import sys
+    if sys.platform == "win32":
+        import ctypes
+        # 创建互斥体
+        mutex_name = "GlobalMiniToolMutex"
+        h_mutex = ctypes.windll.kernel32.CreateMutexW(None, False, mutex_name)
+
+        # 检查互斥体是否已经存在
+        if ctypes.windll.kernel32.GetLastError() == 183:  # ERROR_ALREADY_EXISTS
+            raise Exception("程序已经在运行.")
+    else:
+        import fcntl
+        lock_filename = os.path.join(os.path.expanduser("~"), 'mini-tool-locking.lock')
+        lock_file = open(lock_filename, 'w')
+
+        try:
+            fcntl.lockf(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except IOError:
+            print('Cannot lock: ' + lock_filename)
+            raise Exception("程序已经运行.")
+
+
 def children_process_cnt(current_process):
     cnt = 0
     for process in current_process.children(recursive=True):
@@ -263,7 +286,7 @@ def ignore_files_func(file):
 
 def read_csv_file(file):
     from common import loggers
-    loggers.logger.info(f"当前打开文件：{file}")
+    loggers.logger.debug(f"当前打开文件：{file}")
     cols_list = cols_titles.keys()
     data_frame = pd.read_csv(file, usecols=cols_list, encoding=detect_encoding(file))
     select_col_df = data_frame[cols_list]
