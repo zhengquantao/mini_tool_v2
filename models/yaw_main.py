@@ -20,7 +20,7 @@ nacell_direction_label = 'nacelle_direction'
 wind_speed_label = 'wind_speed'
 gen_speed_label = 'generator_speed'
 
-START_POWER = 100
+START_POWER = 0
 MAX_POWER = 2200
 STEP_POWER = 400
 
@@ -75,9 +75,11 @@ def yaw(file_path, project_path):
         elif df[nacell_direction_label].min() < 0 and df[wind_direction_label].min() > 0:
             df[wind_direction_label] = df[nacell_direction_label]
 
-        power_bins = list(range(START_POWER, MAX_POWER, STEP_POWER))
-        power_labels = [200 + i for i in power_bins][:-1]
-        df[power_bin_label] = pd.cut(df[power_label], bins=power_bins, labels=power_labels)
+        # power_bins = list(range(START_POWER, MAX_POWER, STEP_POWER))
+        # power_labels = [200 + i for i in power_bins][:-1]
+        # df[power_bin_label] = pd.cut(df[power_label], bins=power_bins, labels=power_labels)
+        df = common_cut(df, power_label, power_bin_label, start=START_POWER, step=STEP_POWER)
+        power_labels = np.unique(df[power_bin_label])
 
         yaw_turbine_dict = {"yaw_turbine_list": [], "turbine_code": turbine_code}
 
