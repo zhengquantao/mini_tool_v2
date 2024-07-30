@@ -1,6 +1,7 @@
 import datetime
 import os
 import traceback
+from concurrent.futures.process import ProcessPoolExecutor
 from threading import Thread
 
 import pandas as pd
@@ -246,7 +247,7 @@ class TreeCtrl(metaclass=Singleton):
     def create_ctrl(self, path="./", init_project=False):
         self.__class__.counter += 1
         panel = wx.Panel(self.frame, wx.ID_ANY)
-        self.tree: wx.TreeCtrl = wx.TreeCtrl(panel, wx.ID_ANY, wx.Point(0, 0), wx.Size(160, 250),
+        self.tree: wx.TreeCtrl = wx.TreeCtrl(panel, wx.ID_ANY, wx.Point(0, 0), wx.Size(280, 250),
                                              wx.TR_DEFAULT_STYLE | wx.TR_TWIST_BUTTONS | wx.TR_NO_LINES | wx.NO_BORDER)
         # self.tree = CT.CustomTreeCtrl(self.frame, wx.ID_ANY, wx.Point(-1, -1), wx.Size(160, 500),
         #                               agwStyle=wx.TR_HAS_BUTTONS | wx.TR_TWIST_BUTTONS | wx.TR_NO_LINES | wx.NO_BORDER)
@@ -416,7 +417,7 @@ class TreeCtrl(metaclass=Singleton):
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_11(event, path), model_11)
 
     def on_delete(self, event, path):
-        loggers.logger.info(f"Delete clicked, file path: {path}")
+        logger.info(f"Delete clicked, file path: {path}")
         dlg = wx.MessageDialog(self.frame, f"你确认要删除文件 {path.split(os.sep)[-1]} 吗？",
                                "刪除文件", wx.YES_NO | wx.ICON_WARNING)
         if dlg.ShowModal() != wx.ID_YES:
@@ -436,7 +437,7 @@ class TreeCtrl(metaclass=Singleton):
         if not os.path.isfile(path):
             return
 
-        loggers.logger.info(f"Open clicked, file path: {path}")
+        logger.info(f"Open clicked, file path: {path}")
 
         ctrl = self.notebook_ctrl.notebook_object
         file_name = path.split(os.sep)[-1]
@@ -736,17 +737,26 @@ class TreeCtrl(metaclass=Singleton):
     @staticmethod
     def async_model(callable_func, *args):
         try:
-            file_paths, file_name = callable_func(*args)
-            # 防止多线程操作主进程页面导致异常崩溃
-            wx.CallAfter(publisher.sendMessage, "add_page", msg=(file_paths, file_name))
+            with ProcessPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(callable_func, *args)
+                file_paths, file_name = future.result()
+                # 防止多线程操作主进程页面导致异常崩溃
+                wx.CallAfter(publisher.sendMessage, "add_page", msg=(file_paths, file_name))
+        except SystemExit:
+            executor.shutdown(wait=False)
         except:
-            loggers.logger.error(traceback.format_exc())
+            logger.error(traceback.format_exc())
 
-    def async_report(self, callable_func, *args):
+    @staticmethod
+    def async_report(callable_func, *args):
         try:
-            file_paths = callable_func(*args)
-            # 防止多线程操作主进程页面导致异常崩溃
-            wx.CallAfter(publisher.sendMessage, "add_window", msg=file_paths["docx_output"])
+            with ProcessPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(callable_func, *args)
+                file_paths = future.result()
+                # 防止多线程操作主进程页面导致异常崩溃
+                wx.CallAfter(publisher.sendMessage, "add_window", msg=file_paths["docx_output"])
+        except SystemExit:
+            executor.shutdown(wait=False)
         except:
             logger.error(traceback.format_exc())
 
@@ -775,7 +785,7 @@ class HTMLCtrl(metaclass=Singleton):
             parent = self.frame
         # wx.html2仅支持到echarts<=3.7.0的版本
         ctrl = wx.html2.WebView.New(parent, size=wx.Size(*float_size))
-        # loggers.logger.info(ctrl.GetBackendVersionInfo().Name)
+        # logger.info(ctrl.GetBackendVersionInfo().Name)
         ctrl.LoadURL(f"file:///{path}")
         # ctrl = CefFrame(parent, f"file:///{path}")
         return ctrl
@@ -878,7 +888,7 @@ class LogCtrl(metaclass=Singleton):
         self.mgr = mgr
         self.text = text
         self.style = style
-        wx.CallLater(100,  loggers.init_log, self.create_ctrl)
+        wx.CallLater(100,  init_logger, self.create_ctrl)
 
     def create_ctrl(self):
 
