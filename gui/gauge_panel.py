@@ -1,5 +1,5 @@
 import wx
-from common import loggers
+from common.loggers import logger
 from common.common import async_raise
 
 
@@ -28,8 +28,8 @@ class GaugePanel(wx.GenericProgressDialog):
     def update_progress(self, event):
         try:
             if self.WasCancelled():
-                loggers.logger.info("任务强制停止")
-                async_raise(self.thread_id, SystemExit, logger=loggers.logger)
+                logger.info("任务强制停止")
+                async_raise(self.thread_id, SystemExit)
                 wx.CallAfter(self.close)
                 return
             elif self.WasSkipped():
@@ -56,7 +56,7 @@ class GaugePanel(wx.GenericProgressDialog):
             wx.CallAfter(self.close)
 
         except Exception as e:
-            print(e)
+            logger.error(e)
 
     def close(self):
         self.timer.Stop()

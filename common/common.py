@@ -2,7 +2,6 @@ import ctypes
 import datetime
 import inspect
 import json
-import logging
 import os
 import shutil
 import time
@@ -17,9 +16,10 @@ import wx.lib.agw.aui as aui
 from aui2 import svg_to_bitmap
 
 from settings.settings import opening_dict, cols_titles, result_dir, html_svg, ignore_files
+from common.loggers import logger
 
 
-def async_raise(thread_id, exctype, logger=logging):
+def async_raise(thread_id, exctype):
     """
     通过C语言的库抛出异常
     :param thread_id:
@@ -76,7 +76,7 @@ def is_program_running():
         try:
             fcntl.lockf(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except IOError:
-            print('Cannot lock: ' + lock_filename)
+            logger.error('Cannot lock: ' + lock_filename)
             raise Exception("程序已经运行.")
 
 
@@ -285,8 +285,7 @@ def ignore_files_func(file):
 
 
 def read_csv_file(file):
-    from common import loggers
-    loggers.logger.debug(f"当前打开文件：{file}")
+    logger.debug(f"当前打开文件：{file}")
     cols_list = cols_titles.keys()
     data_frame = pd.read_csv(file, usecols=cols_list, encoding=detect_encoding(file))
     select_col_df = data_frame[cols_list]

@@ -8,7 +8,7 @@ import wx.lib.agw.aui as aui
 from aui2 import svg_to_bitmap
 
 from settings import settings as cs
-from common import loggers
+from common.loggers import logger
 from common.common import read_file, new_app
 
 
@@ -79,7 +79,7 @@ class FileManager:
 
     def open_project(self, path: str, init_project=False):
         pid = os.getpid()
-        loggers.logger.info(f"当前进程号：{pid}")
+        logger.info(f"当前进程号：{pid}")
         opening_dict[pid] = {"path": path, "records": {}}
         self.mgr.AddPane(self.tree_ctrl.create_ctrl(path, init_project=init_project),
                          aui.AuiPaneInfo().Name("ProjectTree").Caption(path).
@@ -136,7 +136,7 @@ class FileManager:
             return
 
         path = os.path.join(select_dialog.GetPath(), directory_name)
-        loggers.logger.info(f"Chosen directory: {path}")
+        logger.info(f"Chosen directory: {path}")
         os.makedirs(path)
         self.add_history(path)
 
@@ -149,7 +149,7 @@ class FileManager:
             return
 
         path = select_dialog.GetPath()
-        loggers.logger.info(f"Chosen directory: {path}")
+        logger.info(f"Chosen directory: {path}")
         self.add_history(path)
         new_app(path)
 
@@ -165,7 +165,7 @@ class FileManager:
             return
 
         path = select_dialog.GetPath()
-        loggers.logger.info(f"Chosen directory: {path}")
+        logger.info(f"Chosen directory: {path}")
         self.tree_ctrl.on_open(event, path)
 
     def on_save_project(self, event: wx.CommandEvent) -> None:
@@ -174,7 +174,7 @@ class FileManager:
             return
 
         path = select_dialog.GetPath()
-        loggers.logger.info(f"Chosen directory: {path}")
+        logger.info(f"Chosen directory: {path}")
         filepath = self.project_path.split(os.sep)[-1]
         path = os.path.join(path, filepath)
         shutil.copytree(self.project_path, path, dirs_exist_ok=True)

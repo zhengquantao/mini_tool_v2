@@ -19,7 +19,7 @@ from aui2 import svg_to_bitmap
 
 from common.common import remove_file, rename_file, get_file_info, add_notebook_page, detect_encoding, \
     close_first_window
-from common import loggers
+from common.loggers import logger, init_logger
 from gui.gauge_panel import GaugePanel
 
 # from settings.resources import overview
@@ -237,7 +237,7 @@ class TreeCtrl(metaclass=Singleton):
         self.tree.SortChildren(self.root)
         self.tree.Expand(self.root)
         self.now_file_list = new_file_list
-        loggers.logger.info("当前有文件改动")
+        logger.info("当前有文件改动")
         # self.tree.Refresh()
 
     def start_position(self) -> wx.Point:
@@ -483,7 +483,7 @@ class TreeCtrl(metaclass=Singleton):
         self.tree.EnsureVisible(new_item)
 
     def on_rename(self, event, path):
-        loggers.logger.info(f"Rename clicked, file path: {path}")
+        logger.info(f"Rename clicked, file path: {path}")
         file_list = path.split(os.sep)
         dlg = wx.TextEntryDialog(self.frame, "请输入新文件名:", "文件重命名", value=file_list[-1])
         if dlg.ShowModal() != wx.ID_OK:
@@ -497,7 +497,7 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_1(self, event, path):
         """能效排行总览"""
-        loggers.logger.info(f"能效排行总览 clicked, path: {path}")
+        logger.info(f"能效排行总览 clicked, path: {path}")
 
         if self.open_history_file(path, "能效排行总览"):
             return
@@ -509,7 +509,7 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_2(self, event, path):
         """能效结果总览"""
-        loggers.logger.info(f"能效结果总览 clicked, path: {path}")
+        logger.info(f"能效结果总览 clicked, path: {path}")
 
         if self.open_history_file(path, "能效结果总览"):
             return
@@ -522,7 +522,7 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_3(self, event, path):
         """发电量排行总览"""
-        loggers.logger.info(f"发电量排行总览 clicked, path: {path}")
+        logger.info(f"发电量排行总览 clicked, path: {path}")
 
         if self.open_history_file(path, "发电量排行总览"):
             return
@@ -535,7 +535,7 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_4(self, event, path):
         """理论与实际功率对比分析"""
-        loggers.logger.info(f"理论与实际功率对比分析 clicked, path: {path}")
+        logger.info(f"理论与实际功率对比分析 clicked, path: {path}")
 
         if self.open_history_file(path, "理论与实际功率对比分析"):
             return
@@ -548,7 +548,7 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_5(self, event, path):
         """风资源分析"""
-        loggers.logger.info(f"风资源分析 clicked, path: {path}")
+        logger.info(f"风资源分析 clicked, path: {path}")
 
         if self.open_history_file(path, "风资源分析"):
             return
@@ -561,7 +561,7 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_6(self, event, path):
         """风资源对比总览"""
-        loggers.logger.info(f"风资源对比总览 clicked, path: {path}")
+        logger.info(f"风资源对比总览 clicked, path: {path}")
 
         if self.open_history_file(path, "风资源对比总览"):
             return
@@ -573,7 +573,7 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_7(self, event, path):
         """风速-风能利用系数分析"""
-        loggers.logger.info(f"风速-风能利用系数分析 clicked, path: {path}")
+        logger.info(f"风速-风能利用系数分析 clicked, path: {path}")
         if self.open_history_file(path, "风速-风能利用系数分析"):
             return
 
@@ -584,7 +584,7 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_8(self, event, path):
         """风速-桨距角分析"""
-        loggers.logger.info(f"风速-桨距角分析 clicked, path: {path}")
+        logger.info(f"风速-桨距角分析 clicked, path: {path}")
         if self.open_history_file(path, "风速-桨距角分析"):
             return
 
@@ -595,7 +595,7 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_9(self, event, path):
         """桨距角-功率分析"""
-        loggers.logger.info(f"桨距角-功率分析 clicked, path: {path}")
+        logger.info(f"桨距角-功率分析 clicked, path: {path}")
         if self.open_history_file(path, "桨距角-功率分析"):
             return
 
@@ -606,7 +606,7 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_10(self, event, path):
         """风速-转速分析"""
-        loggers.logger.info(f"风速-转速分析 clicked, path: {path}")
+        logger.info(f"风速-转速分析 clicked, path: {path}")
         if self.open_history_file(path, "风速-转速分析"):
             return
 
@@ -617,7 +617,7 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_11(self, event, path):
         """转速-功率分析"""
-        loggers.logger.info(f"转速-功率分析 clicked, path: {path}")
+        logger.info(f"转速-功率分析 clicked, path: {path}")
         if self.open_history_file(path, "转速-功率分析"):
             return
 
@@ -628,7 +628,7 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_12(self, event, path):
         """赛马排行总览"""
-        loggers.logger.info(f"能效结果总览 clicked, path: {path}")
+        logger.info(f"能效结果总览 clicked, path: {path}")
 
         if self.open_history_file(path, "赛马排行总览"):
             return
@@ -641,7 +641,7 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_13(self, event, path):
         """偏航对风分析"""
-        loggers.logger.info(f"偏航对风分析 clicked, path: {path}")
+        logger.info(f"偏航对风分析 clicked, path: {path}")
 
         if self.open_history_file(path, "偏航对风分析"):
             return
@@ -653,7 +653,7 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_model_14(self, event, path):
         """偏航对风分析总览"""
-        loggers.logger.info(f"偏航对风分析总览 clicked, path: {path}")
+        logger.info(f"偏航对风分析总览 clicked, path: {path}")
 
         if self.open_history_file(path, "偏航对风分析总览"):
             return
@@ -665,7 +665,7 @@ class TreeCtrl(metaclass=Singleton):
 
     def on_report_1(self, event, path):
         """报告"""
-        loggers.logger.info(f"报告 clicked, path: {path}")
+        logger.info(f"报告 clicked, path: {path}")
         title = "报告"
         if self.open_history_file(path, title, file_type=".docx"):
             return
@@ -711,7 +711,7 @@ class TreeCtrl(metaclass=Singleton):
                 file_name = result_path
                 break
             except Exception as e:
-                loggers.logger.info(f"result file: {result_path} err:{e}")
+                logger.info(f"result file: {result_path} err:{e}")
 
         if not file_name:
             return False
@@ -722,18 +722,19 @@ class TreeCtrl(metaclass=Singleton):
         return True
 
     def on_item_expanded(self, event):
-        loggers.logger.info("Item expanded!")
+        logger.info("Item expanded!")
 
     def on_item_collapsed(self, event):
-        loggers.logger.info("Item collapsed!")
+        logger.info("Item collapsed!")
 
     def on_sel_changed(self, event):
-        loggers.logger.info("Selection changed")
+        logger.info("Selection changed")
 
     def on_sel_changing(self, event):
-        loggers.logger.info("Selection changing")
+        logger.info("Selection changing")
 
-    def async_model(self, callable_func, *args):
+    @staticmethod
+    def async_model(callable_func, *args):
         try:
             file_paths, file_name = callable_func(*args)
             # 防止多线程操作主进程页面导致异常崩溃
@@ -747,7 +748,7 @@ class TreeCtrl(metaclass=Singleton):
             # 防止多线程操作主进程页面导致异常崩溃
             wx.CallAfter(publisher.sendMessage, "add_window", msg=file_paths["docx_output"])
         except:
-            loggers.logger.error(traceback.format_exc())
+            logger.error(traceback.format_exc())
 
 
 class HTMLCtrl(metaclass=Singleton):

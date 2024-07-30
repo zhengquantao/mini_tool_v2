@@ -5,7 +5,7 @@ import wx
 
 from settings.settings import log_level, log_path
 
-logger = None
+logger = logging.getLogger()
 
 
 class RealTimeLogHandler(logging.Handler):
@@ -21,9 +21,9 @@ class RealTimeLogHandler(logging.Handler):
         wx.CallAfter(self.text_ctrl.AppendText, message + '\n')
 
 
-def init_log(create_ctrl=None):
-    global logger
-    logger = logging.getLogger()
+def init_logger(create_ctrl=None):
+    # global logger
+    # logger = logging.getLogger()
     log_handler = RealTimeLogHandler(create_ctrl())
     logger.addHandler(log_handler)
 

@@ -2,7 +2,7 @@ import os
 import math
 import pandas as pd
 
-from common import loggers
+from common.loggers import logger
 from common.common import read_csv_file, detect_encoding, data_cleaning_by_pitchangle, ignore_files_func
 from settings.settings import power_theoretical
 
@@ -138,8 +138,8 @@ def bin_main(file_path, project_path, img_mode=False, run_func_list=None):
         data.insert(len(data.columns), "air_density_x", air_density_list)
 
         #
-        loggers.logger.info("-------------------------------------------------------")
-        loggers.logger.info("开始处理机组{}的数据".format(turbine_code))
+        logger.info("-------------------------------------------------------")
+        logger.info("开始处理机组{}的数据".format(turbine_code))
 
         # *** ---------- 4 基于功率的数据清洗 ----------
 
