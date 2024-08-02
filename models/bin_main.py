@@ -4,7 +4,7 @@ import pandas as pd
 
 from common.loggers import logger
 from common.common import read_csv_file, detect_encoding, data_cleaning_by_pitchangle, ignore_files_func
-from settings.settings import power_theoretical
+from settings.settings import power_theoretical, config
 
 # *** ---------- custom package ----------
 
@@ -34,28 +34,28 @@ def bin_main(file_path, project_path, img_mode=False, run_func_list=None):
         scada_files = [os.path.join(file_path, scada_file) for scada_file in os.listdir(file_path)]
 
     # 叶轮直径
-    rotor_diameter = 104
+    rotor_diameter = config.get("models_params", "rotor_diameter", 104)
 
     # 风轮半径：rotor radius
     rotor_radius = rotor_diameter / 2
 
     # 机组装机容量
-    power_cap = None
+    power_cap = config.get("models_params", "power_cap", None)
 
     # 额定风速
-    rated_wind_speed = None
+    rated_wind_speed = config.get("models_params", "rated_wind_speed", None)
 
     # 切入风速
-    cut_in_wind_speed = 3
+    cut_in_wind_speed = config.get("models_params", "cut_in_wind_speed", 3)
 
     # 切出风速
-    cut_out_wind_speed = 20
+    cut_out_wind_speed = config.get("models_params", "cut_out_wind_speed", 20)
 
     # 最小发电机转速：【并网转速】
-    min_generator_speed = 1000
+    min_generator_speed = config.get("models_params", "min_generator_speed", 1000)
 
     # 传动比：gear ratio，transmission ratio，drive ratio
-    gear_ratio = 131.58
+    gear_ratio = config.get("models_params", "gear_ratio", 131.58)
 
     # *** ---------- 2 按SCADA文件进行分析处理 ----------
     # ? 曲线分仓分析数据词典

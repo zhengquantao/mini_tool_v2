@@ -197,12 +197,14 @@ class TreeCtrl(metaclass=Singleton):
     def add_page(self, msg):
         file_paths, file_name = msg
         add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
-        self.insert_tree_node(msg, image=4)
+        self.insert_tree_node(file_paths, image=4)
 
     def add_window(self, msg):
-
         self.insert_tree_node(msg, image=6)
-        msgs = f"报告导出成功！ \n报告路径为：{msg}"
+        self.report_dialog(msg)
+
+    def report_dialog(self, path):
+        msgs = f"报告导出成功！ \n报告路径为：{path}"
         dlg = wx.MessageDialog(self.frame, msgs, "提示", wx.OK)
         dlg.ShowModal()
         dlg.Destroy()
@@ -452,7 +454,7 @@ class TreeCtrl(metaclass=Singleton):
         elif any([path.endswith(".csv"), path.endswith(".xlsx"), path.endswith(".xls")]):
             data_df = pd.read_csv(path, encoding=detect_encoding(path), low_memory=False)
             # 防止多线程操作主进程页面导致异常崩溃
-            wx.CallAfter(publisher.sendMessage, "set_data_df", data_df=data_df)
+            wx.CallAfter(publisher.sendMessage, "set_data_df", data_df=(data_df, file_name))
             ctrl.AddPage(self.grid_ctrl.create_ctrl(ctrl, data_df), file_name, True,
                          svg_to_bitmap(csv_svg, size=(16, 16)))
 
@@ -717,7 +719,7 @@ class TreeCtrl(metaclass=Singleton):
         if not file_name:
             return False
         if file_type == ".docx":
-            wx.CallAfter(publisher.sendMessage, "add_window", msg=os.path.join(result_dir_path, file_name))
+            self.report_dialog(os.path.join(result_dir_path, file_name))
             return True
         self.on_open(wx.Event, os.path.join(result_dir_path, file_name))
         return True

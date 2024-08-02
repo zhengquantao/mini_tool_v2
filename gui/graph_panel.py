@@ -1,10 +1,15 @@
+import os
+
+import pandas as pd
 import wx
 from aui2 import svg_to_bitmap
 
-from common.common import add_notebook_page
+from common.common import add_notebook_page, detect_encoding
+from common.loggers import logger
 from graph import simple_chart
 from gui.simple_dialog import SimpleDialog
 from settings import settings as cs
+from settings.settings import opening_dict
 
 
 class CustomComboBox(wx.ComboBox):
@@ -63,6 +68,8 @@ class GraphPanel(wx.Panel):
         self.columns = []
         self.notebook_ctrl = notebook_ctrl
         self.html_ctrl = html_ctrl
+        self.select_idx = []
+        self.file_list = []
         # self.SetBackgroundColour("white")
 
     def create_ctrl(self):
@@ -87,17 +94,20 @@ class GraphPanel(wx.Panel):
         # self.tc1 = wx.ComboBox(panel4, wx.ID_ANY, wx.EmptyString, pos=(5, 25), size=(150, 30), choices=self.columns,
         #                        style=wx.TC_MULTILINE)
         # self.tc1.AutoComplete([])
-        panel6 = wx.Panel(panel4, pos=(5, 25), size=(150, 30))
-        self.tc1 = IconTextCtrl(panel6, style=wx.TE_PROCESS_ENTER, size=(150, 30), choices=self.columns)
+        # panel6 = wx.Panel(panel4, pos=(5, 80), size=(150, 30))
+        self.tc1 = IconTextCtrl(panel4, style=wx.TE_PROCESS_ENTER, pos=(5, 25), size=(150, 30), choices=self.columns)
         self.tc1.text_ctrl.AutoComplete([])
 
         wx.StaticText(panel4, pos=(5, 58), label='Y轴：')
         self.tc2 = wx.CheckListBox(panel4, pos=(5, 78), size=(150, 145), choices=self.columns, style=wx.TC_MULTILINE)
         self.tc2.Bind(wx.EVT_LISTBOX, self.on_item_clicked)
         self.tc2.Bind(wx.EVT_LISTBOX_DCLICK, self.on_item_clicked)
-        button = wx.Button(panel4, -1, '浏 览', pos=(75, 231))
-        button.SetBitmapLabel(svg_to_bitmap(cs.sea_svg, size=(20, 20)))
-        button.Bind(wx.EVT_BUTTON, self.on_click)
+        button1 = wx.Button(panel4, -1, '更 多', pos=(8, 231), size=(70, 30))
+        button1.Bind(wx.EVT_BUTTON, self.on_more)
+        button1.SetBitmapLabel(svg_to_bitmap(cs.more_svg, size=(16, 16)))
+        button2 = wx.Button(panel4, -1, '浏 览', pos=(80, 231), size=(70, 30))
+        button2.SetBitmapLabel(svg_to_bitmap(cs.sea_svg, size=(20, 20)))
+        button2.Bind(wx.EVT_BUTTON, self.on_click)
         panel4.SetBackgroundColour("white")
         sizer2.Add(panel2, 0, wx.ALL, 1)
 
@@ -112,9 +122,22 @@ class GraphPanel(wx.Panel):
         index = event.GetSelection()
         self.tc2.Check(index, not self.tc2.IsChecked(index))
 
+    def on_more(self, event):
+        dialog = wx.Dialog(self, id=wx.ID_ANY, title="选择要对比的文件", pos=wx.DefaultPosition, size=wx.Size(250, 200),
+                           style=wx.DEFAULT_DIALOG_STYLE | wx.YES_DEFAULT)
+        self.list_box = wx.ListBox(dialog, choices=self.file_list, style=wx.LB_MULTIPLE)
+        for idx in self.select_idx:
+            self.list_box.SetSelection(idx)
+        self.list_box.Bind(wx.EVT_LISTBOX, self.on_select)
+        dialog.ShowModal()
+
+    def on_select(self, event):
+        self.select_idx = [index for index in self.list_box.GetSelections()]
+
     def set_data(self, data):
-        self.data = data
-        self.columns = data.columns
+        self.data = data[0]
+        self.columns = data[0].columns
+        self.init_more_data(data[1])
 
         self.listbox.DeleteAllItems()
         for i, d in enumerate(self.columns):
@@ -126,6 +149,15 @@ class GraphPanel(wx.Panel):
 
         self.tc2.Clear()
         self.tc2.SetItems(self.columns)
+
+    def init_more_data(self, file_name):
+        self.file_list = []
+        for idx, file in enumerate(os.listdir(opening_dict[os.getpid()]["path"])):
+            if not file.endswith(".csv"):
+                continue
+            self.file_list.append(file)
+            if file == file_name:
+                self.select_idx = [idx]
 
     def build_list_ctrl(self, panel5):
         self.listbox = wx.ListCtrl(panel5, wx.ID_ANY, pos=(5, 5), size=(160, wx.EXPAND),
@@ -160,29 +192,58 @@ class GraphPanel(wx.Panel):
 
     def on_click(self, event):
         if not self.tmp_chart:
+            wx.MessageBox("请选择图表！")
             return
 
         if self.data is None:
+            wx.MessageBox("请选择CSV文件！")
             return
 
         if self.data.empty:
+            wx.MessageBox("请选择不为空的CSV文件！")
             return
 
         x_field = self.tc1.text_ctrl.GetValue()
-        df = self.filter_df(self.data, self.tc1.data, x_field)
+        y_list = self.tc2.GetCheckedItems()
 
-        y_list = self.tc2.GetSelections()
-        checks = self.tc2.GetCheckedItems()
-        y_list.extend(checks)
+        if not all([x_field, y_list]):
+            wx.MessageBox("X,Y轴不能为空")
+            return
 
-        # selected_items = []
-        # for sel in y_list:
-        #     # 使用GetStringSelection获取选中项的文本
-        #     selected_items.append(self.tc2.GetString(sel))
+        df, x_field, y_fields = self.read_df(x_field, y_list)
 
-        file_paths, file_name = simple_chart.build_html(x=df[x_field], y=df.iloc[:, y_list],
+        file_paths, file_name = simple_chart.build_html(x=df[x_field], y=df[y_fields],
                                                         title="", echart_type=self.tmp_chart, save_path=None)
         add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
+
+    def read_df(self, x_field, y_list):
+
+        y_fields = []
+        for sel in y_list:
+            # 使用GetStringSelection获取选中项的文本
+            y_fields.append(self.tc2.GetString(sel))
+
+        if not self.select_idx:
+            df = self.filter_df(self.data, self.tc1.data, x_field)
+            return df, x_field, y_fields
+
+        ret_df = pd.DataFrame()
+        ret_y_fields = []
+        for idx in self.select_idx:
+            try:
+                path = os.path.join(opening_dict[os.getpid()]["path"], self.file_list[idx])
+                df = pd.read_csv(path, encoding=detect_encoding(path), low_memory=False)
+                df = self.filter_df(df, self.tc1.data, x_field)
+                if ret_df.empty:
+                    ret_df[x_field] = df[x_field]
+                df = df[y_fields]
+                new_names = [f"{self.file_list[idx].split('.')[0]}_{field}" for field in y_fields]
+                df.columns = new_names
+                ret_y_fields.extend(new_names)
+                ret_df = pd.concat([ret_df, df], axis=1)
+            except Exception as e:
+                logger.error(e)
+        return ret_df, x_field, ret_y_fields
 
     def filter_df(self, df, params, field):
         class_type = type(df[field][0])

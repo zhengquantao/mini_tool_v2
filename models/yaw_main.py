@@ -148,7 +148,7 @@ def yaw(file_path, project_path):
                 item_dict["min_point"] = [yaw_err_i, min_wind_i]
                 yaw_err_dic[power_i] = yaw_err_i
 
-            yaw_turbine_dict["yaw_turbine_list"].append(item_dict)
+                yaw_turbine_dict["yaw_turbine_list"].append(item_dict)
 
         build_yam_mean(yaw_err_dic, yaw_turbine_dict, turbine_code, results_all)
 

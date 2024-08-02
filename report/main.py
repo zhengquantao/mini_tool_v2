@@ -33,12 +33,12 @@ def report_main(file_path, project_path, title=None):
             "yaw_list": build_yaw_list(yaw_table),
             "turbine_detail_list": build_turbine_detail(yaw_table, yaw_dict)}
     }]
-
+    new_dict = deepcopy(build_report_dict)
     report_result = TemplateReport(
         output_path=os.path.join(project_path, "result"),
         tmp_output_path=os.path.join(project_path, "result"),
     ).run(build_report_dict, pdf=False, filename=random_name(factor_name, title, f_type="docx"), update_index=False)
-    rm_file(build_report_dict)
+    rm_file(new_dict)
     return report_result
 
 
