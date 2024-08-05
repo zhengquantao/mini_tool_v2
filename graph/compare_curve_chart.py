@@ -32,7 +32,7 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
             ),
             yaxis_opts=opts.AxisOpts(
                 type_="value",
-                name="功率(kw)",
+                name="功率(kW)",
                 splitline_opts=opts.SplitLineOpts(is_show=True),
                 min_=0,
             ),

@@ -42,7 +42,7 @@ def build_page(plot_power_df, name):
                    color="#239B56", yaxis_index=2, xaxis_index=0, )
         .extend_axis(
             yaxis=opts.AxisOpts(
-                name="功率(kw)",
+                name="功率(kW)",
                 min_=0,
                 position="right",
                 name_gap=40,
@@ -57,7 +57,7 @@ def build_page(plot_power_df, name):
         )
         .extend_axis(
             yaxis=opts.AxisOpts(
-                name="风功率密度(kw/m^3)",
+                name="风功率密度(kW/m^3)",
                 min_=0,
                 position="right",
                 offset=70,

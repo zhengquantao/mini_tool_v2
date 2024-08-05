@@ -86,8 +86,8 @@ def top_page(plot_power_df):
                 axis_pointer_type="shadow",
                 formatter=JsCode('''function (params) {
                     let ret_val = params[0].name + '<br />';
-                    ret_val += params[0].seriesName + ': ' + params[0].value + ' kw <br />';
-                    ret_val += params[1].seriesName + ': ' + params[1].value + ' kw <br />';
+                    ret_val += params[0].seriesName + ': ' + params[0].value + ' kW <br />';
+                    ret_val += params[1].seriesName + ': ' + params[1].value + ' kW <br />';
                     ret_val += params[2].seriesName + ': ' + params[2].value[1] + ' % <br />';
                     ret_val += params[3].seriesName + ': ' + params[3].value[1] + ' % <br />';
                     return ret_val;
