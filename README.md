@@ -44,6 +44,9 @@ python -m main
   ```
 
 
+<details>
+<summary>Other</summary>
+
 ## 注意
 - wxPython==4.2.1如何去掉抓手？
     > 目前官方没有提供隐藏抓手的功能,需要更改源码的auibar.py文件注释掉对应代码。如下：
@@ -78,3 +81,4 @@ python -m main
 20. ~~增加文件图标~~
 21. ~~charts窗口自适应~~
 
+</details>
