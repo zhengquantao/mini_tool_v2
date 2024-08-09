@@ -177,7 +177,7 @@ def build_yam_mean(yaw_err_dic, yaw_turbine_dict, turbine_code, results_all):
     else:
         comment = ''
         description = ''
-    yaw_turbine_dict["yaw_err_mean"] = yaw_err_mean
+    yaw_turbine_dict["yaw_err_mean"] = 0 if pd.isna(yaw_err_mean) else yaw_err_mean
     yaw_turbine_dict["yaw_err_status"] = status
     yaw_turbine_dict["yaw_err_comment"] = comment
     results_all.append([turbine_code, yaw_err_mean, status, comment])
