@@ -35,19 +35,15 @@ class IconTextCtrl(wx.Control):
         self.text_ctrl = CustomComboBox(self, wx.ID_ANY, pos=(0, 0), size=(110, 30),
                                         choices=choices, style=wx.BORDER_NONE | wx.NO_BORDER)
 
-        self.bitmap = wx.BitmapButton(self, wx.ID_ANY, svg_to_bitmap(cs.inp_setting_svg, size=(16, 16)), pos=(110, 0), style=wx.NO_BORDER)
-        self.bitmap2 = wx.BitmapButton(self, wx.ID_ANY, svg_to_bitmap(cs.inp_close_svg, size=(14, 14)), pos=(130, 0), style=wx.NO_BORDER)
-
+        self.bitmap = wx.BitmapButton(self, wx.ID_ANY, svg_to_bitmap(cs.inp_setting_svg, size=(16, 16)), pos=(110, 0),
+                                      style=wx.NO_BORDER)
         self.bitmap.Bind(wx.EVT_BUTTON, self.on_setting)
-        self.bitmap2.Bind(wx.EVT_BUTTON, self.on_clear)
-
         self.bitmap.SetBackgroundColour("white")
+
+        self.bitmap2 = wx.BitmapButton(self, wx.ID_ANY, svg_to_bitmap(cs.inp_close_svg, size=(14, 14)), pos=(130, 0),
+                                       style=wx.NO_BORDER)
         self.bitmap2.SetBackgroundColour("white")
         self.SetBackgroundColour("white")
-
-    def on_clear(self, event):
-        # 处理按钮点击事件
-        self.text_ctrl.SetValue("")
 
     def on_setting(self, event):
         dialog = SimpleDialog(self, title=f"过滤字段 {self.text_ctrl.GetValue()}", data=self.data)
@@ -70,6 +66,9 @@ class GraphPanel(wx.Panel):
         self.html_ctrl = html_ctrl
         self.select_idx = []
         self.file_list = []
+        self.x = set()
+        self.y = set()
+        self.focus = 0  # 0=x轴, 1=y轴
         # self.SetBackgroundColour("white")
 
     def create_ctrl(self):
@@ -91,21 +90,19 @@ class GraphPanel(wx.Panel):
 
         panel4 = wx.Panel(panel2, pos=(0, 150), size=(161, wx.EXPAND))
         wx.StaticText(panel4, pos=(5, 3), label='X轴：')
-        # self.tc1 = wx.ComboBox(panel4, wx.ID_ANY, wx.EmptyString, pos=(5, 25), size=(150, 30), choices=self.columns,
-        #                        style=wx.TC_MULTILINE)
-        # self.tc1.AutoComplete([])
-        # panel6 = wx.Panel(panel4, pos=(5, 80), size=(150, 30))
-        self.tc1 = IconTextCtrl(panel4, style=wx.TE_PROCESS_ENTER, pos=(5, 25), size=(150, 30), choices=self.columns)
-        self.tc1.text_ctrl.AutoComplete([])
+        self.tc1 = IconTextCtrl(panel4, style=wx.TE_PROCESS_ENTER, pos=(5, 25), size=(150, 30), choices=[])
+        self.tc1.text_ctrl.Bind(wx.EVT_SET_FOCUS, self.on_click_x)
+        self.tc1.bitmap2.Bind(wx.EVT_BUTTON, self.on_clear_x)
 
         wx.StaticText(panel4, pos=(5, 58), label='Y轴：')
-        self.tc2 = wx.CheckListBox(panel4, pos=(5, 78), size=(150, 145), choices=self.columns, style=wx.TC_MULTILINE)
-        self.tc2.Bind(wx.EVT_LISTBOX, self.on_item_clicked)
-        self.tc2.Bind(wx.EVT_LISTBOX_DCLICK, self.on_item_clicked)
-        button1 = wx.Button(panel4, -1, '更 多', pos=(8, 231), size=(70, 30))
+        self.tc2 = IconTextCtrl(panel4, style=wx.TE_PROCESS_ENTER, pos=(5, 78), size=(150, 30), choices=[])
+        self.tc2.text_ctrl.Bind(wx.EVT_SET_FOCUS, self.on_click_y)
+        self.tc2.bitmap2.Bind(wx.EVT_BUTTON, self.on_clear_y)
+
+        button1 = wx.Button(panel4, -1, '更 多', pos=(8, 131), size=(70, 30))
         button1.Bind(wx.EVT_BUTTON, self.on_more)
         button1.SetBitmapLabel(svg_to_bitmap(cs.more_svg, size=(16, 16)))
-        button2 = wx.Button(panel4, -1, '浏 览', pos=(80, 231), size=(70, 30))
+        button2 = wx.Button(panel4, -1, '浏 览', pos=(80, 131), size=(70, 30))
         button2.SetBitmapLabel(svg_to_bitmap(cs.sea_svg, size=(20, 20)))
         button2.Bind(wx.EVT_BUTTON, self.on_click)
         panel4.SetBackgroundColour("white")
@@ -118,9 +115,61 @@ class GraphPanel(wx.Panel):
         self.Layout()
         return self
 
-    def on_item_clicked(self, event):
-        index = event.GetSelection()
-        self.tc2.Check(index, not self.tc2.IsChecked(index))
+    def on_click_x(self, event):
+        self.focus = 0
+        self.set_list_ctrl()
+        event.Skip()
+        wx.CallAfter(self.tc1.text_ctrl.SetCanFocus, False)
+
+    def on_click_y(self, event):
+        self.focus = 1
+        self.set_list_ctrl()
+        event.Skip()
+        wx.CallAfter(self.tc2.text_ctrl.SetCanFocus, False)
+
+    def on_clear_x(self, event):
+        # 处理按钮点击事件
+        self.tc1.text_ctrl.SetValue("")
+        self.deselect_all(self.listbox)
+
+    def on_clear_y(self, event):
+        # 处理按钮点击事件
+        self.tc2.text_ctrl.SetValue("")
+        self.deselect_all(self.listbox)
+
+    @staticmethod
+    def deselect_all(list_ctrl):
+        for i in range(list_ctrl.GetItemCount()):
+            list_ctrl.SetItemState(i, 0, wx.LIST_STATE_SELECTED)
+
+    def set_list_ctrl(self):
+        if self.focus:
+            for i in self.x:
+                self.listbox.IsSelected(i) and self.listbox.Select(i, 0)
+            for i in self.y:
+                self.listbox.SetItemState(i, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+        else:
+            for i in self.y:
+                self.listbox.IsSelected(i) and self.listbox.Select(i, 0)
+            for i in self.x:
+                self.listbox.SetItemState(i, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+
+    def on_item_selected(self, event):
+        idx = event.Index
+
+        if self.focus:
+            self.y.add(idx)
+            self.tc2.text_ctrl.SetValue(",".join([self.columns[i] for i in self.y]))
+        else:
+            self.x.add(idx)
+            self.tc1.text_ctrl.SetValue(",".join([self.columns[i] for i in self.x]))
+
+    def on_item_deselected(self, event):
+        idx = event.Index
+        if self.focus:
+            self.y.discard(idx)
+        else:
+            self.x.discard(idx)
 
     def on_more(self, event):
         dialog = wx.Dialog(self, id=wx.ID_ANY, title="选择要对比的文件", pos=wx.DefaultPosition, size=wx.Size(250, 200),
@@ -143,13 +192,6 @@ class GraphPanel(wx.Panel):
         for i, d in enumerate(self.columns):
             self.listbox.InsertItem(i, d, 0)
 
-        self.tc1.text_ctrl.Clear()
-        self.tc1.text_ctrl.SetItems(self.columns)
-        self.tc1.text_ctrl.AutoComplete(self.columns)
-
-        self.tc2.Clear()
-        self.tc2.SetItems(self.columns)
-
     def init_more_data(self, file_name):
         self.file_list = []
         for idx, file in enumerate(os.listdir(opening_dict[os.getpid()]["path"])):
@@ -166,16 +208,24 @@ class GraphPanel(wx.Panel):
         image_list.Add(svg_to_bitmap(cs.sign_svg, size=(16, 16)))
         self.listbox.AssignImageList(image_list, wx.IMAGE_LIST_SMALL)
         self.listbox.InsertColumn(0, 'columns', width=160)
+        self.listbox.Bind(wx.EVT_LIST_ITEM_SELECTED, self.on_item_selected)
+        self.listbox.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.on_item_deselected)
         return self.listbox
 
     def build_bitmap_button(self, panel3):
         self.bp_btn_dict = {
-            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(cs.line_svg, size=(45, 45)), pos=(2, 2), size=(49, 49), name='Line'): "Line",
-            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(cs.bar_svg, size=(45, 45)), pos=(2, 52), size=(49, 49), name='Bar'): "Bar",
-            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(cs.scatter_svg, size=(45, 45)), pos=(53, 2), size=(49, 49), name='Scatter'): "Scatter",
-            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(cs.bar2_svg, size=(45, 45)), pos=(53, 52), size=(49, 49), name='BarStack'): "BarStack",
-            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(cs.bar3_svg, size=(45, 45)), pos=(105, 2), size=(49, 49), name='BarReversal'): "BarReversal",
-            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(cs.line2_svg, size=(45, 45)), pos=(105, 52), size=(49, 49), name='LineGap'): "LineGap",
+            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(cs.line_svg, size=(45, 45)), pos=(2, 2), size=(49, 49),
+                            name='Line'): "Line",
+            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(cs.bar_svg, size=(45, 45)), pos=(2, 52), size=(49, 49),
+                            name='Bar'): "Bar",
+            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(cs.scatter_svg, size=(45, 45)), pos=(53, 2), size=(49, 49),
+                            name='Scatter'): "Scatter",
+            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(cs.bar2_svg, size=(45, 45)), pos=(53, 52), size=(49, 49),
+                            name='BarStack'): "BarStack",
+            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(cs.bar3_svg, size=(45, 45)), pos=(105, 2), size=(49, 49),
+                            name='BarReversal'): "BarReversal",
+            wx.BitmapButton(panel3, wx.ID_ANY, svg_to_bitmap(cs.line2_svg, size=(45, 45)), pos=(105, 52), size=(49, 49),
+                            name='LineGap'): "LineGap",
         }
         for btn in self.bp_btn_dict.keys():
             panel3.Bind(wx.EVT_BUTTON, self.on_dpclick, btn)
@@ -203,29 +253,24 @@ class GraphPanel(wx.Panel):
             wx.MessageBox("请选择不为空的CSV文件！")
             return
 
-        x_field = self.tc1.text_ctrl.GetValue()
-        y_list = self.tc2.GetCheckedItems()
+        x_field = self.columns[list(self.x)[0]]
+        y_fields = [self.columns[i] for i in self.y]
 
-        if not all([x_field, y_list]):
+        if not all([x_field, y_fields]):
             wx.MessageBox("X,Y轴不能为空")
             return
 
-        df, x_field, y_fields = self.read_df(x_field, y_list)
+        x_df, y_df = self.read_df(x_field, y_fields)
 
-        file_paths, file_name = simple_chart.build_html(x=df[x_field], y=df[y_fields],
+        file_paths, file_name = simple_chart.build_html(x=x_df, y=y_df,
                                                         title="", echart_type=self.tmp_chart, save_path=None)
         add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
 
-    def read_df(self, x_field, y_list):
-
-        y_fields = []
-        for sel in y_list:
-            # 使用GetStringSelection获取选中项的文本
-            y_fields.append(self.tc2.GetString(sel))
+    def read_df(self, x_field, y_fields):
 
         if not self.select_idx:
             df = self.filter_df(self.data, self.tc1.data, x_field)
-            return df, x_field, y_fields
+            return df[x_field], y_fields
 
         ret_df = pd.DataFrame()
         ret_y_fields = []
@@ -243,9 +288,10 @@ class GraphPanel(wx.Panel):
                 ret_df = pd.concat([ret_df, df], axis=1)
             except Exception as e:
                 logger.error(e)
-        return ret_df, x_field, ret_y_fields
+        return ret_df[x_field], ret_df[ret_y_fields]
 
-    def filter_df(self, df, params, field):
+    @staticmethod
+    def filter_df(df, params, field):
         class_type = type(df[field][0])
         if params.get("L"):
             df = df[df[field] > class_type(params["L"])]

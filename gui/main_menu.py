@@ -101,6 +101,10 @@ class MainMenu:
         # delete_menu.SetBitmap(svg_to_bitmap(delete_svg, size=(16, 16)))
         # self.items["Edit"].Enable(wx.ID_DELETE, False)
 
+        id_covert = wx.ID_ANY
+        self.items["Tools"].Append(id_covert, "Convert SCADA")
+        self.frame.Bind(wx.EVT_MENU, self.on_convert, id=id_covert)
+
         self.items["Help"].Append(wx.ID_HELP)
         self.frame.Bind(wx.EVT_MENU, self.on_help, id=wx.ID_HELP)
         contact_menu = self.items["Help"].Append(wx.ID_HELP_CONTEXT, "Contact Us")
@@ -141,6 +145,10 @@ class MainMenu:
         import webbrowser
         webbrowser.open("https://www.quant-cloud.cn/home.html")
         wx.EndBusyCursor()
+
+    def on_convert(self, _event: wx.CommandEvent):
+        dlg = wx.MessageDialog(self.frame, "xxxx", "xxxx", wx.OK | wx.ICON_INFORMATION)
+        dlg.ShowModal()
 
 
 class AboutDialog(wx.Dialog):

@@ -54,13 +54,7 @@ class PaneManager:
         self.mgr.Update()
 
     def bind_menu(self):
-        mb_items: dict = self.mb_items
         menu_refid: wx.WindowIDRef
-        self.themes = {self.mb_items[key]["id"]: agw_tabart_provider[key] for key in agw_tabart_provider}
-        for menu_refid in self.themes:
-            self.frame.Bind(wx.EVT_MENU, self.on_notebook_theme, menu_refid)
-
-        self.frame.Bind(wx.EVT_MENU, self.on_preview, id=mb_items["NotebookPreview"]["id"])
 
         self.frame.Bind(aui.EVT_AUI_PANE_CLOSE, self.on_pane_close)
         self.frame.Bind(aui.EVT_AUI_PANE_MINIMIZE, self.on_pane_min)
@@ -69,35 +63,8 @@ class PaneManager:
         self.mgr.GetPane("notebook_content").Show()
         self.mgr.Update()
 
-    def on_preview(self, _event: wx.CommandEvent) -> None:
-        nb: aui.AuiNotebook = self.mgr.GetPane("notebook_content").window
-        nb.NotebookPreview()
-        self.mgr.Update()
-
-    def on_notebook_theme(self, event: wx.CommandEvent) -> None:
-        """Update notebook theme (TabArt provider)."""
-        event_id: wx.WindowIDRef = event.GetId()
-        if self.notebook_ctrl.notebook_theme == self.themes[event_id]["rowid"]:
-            return
-        self.notebook_ctrl.notebook_theme = self.themes[event_id]["rowid"]
-        art_provider = self.themes[event_id]["provider"]()
-
-        nb: aui.AuiNotebook
-        for nb in self.notebook_ctrl.all_notebooks():
-            nb.SetArtProvider(art_provider)
-            nb.Refresh()
-            nb.Update()
-
     def on_delete(self, _event: wx.CommandEvent) -> None:
         pass
-
-    def on_change_content_pane(self, event: wx.CommandEvent) -> None:
-        ctrl_key: str
-        pane_key: str
-        ref_id: wx.WindowIDRef = event.GetId()
-        for pane_key, ctrl_key in content_ctrls.items():
-            self.mgr.GetPane(pane_key).Show(ref_id == self.mb_items[ctrl_key]["id"])
-        self.mgr.Update()
 
     def on_pane_min(self, event: aui.AuiManagerEvent) -> None:
 
