@@ -9,6 +9,7 @@ import wx
 import wx.lib.agw.aui as aui
 from aui2 import svg_to_bitmap
 
+from gui.convert_panel import ScadaPanel, PowerTheoreticalPanel
 from gui.main_menu_res import main_menu_items
 from settings.settings import main_title, __version__, icon_svg, delete_svg, contact_svg, web_svg
 
@@ -101,9 +102,12 @@ class MainMenu:
         # delete_menu.SetBitmap(svg_to_bitmap(delete_svg, size=(16, 16)))
         # self.items["Edit"].Enable(wx.ID_DELETE, False)
 
-        id_covert = wx.ID_ANY
-        self.items["Tools"].Append(id_covert, "Convert SCADA")
-        self.frame.Bind(wx.EVT_MENU, self.on_convert, id=id_covert)
+        id_covert_data = wx.NewId()
+        id_covert_power = wx.NewId()
+        self.items["Tools"].Append(id_covert_data, "Convert SCADA")
+        self.frame.Bind(wx.EVT_MENU, self.on_convert_scada, id=id_covert_data)
+        self.items["Tools"].Append(id_covert_power, "Convert POWER")
+        self.frame.Bind(wx.EVT_MENU, self.on_convert_power, id=id_covert_power)
 
         self.items["Help"].Append(wx.ID_HELP)
         self.frame.Bind(wx.EVT_MENU, self.on_help, id=wx.ID_HELP)
@@ -146,9 +150,11 @@ class MainMenu:
         webbrowser.open("https://www.quant-cloud.cn/home.html")
         wx.EndBusyCursor()
 
-    def on_convert(self, _event: wx.CommandEvent):
-        dlg = wx.MessageDialog(self.frame, "xxxx", "xxxx", wx.OK | wx.ICON_INFORMATION)
-        dlg.ShowModal()
+    def on_convert_scada(self, _event: wx.CommandEvent):
+        ScadaPanel(self.frame)
+
+    def on_convert_power(self, _event: wx.CommandEvent):
+        PowerTheoreticalPanel(self.frame)
 
 
 class AboutDialog(wx.Dialog):
