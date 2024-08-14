@@ -32,8 +32,8 @@ class IconTextCtrl(wx.Control):
         super().__init__(parent, id, pos, size, style, validator, name)
         self.data = {"field": "", "L": "", "S": "", "IN": ""}
 
-        self.text_ctrl = CustomComboBox(self, wx.ID_ANY, pos=(0, 0), size=(110, 30),
-                                        choices=choices, style=wx.BORDER_NONE | wx.NO_BORDER)
+        self.text_ctrl = wx.TextCtrl(self, wx.ID_ANY, pos=(0, 0), size=(110, 30),
+                                     style=wx.BORDER_NONE | wx.NO_BORDER | wx.TE_READONLY)
 
         self.bitmap = wx.BitmapButton(self, wx.ID_ANY, svg_to_bitmap(cs.inp_setting_svg, size=(16, 16)), pos=(110, 0),
                                       style=wx.NO_BORDER)
@@ -43,6 +43,7 @@ class IconTextCtrl(wx.Control):
         self.bitmap2 = wx.BitmapButton(self, wx.ID_ANY, svg_to_bitmap(cs.inp_close_svg, size=(14, 14)), pos=(130, 0),
                                        style=wx.NO_BORDER)
         self.bitmap2.SetBackgroundColour("white")
+        self.text_ctrl.SetBackgroundColour("white")
         self.SetBackgroundColour("white")
 
     def on_setting(self, event):
