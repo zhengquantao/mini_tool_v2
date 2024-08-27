@@ -7,7 +7,7 @@ import wx.lib.agw.aui as aui
 from typing import TYPE_CHECKING
 
 from aui2 import svg_to_bitmap
-
+from pubsub import pub as publisher
 from settings.settings import float_size, left_svg, top_svg, new_page_svg, html_svg
 
 if TYPE_CHECKING:
@@ -46,6 +46,7 @@ class Notebook:
         self.html_ctrl = html_ctrl
         self.create_menu_id = create_menu_id
         self.notebook_object = None
+        publisher.subscribe(self.open_pdf, "add_pdf")
         frame.Bind(wx.EVT_MENU, self.on_create, id=self.create_menu_id)
 
     def start_position(self) -> wx.Point:
@@ -59,6 +60,12 @@ class Notebook:
             if isinstance(pane.window, aui.AuiNotebook):
                 nbs.append(pane.window)
         return nbs
+
+    def open_pdf(self):
+        file_path = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), "static", "js",
+                                 "小工具文档.pdf")
+        self.notebook_object.AddPage(self.html_ctrl.create_ctrl(parent=self.notebook_object, path=file_path),
+                                     "Welcome to MINI-TOOL", True, svg_to_bitmap(html_svg, size=(16, 16)))
 
     def create_ctrl(self) -> aui.AuiNotebook:
         # If MainFrame subclasses wx.Frame, replace the following line
@@ -78,11 +85,6 @@ class Notebook:
         # font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
         # page.SetFont(font)
         # ctrl.AddPage(page, "Welcome to MINI-TOOL", False, page_bmp)
-
-        file_path = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), "static", "js",
-                                 "introduce.html")
-        ctrl.AddPage(self.html_ctrl.create_ctrl(parent=ctrl, path=file_path), "Welcome to MINI-TOOL", True,
-                     svg_to_bitmap(html_svg, size=(16, 16)))
 
         # panel: wx.Panel = wx.Panel(ctrl, wx.ID_ANY)
         # flex: wx.FlexGridSizer = wx.FlexGridSizer(rows=0, cols=2, vgap=2, hgap=2)
@@ -127,6 +129,7 @@ class Notebook:
         ctrl.Bind(aui.EVT_AUINOTEBOOK_TAB_RIGHT_DOWN, self.on_right_click_up)
         ctrl.Bind(aui.EVT_AUINOTEBOOK_PAGE_CLOSED, self.on_closed)
         self.notebook_object = ctrl
+        self.open_pdf()
         return ctrl
 
     def on_right_click_up(self, event):

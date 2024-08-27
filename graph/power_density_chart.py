@@ -28,7 +28,7 @@ def build_page(plot_power_df, name):
     plot_power_df = common_cut(plot_power_df, wind_speed_label, wind_speed_bin_label, start=0, step=0.5)
     plot_power_df[wind_speed_bin_label] = plot_power_df[wind_speed_bin_label].astype('float').fillna(0)
     wind_speed_count = len(plot_power_df["wind_speed2"])
-    grouped_mean = plot_power_df[plot_power_df["groups"] > 0].groupby("groups").agg(
+    grouped_mean = plot_power_df[plot_power_df[wind_speed_bin_label] > 0].groupby(wind_speed_bin_label).agg(
         {"power": "mean", "wind_speed": "size", "air_density": "mean", "wind_speed2": "sum"})
     grouped_mean = grouped_mean.fillna(0)
     grouped_mean["wind_power_density"] = grouped_mean.apply(

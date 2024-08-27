@@ -24,6 +24,7 @@ from common.loggers import logger, init_logger
 from gui.gauge_panel import GaugePanel
 
 # from settings.resources import overview
+from models.wind_flow_intensity import wind_flow_main
 from report.main import report_main
 from settings.settings import opening_dict, float_size, display_grid_count, model2_svg, model1_svg, result_dir, png_svg, \
     csv_svg, html_svg, console_svg, docx_svg
@@ -369,17 +370,17 @@ class TreeCtrl(metaclass=Singleton):
         sub_model_menu1 = wx.Menu()
         if os.path.isdir(path):
             menu.AppendSeparator()
-            model_14 = sub_model_menu1.Append(wx.ID_ANY, '偏航对风分析总览')
             model_12 = sub_model_menu1.Append(wx.ID_ANY, '赛马排行总览')
-            model_1 = sub_model_menu1.Append(wx.ID_ANY, '能效排行总览')
-            model_2 = sub_model_menu1.Append(wx.ID_ANY, '能效结果总览')
-            model_3 = sub_model_menu1.Append(wx.ID_ANY, '发电量排行总览')
-            model_6 = sub_model_menu1.Append(wx.ID_ANY, '风资源对比总览')
+            model_14 = sub_model_menu1.Append(wx.ID_ANY, '偏航对风分析总览')
+            # model_1 = sub_model_menu1.Append(wx.ID_ANY, '能效排行总览')
+            # model_2 = sub_model_menu1.Append(wx.ID_ANY, '能效结果总览')
+            # model_3 = sub_model_menu1.Append(wx.ID_ANY, '发电量排行总览')
+            model_6 = sub_model_menu1.Append(wx.ID_ANY, '风况总览')
 
             report_1 = menu.Append(wx.ID_ANY, '生成报告')
-            self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_1(event, path), model_1)
-            self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_2(event, path), model_2)
-            self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_3(event, path), model_3)
+            # self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_1(event, path), model_1)
+            # self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_2(event, path), model_2)
+            # self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_3(event, path), model_3)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_6(event, path), model_6)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_12(event, path), model_12)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_14(event, path), model_14)
@@ -563,16 +564,16 @@ class TreeCtrl(metaclass=Singleton):
         self.gauge = GaugePanel(self.frame, "风资源分析", thread.ident)
 
     def on_model_6(self, event, path):
-        """风资源对比总览"""
-        logger.info(f"风资源对比总览 clicked, path: {path}")
+        """风况总览"""
+        logger.info(f"风况总览 clicked, path: {path}")
 
-        if self.open_history_file(path, "风资源对比总览"):
+        if self.open_history_file(path, "风况总览"):
             return
 
         project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(compare_curve_all, path, project_path, 1, True))
+        thread = Thread(target=self.async_model, args=(wind_flow_main, path, project_path, "风况总览"))
         thread.start()
-        self.gauge = GaugePanel(self.frame, "风资源对比总览", thread.ident)
+        self.gauge = GaugePanel(self.frame, "风况总览", thread.ident)
 
     def on_model_7(self, event, path):
         """风速-风能利用系数分析"""

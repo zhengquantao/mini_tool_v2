@@ -129,7 +129,7 @@ def curve_sigmod(x, y):
 
 
     y2 = sigmoid(x, *popt)
-    y2.name = "功率"
+    y2.name = "power"
     y2 = y2.apply(lambda x: y.max() if x > y.max() else x)
 
     return y2, popt

@@ -7,9 +7,10 @@ import pandas as pd
 
 from common.common import detect_encoding, random_name
 from models.dswe_main import iec_main_export
+from models.wind_flow_intensity import wind_flow_main_export
 from models.yaw_main import yaw_main_export
 from report.core.template_report import TemplateReport
-from settings.settings import ignore_files
+from settings.settings import ignore_files, result_dir
 
 
 def report_main(file_path, project_path, title=None):
@@ -31,12 +32,13 @@ def report_main(file_path, project_path, title=None):
             "endTime": end_time,
             "energy_coeff_list": build_energy_coeff_list(iec_table),
             "yaw_list": build_yaw_list(yaw_table),
+            "wind_flow_list": wind_flow_main_export(file_path, project_path),
             "turbine_detail_list": build_turbine_detail(yaw_table, yaw_dict)}
     }]
     new_dict = deepcopy(build_report_dict)
     report_result = TemplateReport(
-        output_path=os.path.join(project_path, "result"),
-        tmp_output_path=os.path.join(project_path, "result"),
+        output_path=os.path.join(project_path, result_dir),
+        tmp_output_path=os.path.join(project_path, result_dir),
     ).run(build_report_dict, pdf=False, filename=random_name(factor_name, title, f_type="docx"), update_index=False)
     rm_file(new_dict)
     return report_result
@@ -60,8 +62,11 @@ def rm_file(data, file_type=".html"):
 
 
 def build_energy_coeff_list(energy_coeff_df) -> t.List[t.Any]:
+    if energy_coeff_df.empty:
+        return []
     energy_coeff_df = energy_coeff_df.sort_values(by="Weighted_diff", ascending=False)
-    energy_coeff_df = energy_coeff_df[["turbine_code", "Weighted_diff", "EBA_ratio", "pdf_power(mWh)", "iec_power(mWh)"]]
+    energy_coeff_df = energy_coeff_df[
+        ["turbine_code", "Weighted_diff", "EBA_ratio", "pdf_power(mWh)", "iec_power(mWh)"]]
     # headers = ["排行", "风机号", "能效系数(%)", "能量可利用率(%)", "理论发电量(kw/h)", "实际发电量(kw/h)"]
     rows = [[idx] + row.tolist() for idx, row in enumerate(energy_coeff_df.values, start=1)]
     return rows
@@ -105,14 +110,19 @@ def get_time_and_count(project_path) -> t.Tuple[str, str, int]:
     has_init = False
     start_time, end_time, cnt = "2023-12-01", "2023-12-30", 0
     for file in os.listdir(project_path):
-        if file.endswith(".csv") and file not in ignore_files:
-            cnt += 1
-            if has_init:
-                continue
-            file_path = os.path.join(project_path, file)
-            data_df = pd.read_csv(file_path, usecols=["real_time"], encoding=detect_encoding(file_path))
-            start_time = data_df["real_time"].min()
-            end_time = data_df["real_time"].max()
-            has_init = True
+        if not file.endswith(".csv"):
+            continue
+
+        if file in ignore_files:
+            continue
+
+        cnt += 1
+        if has_init:
+            continue
+        file_path = os.path.join(project_path, file)
+        data_df = pd.read_csv(file_path, usecols=["real_time"], encoding=detect_encoding(file_path))
+        start_time = data_df["real_time"].min()
+        end_time = data_df["real_time"].max()
+        has_init = True
 
     return start_time, end_time, cnt

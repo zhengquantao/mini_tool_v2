@@ -15,12 +15,12 @@ else:
 
 main_menu_items = {
     "File": {
-        "label": "&File",
+        "label": "&文件",
         "children": {
-            "NewProject": {"label": "New &Project", "id": wx.ID_NEW},
-            "OpenProject": {"label": "Open &Project", "id": wx.ID_OPEN, "icon": open_svg},
-            "OpenFile": {"label": "Open &File", "id": wx.ID_FILE},
-            "SaveProject": {"label": "Save &Project", "id": wx.ID_SAVE},
+            "NewProject": {"label": "新建项目", "id": wx.ID_NEW},
+            "OpenProject": {"label": "打开项目", "id": wx.ID_OPEN, "icon": open_svg},
+            "OpenFile": {"label": "打开文件", "id": wx.ID_FILE},
+            "SaveProject": {"label": "保存项目", "id": wx.ID_SAVE},
         }
     },
     # "Edit": {
@@ -182,11 +182,11 @@ main_menu_items = {
     #     }
     # },
     "Tools": {
-        "label": "&Tools",
+        "label": "&工具",
         "children": {}
     },
     "Help": {
-        "label": "&Help",
+        "label": "&帮助",
         "children": {}
     },
 }

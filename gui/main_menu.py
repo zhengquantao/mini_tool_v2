@@ -4,14 +4,15 @@ This class relies on the order-preserving behavior of the stock Python
 dictionary for both top-level menu labels and menu items.
 """
 import datetime
+from multiprocessing import Process
 
 import wx
 import wx.lib.agw.aui as aui
 from aui2 import svg_to_bitmap
-
-from gui.convert_panel import ScadaPanel, PowerTheoreticalPanel
+from pubsub import pub as publisher
+from gui.convert_panel import ScadaPanel, PowerTheoreticalPanel, convert_gui
 from gui.main_menu_res import main_menu_items
-from settings.settings import main_title, __version__, icon_svg, delete_svg, contact_svg, web_svg
+from settings.settings import main_title, __version__, icon_svg, contact_svg, web_svg, convert_svg
 
 
 # If MainFrame subclasses wx.Frame, uncomment the following lines
@@ -104,19 +105,20 @@ class MainMenu:
 
         id_covert_data = wx.NewId()
         id_covert_power = wx.NewId()
-        self.items["Tools"].Append(id_covert_data, "Convert SCADA")
-        self.frame.Bind(wx.EVT_MENU, self.on_convert_scada, id=id_covert_data)
-        self.items["Tools"].Append(id_covert_power, "Convert POWER")
+        self.items["Tools"].Append(id_covert_power, "转换理论功率数据")
         self.frame.Bind(wx.EVT_MENU, self.on_convert_power, id=id_covert_power)
+        scada_menu = self.items["Tools"].Append(id_covert_data, "转换SCADA数据")
+        scada_menu.SetBitmap(svg_to_bitmap(convert_svg, size=(15, 15)))
+        self.frame.Bind(wx.EVT_MENU, self.on_convert_scada, id=id_covert_data)
 
-        self.items["Help"].Append(wx.ID_HELP)
+        self.items["Help"].Append(wx.ID_HELP, "文档")
         self.frame.Bind(wx.EVT_MENU, self.on_help, id=wx.ID_HELP)
-        contact_menu = self.items["Help"].Append(wx.ID_HELP_CONTEXT, "Contact Us")
+        contact_menu = self.items["Help"].Append(wx.ID_HELP_CONTEXT, "联系我们")
         contact_menu.SetBitmap(svg_to_bitmap(contact_svg, size=(15, 15)))
         self.frame.Bind(wx.EVT_MENU, self.on_contact, id=wx.ID_HELP_CONTEXT)
-        self.items["Help"].Append(wx.ID_ABOUT)
+        self.items["Help"].Append(wx.ID_ABOUT, "关于我们")
         self.frame.Bind(wx.EVT_MENU, self.on_about, id=wx.ID_ABOUT)
-        web_menu = self.items["Help"].Append(wx.ID_HELP_CONTENTS, "WebSite")
+        web_menu = self.items["Help"].Append(wx.ID_HELP_CONTENTS, "官网")
         web_menu.SetBitmap(svg_to_bitmap(web_svg, size=(15, 15)))
         self.frame.Bind(wx.EVT_MENU, self.on_web_home, id=wx.ID_HELP_CONTENTS)
 
@@ -132,13 +134,15 @@ class MainMenu:
         dlg.Destroy()
 
     def on_help(self, _event: wx.CommandEvent) -> None:
-        msg = "Energy efficiency assistant \nAn advanced scientific analysis  tool for operations personnel"
-        dlg = wx.MessageDialog(self.frame, msg, "Help You", wx.OK)
-        dlg.ShowModal()
-        dlg.Destroy()
+        wx.CallAfter(publisher.sendMessage, "add_pdf")
 
     def on_contact(self, _event: wx.CommandEvent):
-        msg = "Website: https://www.quant-cloud.cn \nPhone :110 3423 3242\n Email: 123234224324@qq.com \n Address: 中国广东省深圳市南山区前海街道50034号4楼"
+        msg = """
+        Website: https://www.quant-cloud.cn\n
+        Phone :110 3423 3242\n
+        Email: 123234224324@qq.com\n
+        Address: 中国广东省深圳市南山区前海街道50034号4楼
+        """
         dlg = wx.MessageDialog(self.frame, msg, "Contact Us", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
@@ -151,10 +155,10 @@ class MainMenu:
         wx.EndBusyCursor()
 
     def on_convert_scada(self, _event: wx.CommandEvent):
-        ScadaPanel(self.frame)
+        Process(target=convert_gui, args=(ScadaPanel, )).start()
 
     def on_convert_power(self, _event: wx.CommandEvent):
-        PowerTheoreticalPanel(self.frame)
+        Process(target=convert_gui, args=(PowerTheoreticalPanel,)).start()
 
 
 class AboutDialog(wx.Dialog):
@@ -177,11 +181,11 @@ class AboutDialog(wx.Dialog):
 
         szPanel = wx.BoxSizer(wx.VERTICAL)
         szPanel.AddStretchSpacer(1)
-        MAX_SIZE = 300
+        max_size = 300
         caption = f'{main_title} {__version__}'
         self.stCaption = wx.StaticText(self.panel, wx.ID_ANY, caption)
-        self.stCaption.SetMaxSize((MAX_SIZE, -1))
-        self.stCaption.Wrap(MAX_SIZE)
+        self.stCaption.SetMaxSize((max_size, -1))
+        self.stCaption.Wrap(max_size)
         self.stCaption.SetFont(wx.Font(pointSize=16, family=wx.FONTFAMILY_DEFAULT,
                                        style=wx.FONTSTYLE_NORMAL,
                                        weight=wx.FONTWEIGHT_NORMAL,
@@ -191,8 +195,8 @@ class AboutDialog(wx.Dialog):
 
         strCopyright = f'(c) 2018-{datetime.datetime.now().year} Shenzhen LiangYun.\n All rights reserved.'
         self.stCopyright = wx.StaticText(self.panel, wx.ID_ANY, strCopyright)
-        self.stCopyright.SetMaxSize((MAX_SIZE, -1))
-        self.stCopyright.Wrap(MAX_SIZE)
+        self.stCopyright.SetMaxSize((max_size, -1))
+        self.stCopyright.Wrap(max_size)
         self.stCopyright.SetFont(wx.Font(pointSize=10, family=wx.FONTFAMILY_DEFAULT,
                                          style=wx.FONTSTYLE_NORMAL,
                                          weight=wx.FONTWEIGHT_NORMAL,
@@ -201,8 +205,8 @@ class AboutDialog(wx.Dialog):
 
         build = wx.GetOsDescription() + '; wxWidgets ' + wx.version()
         self.stBuild = wx.StaticText(self.panel, wx.ID_ANY, build)
-        self.stBuild.SetMaxSize((MAX_SIZE, -1))
-        self.stBuild.Wrap(MAX_SIZE)
+        self.stBuild.SetMaxSize((max_size, -1))
+        self.stBuild.Wrap(max_size)
         self.stBuild.SetFont(wx.Font(pointSize=10, family=wx.FONTFAMILY_DEFAULT,
                                      style=wx.FONTSTYLE_NORMAL,
                                      weight=wx.FONTWEIGHT_NORMAL,

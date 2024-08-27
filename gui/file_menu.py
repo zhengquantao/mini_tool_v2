@@ -51,7 +51,7 @@ class FileManager:
         menu_refid: wx.WindowIDRef
         ctrl_key: str
         self.file_history()
-        mb_items["File"].Append(wx.ID_EXIT, "E&xit\tAlt-F4")
+        mb_items["File"].Append(wx.ID_EXIT, "退出\tAlt-F4")
 
         # File
         self.frame.Bind(wx.EVT_MENU, self.on_new_project, id=mb_items["NewProject"]["id"])
@@ -69,7 +69,7 @@ class FileManager:
         recent = wx.Menu()
         self.filehistory.UseMenu(recent)
         self.filehistory.AddFilesToMenu()
-        self.mb_items["File"].Append(wx.ID_ANY, '&Recent Project', recent)
+        self.mb_items["File"].Append(wx.ID_ANY, '&最近打开项目', recent)
 
     def add_history(self, path: str):
         # 将项目路径添加到 FileHistory 中

@@ -2,9 +2,17 @@ import os
 
 import pandas as pd
 import wx
+from aui2 import svg_to_bitmap
 
 from common.common import detect_encoding
-from settings.settings import power_theoretical
+from settings.settings import power_theoretical, convert_btn_svg
+
+
+def convert_gui(call_func):
+    app = wx.App(False)
+    frame = wx.Frame(parent=None, title="")
+    call_func(frame)
+    app.MainLoop()
 
 
 class ScadaPanel:
@@ -37,8 +45,9 @@ class ScadaPanel:
         panel.ShowModal()
 
     def build_button_component(self, panel):
-        button = wx.Button(panel, -1, "开 始 转 换")
+        button = wx.Button(panel, -1, " 开 始 转 换 ")
         button.Bind(wx.EVT_BUTTON, self.on_button)
+        button.SetBitmapCurrent(svg_to_bitmap(convert_btn_svg, size=(20, 20)))
         return button
 
     def build_save_component(self, panel):
@@ -86,7 +95,7 @@ class ScadaPanel:
         fields_sizer.Add(field2_box, 0, wx.ALL | wx.CENTER, 5)
 
         field3_box = wx.BoxSizer(wx.HORIZONTAL)
-        label3 = wx.StaticText(panel, -1, "桨距角度(pitch_angle)")
+        label3 = wx.StaticText(panel, -1, "桨叶角度(pitch_angle)")
         self.field3 = wx.ComboBox(panel, -1, size=(200, 30))
         field3_box.Add(label3, 5, wx.ALL | wx.CENTER, 5)
         field3_box.Add(self.field3, 5, wx.ALL | wx.CENTER, 5)
@@ -215,10 +224,11 @@ class ScadaPanel:
         df = self.open_file(file)
         if not status_value:
             return df
-        if status_value.isdigit():
-            df = df[df[run_status] == int(status_value)]
+        val = eval(status_value)
+        if isinstance(val, (int, float, complex)):
+            df = df[df[run_status] == val]
         else:
-            df = df[df[run_status] == status_value]
+            df = df[df[run_status] == val]
         return df
 
     def set_status_value(self, event):
@@ -237,8 +247,7 @@ class ScadaPanel:
 
     def on_select_file(self, event):
         dialog = wx.FileDialog(self.panel, "请选择需要转换的文件",
-                               wildcard="所有文件 (*.csv, *.xls, *.xlsx)|*.csv;*.xls;*.xlsx",
-                               style=wx.FD_OPEN | wx.FD_MULTIPLE)
+                               wildcard="所有文件 (*.csv, *.xls, *.xlsx)|*.csv;*.xls;*.xlsx", style=wx.FD_MULTIPLE)
         if dialog.ShowModal() == wx.ID_OK:
             self.filepath = dialog.GetPaths()  # 获取选择的文件路径
             self.file1.SetValue(",".join([i.split(os.sep)[-1] for i in self.filepath]))
@@ -254,11 +263,11 @@ class ScadaPanel:
         dialog.Destroy()
 
     @staticmethod
-    def open_file(filepath: str):
+    def open_file(filepath: str, **kwargs):
         if filepath.endswith(".csv"):
-            df = pd.read_csv(filepath, encoding=detect_encoding(filepath), low_memory=False)
+            df = pd.read_csv(filepath, encoding=detect_encoding(filepath), low_memory=False, **kwargs)
         else:
-            df = pd.read_excel(filepath)
+            df = pd.read_excel(filepath, **kwargs)
         return df
 
     def set_field_columns(self):
@@ -316,8 +325,9 @@ class PowerTheoreticalPanel:
         panel.ShowModal()
 
     def build_button_component(self, panel):
-        button = wx.Button(panel, -1, "开 始 转 换")
+        button = wx.Button(panel, -1, " 开 始 转 换 ")
         button.Bind(wx.EVT_BUTTON, self.on_button)
+        button.SetBitmapCurrent(svg_to_bitmap(convert_btn_svg, size=(20, 20)))
         return button
 
     def build_save_component(self, panel):

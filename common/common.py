@@ -315,6 +315,7 @@ def read_csv_file(file):
             # 一年分钟级将为10分钟级
             select_col_df = select_col_df.resample("10min").mean()
     # 加上turbine_code列
+    select_col_df.dropna(how='all', inplace=True)
     select_col_df.insert(loc=0, column='turbine_code', value=turbine_code)
     return select_col_df
 

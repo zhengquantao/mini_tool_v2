@@ -195,12 +195,14 @@ class GraphPanel(wx.Panel):
 
     def init_more_data(self, file_name):
         self.file_list = []
-        for idx, file in enumerate(os.listdir(opening_dict[os.getpid()]["path"])):
+        cnt = 0
+        for _, file in enumerate(os.listdir(opening_dict[os.getpid()]["path"])):
             if not file.endswith(".csv"):
                 continue
             self.file_list.append(file)
             if file == file_name:
-                self.select_idx = [idx]
+                self.select_idx = [cnt]
+            cnt += 1
 
     def build_list_ctrl(self, panel5):
         self.listbox = wx.ListCtrl(panel5, wx.ID_ANY, pos=(5, 5), size=(160, wx.EXPAND),
@@ -280,6 +282,7 @@ class GraphPanel(wx.Panel):
                 path = os.path.join(opening_dict[os.getpid()]["path"], self.file_list[idx])
                 df = pd.read_csv(path, encoding=detect_encoding(path), low_memory=False)
                 df = self.filter_df(df, self.tc1.data, x_field)
+                df = self.filter_df(df, self.tc2.data, y_fields[0])
                 if ret_df.empty:
                     ret_df[x_field] = df[x_field]
                 df = df[y_fields]

@@ -51,10 +51,10 @@ class ToolBarManager:
                              agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_VERTICAL | aui.AUI_TB_VERT_TEXT |
                                       aui.AUI_TB_PLAIN_BACKGROUND)
 
-        tb5.AddSimpleTool(project_tb_id, "Project", svg_to_bitmap(cs.tree_nav_svg, size=(13, 13)),)
+        tb5.AddSimpleTool(project_tb_id, "项目", svg_to_bitmap(cs.tree_nav_svg, size=(13, 13)),)
         # tb5.AddSeparator()
         gripe_tb_id: int = wx.NewIdRef()
-        tb5.AddSimpleTool(gripe_tb_id, "Graph", svg_to_bitmap(cs.graph_svg, size=(13, 13)))
+        tb5.AddSimpleTool(gripe_tb_id, "图表", svg_to_bitmap(cs.graph_svg, size=(13, 13)))
         tb5.Realize()
         mgr.AddPane(tb5, aui.AuiPaneInfo().Name("toolbar_left").Caption("左边栏").ToolbarPane().Floatable(False)
                     .Dockable(False).Left())
@@ -63,7 +63,7 @@ class ToolBarManager:
                              agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_VERT_TEXT | aui.AUI_TB_PLAIN_BACKGROUND)
         tb6.SetToolBitmapSize(wx.Size(16, 16))
         database: int = wx.NewIdRef()
-        tb6.AddSimpleTool(database, "Database", svg_to_bitmap(cs.database_svg, size=(13, 13)))
+        tb6.AddSimpleTool(database, "数据库", svg_to_bitmap(cs.database_svg, size=(13, 13)))
         tb6.EnableTool(database, False)
         tb6.Realize()
         mgr.AddPane(tb6, aui.AuiPaneInfo().Name("toolbar_right").Caption("右边栏").
@@ -79,7 +79,7 @@ class ToolBarManager:
         console_tb_id: int = wx.NewIdRef()
         tb7 = aui.AuiToolBar(frame, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
                              agwStyle=aui.AUI_TB_OVERFLOW | aui.AUI_TB_HORZ_TEXT | aui.AUI_TB_PLAIN_BACKGROUND)
-        tb7.AddSimpleTool(console_tb_id, "Console", svg_to_bitmap(cs.console_svg, size=(12, 12)), )
+        tb7.AddSimpleTool(console_tb_id, "监控", svg_to_bitmap(cs.console_svg, size=(12, 12)), )
         tb7.Realize()
         mgr.AddPane(tb7, aui.AuiPaneInfo().Name("toolbar_bottom").Caption("底边栏").ToolbarPane().Floatable(False)
                     .Dockable(False).Bottom())

@@ -31,7 +31,7 @@ def build_html(data, col_x, col_y, xlabel, ylabel, title, file_path, bin_df,  hu
 
     :return:
     """
-    colors = ["#EBDEF0", "#D7BDE2", "#C39BD3", "#AF7AC5", "#9B59B6", "#884EA0", "#76448A"]
+    colors = ["#EBDEF0", "#D7BDE2", "#C39BD3", "#AF7AC5", "#9B59B6", "#884EA0", "#76448A", "#1565c0", "#ad1457", "#c62828", "#f9a825", "#ff8f00", "#d84315", "#FF3300"]
     colors_size = len(colors)
     scatter = (
         Scatter(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title,

@@ -52,7 +52,7 @@ def bin_main(file_path, project_path, img_mode=False, run_func_list=None):
     cut_out_wind_speed = config.get("models_params", "cut_out_wind_speed", 20)
 
     # 最小发电机转速：【并网转速】
-    min_generator_speed = config.get("models_params", "min_generator_speed", 1000)
+    min_generator_speed = config.get("models_params", "min_generator_speed", 0)
 
     # 传动比：gear ratio，transmission ratio，drive ratio
     gear_ratio = config.get("models_params", "gear_ratio", 131.58)
