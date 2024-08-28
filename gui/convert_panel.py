@@ -12,7 +12,7 @@ def convert_gui(call_func):
     app = wx.App(False)
     frame = wx.Frame(parent=None, title="")
     call_func(frame)
-    app.MainLoop()
+    # app.MainLoop()
 
 
 class ScadaPanel:
@@ -116,7 +116,7 @@ class ScadaPanel:
         fields_sizer.Add(field5_box, 0, wx.ALL | wx.CENTER, 5)
 
         field6_box = wx.BoxSizer(wx.HORIZONTAL)
-        label6 = wx.StaticText(panel, -1, "风向方向(wind_direction)")
+        label6 = wx.StaticText(panel, -1, "风向(wind_direction)")
         self.field6 = wx.ComboBox(panel, -1, size=(200, 30))
         field6_box.Add(label6, 5, wx.ALL | wx.CENTER, 5)
         field6_box.Add(self.field6, 5, wx.ALL | wx.CENTER, 5)

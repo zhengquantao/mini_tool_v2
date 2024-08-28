@@ -82,7 +82,7 @@ class FileManager:
         logger.info(f"当前进程号：{pid}")
         opening_dict[pid] = {"path": path, "records": {}}
         self.mgr.AddPane(self.tree_ctrl.create_ctrl(path, init_project=init_project),
-                         aui.AuiPaneInfo().Name("ProjectTree").Caption(path).
+                         aui.AuiPaneInfo().Name("ProjectTree").Caption("" if init_project else path).
                          CloseButton(False).MaximizeButton(False).Layer(2).Position(1).Left().
                          MinimizeButton(True).Movable(False).Floatable(False).
                          Icon(svg_to_bitmap(cs.tree_svg, size=(13, 13))))
