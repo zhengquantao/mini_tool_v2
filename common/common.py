@@ -43,10 +43,14 @@ def async_raise(thread_id, exctype):
 
 def new_app(path):
     from multiprocessing import Process, freeze_support
-    from server.gui_server import run_gui
     freeze_support()
-    app = Process(target=run_gui, args=(path,))
+    app = Process(target=new_child_app, args=(path,))
     app.start()
+
+
+def new_child_app(path):
+    from server.gui_server import run_gui
+    run_gui(path)
 
 
 def daemon_app(app, ppid=None):
