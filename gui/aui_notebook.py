@@ -127,7 +127,7 @@ class Notebook:
         # ctrl.SetPageTextColour(1, wx.BLUE)
         # ctrl.SetRenamable(1, True)
         ctrl.Bind(aui.EVT_AUINOTEBOOK_TAB_RIGHT_DOWN, self.on_right_click_up)
-        ctrl.Bind(aui.EVT_AUINOTEBOOK_PAGE_CLOSED, self.on_closed)
+        # ctrl.Bind(aui.EVT_AUINOTEBOOK_PAGE_CLOSED, self.on_closed)
         self.notebook_object = ctrl
         self.open_pdf()
         return ctrl
