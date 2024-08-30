@@ -131,7 +131,7 @@ class FileManager:
             return
 
         directory_name: str = dlg.GetValue()
-        select_dialog = wx.DirDialog(self.frame, "请选择文件保存路径：", style=wx.DD_DEFAULT_STYLE)
+        select_dialog = wx.DirDialog(self.frame, "请选择项目保存路径：", style=wx.DD_DEFAULT_STYLE)
         if select_dialog.ShowModal() != wx.ID_OK:
             return
 
@@ -142,6 +142,9 @@ class FileManager:
 
         new_app(path)
         # self.open_project(path)
+        if self.init:
+            # self.frame.Close(True)
+            self.frame.Destroy()
 
     def on_open_project(self, event: wx.CommandEvent) -> None:
         select_dialog = wx.DirDialog(self.frame, "请选择要打开的项目：", style=wx.DD_DEFAULT_STYLE)
