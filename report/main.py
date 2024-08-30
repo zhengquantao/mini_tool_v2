@@ -27,7 +27,7 @@ def report_main(file_path, project_path, title=None):
             "approver": "深圳量云",
             "createTime": datetime.datetime.now().strftime("%Y-%m-%d"),
             "fanNum": cnt,
-            "fanModel": "明阳1.5",
+            "fanModel": "",
             "startTime": start_time,
             "endTime": end_time,
             "energy_coeff_list": build_energy_coeff_list(iec_table),
