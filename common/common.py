@@ -4,13 +4,12 @@ import inspect
 import json
 import os
 import shutil
-import time
 from functools import wraps
+from multiprocessing import Process, freeze_support
 import chardet
 
 import numpy as np
 import pandas as pd
-import psutil
 import wx
 import wx.lib.agw.aui as aui
 from aui2 import svg_to_bitmap
@@ -42,23 +41,10 @@ def async_raise(thread_id, exctype):
 
 
 def new_app(path):
-    from multiprocessing import Process, freeze_support
     freeze_support()
-    app = Process(target=new_child_app, args=(path,))
-    app.start()
-
-
-def new_child_app(path):
     from server.gui_server import run_gui
-    run_gui(path)
-
-
-def daemon_app(app, ppid=None):
-    current_process = psutil.Process(ppid)
-    while children_process_cnt(current_process) > 1:
-        time.sleep(3)
-
-    app.terminate()
+    app = Process(target=run_gui, args=(path,))
+    app.start()
 
 
 def is_program_running():
@@ -82,14 +68,6 @@ def is_program_running():
         except IOError:
             logger.error('Cannot lock: ' + lock_filename)
             raise Exception("程序已经运行.")
-
-
-def children_process_cnt(current_process):
-    cnt = 0
-    for process in current_process.children(recursive=True):
-        if process.name() == current_process.name():
-            cnt += 1
-    return cnt
 
 
 def random_name(turbine, desc, f_type="html"):

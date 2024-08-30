@@ -31,7 +31,7 @@ class MainApp:
 
         # If MainFrame subclasses wx.Frame and MainFrame().frame is not set to self,
         # remove the second line and rename main_frame -> frame.
-        main_frame: MainFrame = MainFrame(None, wx.ID_ANY, main_title, size=wx.Size(*window_size))
+        main_frame: MainFrame = MainFrame(None, wx.ID_ANY, main_title, size=wx.Size(*window_size), app=self.app)
 
         # set icon
         icon = wx.Icon()
