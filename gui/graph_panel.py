@@ -270,11 +270,6 @@ class GraphPanel(wx.Panel):
         add_notebook_page(self.notebook_ctrl, self.html_ctrl, file_paths, file_name)
 
     def read_df(self, x_field, y_fields):
-
-        if not self.select_idx:
-            df = self.filter_df(self.data, self.tc1.data, x_field)
-            return df[x_field], y_fields
-
         ret_df = pd.DataFrame()
         ret_y_fields = []
         for idx in self.select_idx:
@@ -296,7 +291,7 @@ class GraphPanel(wx.Panel):
 
     @staticmethod
     def filter_df(df, params, field):
-        class_type = type(df[field][0])
+        class_type = type(df[field].iloc[0])
         if params.get("L"):
             df = df[df[field] > class_type(params["L"])]
         if params.get("S"):
