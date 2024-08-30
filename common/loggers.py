@@ -16,9 +16,12 @@ class RealTimeLogHandler(logging.Handler):
         self.text_ctrl = text_ctrl
 
     def emit(self, record):
-        message = self.format(record)
-        # 安全地在UI主线程中更新TextCtrl
-        wx.CallAfter(self.text_ctrl.AppendText, message + '\n')
+        try:
+            message = self.format(record)
+            # 安全地在UI主线程中更新TextCtrl
+            wx.CallAfter(self.text_ctrl.AppendText, message + '\n')
+        except Exception as e:
+            pass
 
 
 def init_logger(create_ctrl=None):
