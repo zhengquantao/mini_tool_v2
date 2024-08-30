@@ -139,11 +139,11 @@ class MainMenu:
     def on_contact(self, _event: wx.CommandEvent):
         msg = """
         Website: https://www.quant-cloud.cn\n
-        Phone :110 3423 3242\n
-        Email: 123234224324@qq.com\n
-        Address: 中国广东省深圳市南山区前海街道50034号4楼
+        Phone: 0755-86523057\n
+        Email: quant-cloud@mywind.com.cn\n 
+        Address: 深圳市前海卓越金融中心3座10层
         """
-        dlg = wx.MessageDialog(self.frame, msg, "Contact Us", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self.frame, msg, "联系我们", wx.OK | wx.ICON_NONE)
         dlg.ShowModal()
         dlg.Destroy()
 
@@ -165,7 +165,7 @@ class AboutDialog(wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__(self,
                            parent,
-                           title=f"About {main_title}",
+                           title=f"关于 {main_title}",
                            style=wx.DEFAULT_DIALOG_STYLE)
 
         szAll = wx.BoxSizer(wx.VERTICAL)
