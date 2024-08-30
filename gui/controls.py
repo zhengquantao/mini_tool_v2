@@ -220,8 +220,8 @@ class TreeCtrl(metaclass=Singleton):
             self.tree.EnsureVisible(self.result_dir)
 
         new_item = self.tree.AppendItem(self.result_dir, child_path.split(os.sep)[-1], image=image, data=child_path)
-        self.tree.EnsureVisible(new_item)
-        self.tree.SetFocusedItem(new_item)
+        # self.tree.EnsureVisible(new_item)
+        # self.tree.SetFocusedItem(new_item)
 
     def set_data_df(self, data_df):
         self.graph_ctrl.set_data(data_df)
@@ -406,15 +406,15 @@ class TreeCtrl(metaclass=Singleton):
 
         sub_model_menu2 = wx.Menu()
         # 控制曲线分析（Bin分仓）
-        model_7 = sub_model_menu2.Append(wx.ID_ANY, '风速-风能利用系数分析')
-        model_8 = sub_model_menu2.Append(wx.ID_ANY, '风速-桨距角分析')
+        # model_7 = sub_model_menu2.Append(wx.ID_ANY, '风速-风能利用系数分析')
+        # model_8 = sub_model_menu2.Append(wx.ID_ANY, '风速-桨距角分析')
         model_9 = sub_model_menu2.Append(wx.ID_ANY, '桨距角-功率分析')
         model_10 = sub_model_menu2.Append(wx.ID_ANY, '风速-转速分析')
         model_11 = sub_model_menu2.Append(wx.ID_ANY, '转速-功率分析')
 
         menu.AppendSubMenu(sub_model_menu2, '控制曲线分析').SetBitmap(svg_to_bitmap(model2_svg, size=(13, 13)))
-        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_7(event, path), model_7)
-        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_8(event, path), model_8)
+        # self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_7(event, path), model_7)
+        # self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_8(event, path), model_8)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_9(event, path), model_9)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_10(event, path), model_10)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_11(event, path), model_11)
@@ -452,8 +452,8 @@ class TreeCtrl(metaclass=Singleton):
             ctrl.AddPage(self.html_ctrl.create_ctrl(parent=ctrl, path=path), file_name, True,
                          svg_to_bitmap(html_svg, size=(16, 16)))
 
-        elif any([path.endswith(".csv"), path.endswith(".xlsx"), path.endswith(".xls")]):
-            data_df = pd.read_csv(path, encoding=detect_encoding(path), low_memory=False)
+        elif path.endswith(".csv"):
+            data_df = pd.read_csv(path, encoding=detect_encoding(path), low_memory=False, nrows=display_grid_count)
             # 防止多线程操作主进程页面导致异常崩溃
             wx.CallAfter(publisher.sendMessage, "set_data_df", data_df=(data_df, file_name))
             ctrl.AddPage(self.grid_ctrl.create_ctrl(ctrl, data_df), file_name, True,
@@ -742,6 +742,7 @@ class TreeCtrl(metaclass=Singleton):
         try:
             with ProcessPoolExecutor(max_workers=1) as executor:
                 future = executor.submit(callable_func, *args)
+                wx.CallAfter(publisher.sendMessage, "send_future", msg=executor._processes.keys())
                 file_paths, file_name = future.result()
                 # 防止多线程操作主进程页面导致异常崩溃
                 wx.CallAfter(publisher.sendMessage, "add_page", msg=(file_paths, file_name))
@@ -755,6 +756,7 @@ class TreeCtrl(metaclass=Singleton):
         try:
             with ProcessPoolExecutor(max_workers=1) as executor:
                 future = executor.submit(callable_func, *args)
+                wx.CallAfter(publisher.sendMessage, "send_future", msg=executor._processes.keys())
                 file_paths = future.result()
                 # 防止多线程操作主进程页面导致异常崩溃
                 wx.CallAfter(publisher.sendMessage, "add_window", msg=file_paths["docx_output"])
