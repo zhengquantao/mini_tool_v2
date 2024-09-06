@@ -14,7 +14,7 @@ from pyecharts.charts import Bar, Line
 
 def build_html(factor_path, turbine, plot_power_df, name, *args, **kwargs):
     page = build_page(plot_power_df, name)
-    file_name = random_name(turbine, "风资源对比")
+    file_name = random_name(turbine, "风资源分析")
     factor_path = create_dir(factor_path)
     html_path = page.render(os.path.join(factor_path, file_name))
 
@@ -57,11 +57,11 @@ def build_page(plot_power_df, name):
         )
         .extend_axis(
             yaxis=opts.AxisOpts(
-                name="风功率密度(kW/m^3)",
+                name="风功率密度(kW/m^2)",
                 min_=0,
                 position="right",
-                offset=70,
-                name_gap=40,
+                offset=55,
+                name_gap=20,
                 name_location="middle",
                 splitline_opts=opts.SplitLineOpts(is_show=False),
             ),
@@ -93,7 +93,7 @@ def build_page(plot_power_df, name):
             ),
             toolbox_opts=opts.ToolboxOpts(
                 is_show=True,  # 是否显示该工具
-                orient="vertical",  # 工具栏 icon 的布局朝向
+                # orient="vertical",  # 工具栏 icon 的布局朝向
                 pos_left="",
                 pos_right="5",  # 工具栏组件离容器左侧的距离
                 feature={

@@ -3,6 +3,7 @@
 This class relies on the order-preserving behavior of the stock Python
 dictionary for both top-level menu labels and menu items.
 """
+import os
 import datetime
 from multiprocessing import Process
 
@@ -10,9 +11,12 @@ import wx
 import wx.lib.agw.aui as aui
 from aui2 import svg_to_bitmap
 from pubsub import pub as publisher
+
+from common.common import new_app
 from gui.convert_panel import ScadaPanel, PowerTheoreticalPanel, convert_gui
 from gui.main_menu_res import main_menu_items
-from settings.settings import main_title, __version__, icon_svg, contact_svg, web_svg, convert_svg
+from settings.settings import main_title, __version__, icon_svg, contact_svg, web_svg, convert_svg, about_svg, doc_svg, \
+    show_svg
 
 
 # If MainFrame subclasses wx.Frame, uncomment the following lines
@@ -32,8 +36,10 @@ class MainMenu:
         self.menubar = wx.MenuBar()
         self.item_ids = {}
         self.items = {}
+        self.project_path = ""
         self.build()
         frame.SetMenuBar(self.menubar)
+        publisher.subscribe(self.send_project_path, "send_project_path")
 
     def art_provider(self) -> aui.AuiDefaultDockArt:
         return self.mgr.GetArtProvider()
@@ -105,22 +111,30 @@ class MainMenu:
 
         id_covert_data = wx.NewId()
         id_covert_power = wx.NewId()
-        self.items["Tools"].Append(id_covert_power, "转换理论功率数据")
+        scada_menu = self.items["Tools"].Append(id_covert_power, "转换理论功率数据")
+        scada_menu.SetBitmap(svg_to_bitmap(convert_svg, size=(15, 15)))
         self.frame.Bind(wx.EVT_MENU, self.on_convert_power, id=id_covert_power)
         scada_menu = self.items["Tools"].Append(id_covert_data, "转换SCADA数据")
         scada_menu.SetBitmap(svg_to_bitmap(convert_svg, size=(15, 15)))
         self.frame.Bind(wx.EVT_MENU, self.on_convert_scada, id=id_covert_data)
 
-        self.items["Help"].Append(wx.ID_HELP, "文档")
+        doc_menu = self.items["Help"].Append(wx.ID_HELP, "文档")
+        doc_menu.SetBitmap(svg_to_bitmap(doc_svg, size=(15, 15)))
+
         self.frame.Bind(wx.EVT_MENU, self.on_help, id=wx.ID_HELP)
         contact_menu = self.items["Help"].Append(wx.ID_HELP_CONTEXT, "联系我们")
         contact_menu.SetBitmap(svg_to_bitmap(contact_svg, size=(15, 15)))
         self.frame.Bind(wx.EVT_MENU, self.on_contact, id=wx.ID_HELP_CONTEXT)
-        self.items["Help"].Append(wx.ID_ABOUT, "关于我们")
+        about_menu = self.items["Help"].Append(wx.ID_ABOUT, "关于我们")
+        about_menu.SetBitmap(svg_to_bitmap(about_svg, size=(15, 15)))
         self.frame.Bind(wx.EVT_MENU, self.on_about, id=wx.ID_ABOUT)
         web_menu = self.items["Help"].Append(wx.ID_HELP_CONTENTS, "官网")
         web_menu.SetBitmap(svg_to_bitmap(web_svg, size=(15, 15)))
         self.frame.Bind(wx.EVT_MENU, self.on_web_home, id=wx.ID_HELP_CONTENTS)
+        self.items["Help"].AppendSeparator()
+        show_menu = self.items["Help"].Append(wx.ID_HELP_PROCEDURES, "演示项目")
+        show_menu.SetBitmap(svg_to_bitmap(show_svg, size=(15, 15)))
+        self.frame.Bind(wx.EVT_MENU, self.on_test_project, id=wx.ID_HELP_PROCEDURES)
 
     def on_about(self, _event: wx.CommandEvent) -> None:
         # msg = "wx.aui Demo\nAn advanced library for wxWidgets"
@@ -133,15 +147,19 @@ class MainMenu:
         dlg.ShowModal()
         dlg.Destroy()
 
+    def send_project_path(self, path):
+        self.project_path = path
+
     def on_help(self, _event: wx.CommandEvent) -> None:
         wx.CallAfter(publisher.sendMessage, "add_pdf")
 
     def on_contact(self, _event: wx.CommandEvent):
         msg = """
-        Website: https://www.quant-cloud.cn\n
-        Phone: 0755-86523057\n
+        公司: 深圳量云能源网络科技有限公司\n
+        网址: https://www.quant-cloud.cn\n
+        电话: 0755-86523057\n
         Email: quant-cloud@mywind.com.cn\n 
-        Address: 深圳市前海卓越金融中心3座10层
+        地址: 深圳市前海深港合作区南山街道梦海大道5033号前海卓越金融中心3号楼L10-01
         """
         dlg = wx.MessageDialog(self.frame, msg, "联系我们", wx.OK | wx.ICON_NONE)
         dlg.ShowModal()
@@ -149,16 +167,25 @@ class MainMenu:
 
     def on_web_home(self, _event: wx.CommandEvent):
         """go to web homepage"""
-        wx.BeginBusyCursor()
-        import webbrowser
-        webbrowser.open("https://www.quant-cloud.cn/home.html")
-        wx.EndBusyCursor()
+        web_url = "https://www.quant-cloud.cn/home.html"
+        try:
+            wx.BeginBusyCursor()
+            import webbrowser
+            webbrowser.open(web_url)
+            wx.EndBusyCursor()
+        except:
+            wx.MessageBox(web_url, "量云官网",  wx.OK | wx.ICON_NONE)
+
+    def on_test_project(self, _event: wx.CommandEvent):
+        """open test project"""
+        test_path = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), "static", "js", "演示项目")
+        new_app(test_path)
 
     def on_convert_scada(self, _event: wx.CommandEvent):
-        Process(target=convert_gui, args=(ScadaPanel, )).start()
+        Process(target=convert_gui, args=(ScadaPanel, self.project_path)).start()
 
     def on_convert_power(self, _event: wx.CommandEvent):
-        Process(target=convert_gui, args=(PowerTheoreticalPanel,)).start()
+        Process(target=convert_gui, args=(PowerTheoreticalPanel, self.project_path)).start()
 
 
 class AboutDialog(wx.Dialog):
@@ -193,7 +220,7 @@ class AboutDialog(wx.Dialog):
 
         szPanel.Add(self.stCaption, 0, wx.ALL | wx.EXPAND, 5)
 
-        strCopyright = f'(c) 2018-{datetime.datetime.now().year} Shenzhen LiangYun.\n All rights reserved.'
+        strCopyright = f'(c)2015-{datetime.datetime.now().year} Shenzhen Quant-Cloud Energy Network Technology Co., Ltd.'
         self.stCopyright = wx.StaticText(self.panel, wx.ID_ANY, strCopyright)
         self.stCopyright.SetMaxSize((max_size, -1))
         self.stCopyright.Wrap(max_size)

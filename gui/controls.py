@@ -2,6 +2,7 @@ import datetime
 import os
 import traceback
 from concurrent.futures.process import ProcessPoolExecutor
+from functools import wraps
 from threading import Thread
 
 import pandas as pd
@@ -169,6 +170,28 @@ class TextCtrl(metaclass=Singleton):
         ctrl.Refresh()
 
 
+def decorate_model(model_name=None):
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            path = args[1]
+            logger.info(f"{model_name} clicked, path: {path}")
+
+            if self.open_history_file(path, model_name):
+                return
+
+            run_key = hash(f"{path}{model_name}")
+            if self.is_running(run_key):
+                wx.MessageBox("正在执行中", "提示", wx.OK | wx.ICON_NONE)
+                return
+
+            kwargs["run_key"] = run_key
+            return func(self, *args, **kwargs)
+        return wrapper
+    return decorator
+
+
 class TreeCtrl(metaclass=Singleton):
     """Factory for a tree control."""
 
@@ -188,12 +211,19 @@ class TreeCtrl(metaclass=Singleton):
         self.grid_ctrl = grid_ctrl
         self.graph_ctrl = graph_ctrl
         self.now_file_list = []
+        self.running_model = {}
         frame.Bind(wx.EVT_MENU, self.on_create, id=self.create_menu_id)
         publisher.subscribe(self.add_page, "add_page")
         publisher.subscribe(self.add_window, "add_window")
         publisher.subscribe(self.set_data_df, "set_data_df")
+        publisher.subscribe(self.remove_running_model, "remove_running_model")
         self.result_dir = None
         self.gauge = None
+
+    def remove_running_model(self, kwargs):
+        run_key = kwargs["run_key"]
+        if run_key in self.running_model:
+            del self.running_model[run_key]
 
     def add_page(self, msg):
         file_paths, file_name = msg
@@ -370,31 +400,32 @@ class TreeCtrl(metaclass=Singleton):
         sub_model_menu1 = wx.Menu()
         if os.path.isdir(path):
             menu.AppendSeparator()
+            model_6 = sub_model_menu1.Append(wx.ID_ANY, '风况总览')
             model_12 = sub_model_menu1.Append(wx.ID_ANY, '赛马排行总览')
             model_14 = sub_model_menu1.Append(wx.ID_ANY, '偏航对风分析总览')
             # model_1 = sub_model_menu1.Append(wx.ID_ANY, '能效排行总览')
             # model_2 = sub_model_menu1.Append(wx.ID_ANY, '能效结果总览')
             # model_3 = sub_model_menu1.Append(wx.ID_ANY, '发电量排行总览')
-            model_6 = sub_model_menu1.Append(wx.ID_ANY, '风况总览')
 
-            report_1 = menu.Append(wx.ID_ANY, '生成报告')
             # self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_1(event, path), model_1)
             # self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_2(event, path), model_2)
             # self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_3(event, path), model_3)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_6(event, path), model_6)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_12(event, path), model_12)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_14(event, path), model_14)
-            self.tree.Bind(wx.EVT_MENU, lambda event: self.on_report_1(event, path), report_1)
+
             menu.AppendSubMenu(sub_model_menu1, '能效分析').SetBitmap(svg_to_bitmap(model1_svg, size=(13, 13)))
+            report_1 = menu.Append(wx.ID_ANY, '生成报告')
+            self.tree.Bind(wx.EVT_MENU, lambda event: self.on_report_1(event, path), report_1)
 
         elif path.endswith(".csv"):
             menu.AppendSeparator()
-            model_13 = sub_model_menu1.Append(wx.ID_ANY, '偏航对风分析')
-            model_4 = sub_model_menu1.Append(wx.ID_ANY, '理论与实际功率对比分析')
+
             model_5 = sub_model_menu1.Append(wx.ID_ANY, '风资源分析')
+            model_4 = sub_model_menu1.Append(wx.ID_ANY, '理论与实际功率分析')
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_4(event, path), model_4)
             self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_5(event, path), model_5)
-            self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_13(event, path), model_13)
+
             menu.AppendSubMenu(sub_model_menu1, '能效分析').SetBitmap(svg_to_bitmap(model1_svg, size=(13, 13)))
 
     def menu_model2(self, menu, path):
@@ -406,6 +437,7 @@ class TreeCtrl(metaclass=Singleton):
 
         sub_model_menu2 = wx.Menu()
         # 控制曲线分析（Bin分仓）
+        model_13 = sub_model_menu2.Append(wx.ID_ANY, '偏航对风分析')
         # model_7 = sub_model_menu2.Append(wx.ID_ANY, '风速-风能利用系数分析')
         # model_8 = sub_model_menu2.Append(wx.ID_ANY, '风速-桨距角分析')
         model_9 = sub_model_menu2.Append(wx.ID_ANY, '桨距角-功率分析')
@@ -418,6 +450,7 @@ class TreeCtrl(metaclass=Singleton):
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_9(event, path), model_9)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_10(event, path), model_10)
         self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_11(event, path), model_11)
+        self.tree.Bind(wx.EVT_MENU, lambda event: self.on_model_13(event, path), model_13)
 
     def on_delete(self, event, path):
         logger.info(f"Delete clicked, file path: {path}")
@@ -499,183 +532,139 @@ class TreeCtrl(metaclass=Singleton):
         self.tree.SetItemText(self.current, directory_name)
         self.tree.SetPyData(self.current, os.sep.join(file_list))
 
-    def on_model_1(self, event, path):
+    def is_running(self, run_key):
+        if run_key in self.running_model:
+            return True
+        self.running_model[run_key] = 1
+        return False
+
+    @decorate_model("能效排行总览")
+    def on_model_1(self, event, path, run_key=""):
         """能效排行总览"""
-        logger.info(f"能效排行总览 clicked, path: {path}")
-
-        if self.open_history_file(path, "能效排行总览"):
-            return
-
         project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(geo_main, path, project_path))
+        thread = Thread(target=self.async_model, args=(geo_main, path, project_path), kwargs={"run_key": run_key})
         thread.start()
         self.gauge = GaugePanel(self.frame, "能效排行总览", thread.ident)
 
-    def on_model_2(self, event, path):
+    @decorate_model("能效结果总览")
+    def on_model_2(self, event, path, run_key=""):
         """能效结果总览"""
-        logger.info(f"能效结果总览 clicked, path: {path}")
-
-        if self.open_history_file(path, "能效结果总览"):
-            return
-
         # 能效结果总览
         project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(iec_main, path, project_path))
+        thread = Thread(target=self.async_model, args=(iec_main, path, project_path), kwargs={"run_key": run_key})
         thread.start()
         self.gauge = GaugePanel(self.frame, "能效结果总览", thread.ident)
 
-    def on_model_3(self, event, path):
+    @decorate_model("发电量排行总览")
+    def on_model_3(self, event, path, run_key=""):
         """发电量排行总览"""
-        logger.info(f"发电量排行总览 clicked, path: {path}")
-
-        if self.open_history_file(path, "发电量排行总览"):
-            return
-
         # 能效结果总览
         project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(iec_main, path, project_path, True))
+        thread = Thread(target=self.async_model, args=(iec_main, path, project_path, True), kwargs={"run_key": run_key})
         thread.start()
         self.gauge = GaugePanel(self.frame, "发电量排行总览", thread.ident)
 
-    def on_model_4(self, event, path):
-        """理论与实际功率对比分析"""
-        logger.info(f"理论与实际功率对比分析 clicked, path: {path}")
-
-        if self.open_history_file(path, "理论与实际功率对比分析"):
-            return
-
+    @decorate_model("理论与实际功率分析")
+    def on_model_4(self, event, path, run_key=""):
+        """理论与实际功率分析"""
         # 理论和实际功率曲线对比
         project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(compare_curve, path, project_path))
+        thread = Thread(target=self.async_model, args=(compare_curve, path, project_path), kwargs={"run_key": run_key})
         thread.start()
-        self.gauge = GaugePanel(self.frame, "理论与实际功率对比分析", thread.ident)
+        self.gauge = GaugePanel(self.frame, "理论与实际功率分析", thread.ident)
 
-    def on_model_5(self, event, path):
+    @decorate_model("风资源分析")
+    def on_model_5(self, event, path, run_key=""):
         """风资源分析"""
-        logger.info(f"风资源分析 clicked, path: {path}")
-
-        if self.open_history_file(path, "风资源分析"):
-            return
-
         # 风资源对比
         project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(compare_curve, path, project_path, 1, True))
+        thread = Thread(target=self.async_model, args=(compare_curve, path, project_path, 1, True), kwargs={"run_key": run_key})
         thread.start()
         self.gauge = GaugePanel(self.frame, "风资源分析", thread.ident)
 
-    def on_model_6(self, event, path):
+    @decorate_model("风况总览")
+    def on_model_6(self, event, path, run_key=""):
         """风况总览"""
-        logger.info(f"风况总览 clicked, path: {path}")
-
-        if self.open_history_file(path, "风况总览"):
-            return
-
+        model_name = "风况总览"
         project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(wind_flow_main, path, project_path, "风况总览"))
+        thread = Thread(target=self.async_model, args=(wind_flow_main, path, project_path, model_name), kwargs={"run_key": run_key})
         thread.start()
-        self.gauge = GaugePanel(self.frame, "风况总览", thread.ident)
+        self.gauge = GaugePanel(self.frame, model_name, thread.ident)
 
-    def on_model_7(self, event, path):
+    @decorate_model("风速-风能利用系数分析")
+    def on_model_7(self, event, path, run_key=""):
         """风速-风能利用系数分析"""
-        logger.info(f"风速-风能利用系数分析 clicked, path: {path}")
-        if self.open_history_file(path, "风速-风能利用系数分析"):
-            return
-
         project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["cp_windspeed"]))
+        thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["cp_windspeed"]), kwargs={"run_key": run_key})
         thread.start()
         self.gauge = GaugePanel(self.frame, "风速-风能利用系数分析", thread.ident)
 
-    def on_model_8(self, event, path):
+    @decorate_model("风速-桨距角分析")
+    def on_model_8(self, event, path, run_key=""):
         """风速-桨距角分析"""
-        logger.info(f"风速-桨距角分析 clicked, path: {path}")
-        if self.open_history_file(path, "风速-桨距角分析"):
-            return
-
         project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["pitch_windspeed"]))
+        thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["pitch_windspeed"]), kwargs={"run_key": run_key})
         thread.start()
         self.gauge = GaugePanel(self.frame, "风速-桨距角分析", thread.ident)
 
-    def on_model_9(self, event, path):
+    @decorate_model("桨距角-功率分析")
+    def on_model_9(self, event, path, run_key=""):
         """桨距角-功率分析"""
-        logger.info(f"桨距角-功率分析 clicked, path: {path}")
-        if self.open_history_file(path, "桨距角-功率分析"):
-            return
 
         project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["power_pitch"]))
+        thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["power_pitch"]), kwargs={"run_key": run_key})
         thread.start()
         self.gauge = GaugePanel(self.frame, "桨距角-功率分析", thread.ident)
 
-    def on_model_10(self, event, path):
+    @decorate_model("风速-转速分析")
+    def on_model_10(self, event, path, run_key=""):
         """风速-转速分析"""
-        logger.info(f"风速-转速分析 clicked, path: {path}")
-        if self.open_history_file(path, "风速-转速分析"):
-            return
-
         project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["gen_wind_speed"]))
+        thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["gen_wind_speed"]), kwargs={"run_key": run_key})
         thread.start()
         self.gauge = GaugePanel(self.frame, "风速-转速分析", thread.ident)
 
-    def on_model_11(self, event, path):
+    @decorate_model("转速-功率分析")
+    def on_model_11(self, event, path, run_key=""):
         """转速-功率分析"""
-        logger.info(f"转速-功率分析 clicked, path: {path}")
-        if self.open_history_file(path, "转速-功率分析"):
-            return
-
         project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["power_genspeed"]))
+        thread = Thread(target=self.async_model, args=(bin_main, path, project_path, False, ["power_genspeed"]), kwargs={"run_key": run_key})
         thread.start()
         self.gauge = GaugePanel(self.frame, "转速-功率分析", thread.ident)
 
-    def on_model_12(self, event, path):
+    @decorate_model("赛马排行总览")
+    def on_model_12(self, event, path, run_key=""):
         """赛马排行总览"""
-        logger.info(f"能效结果总览 clicked, path: {path}")
-
-        if self.open_history_file(path, "赛马排行总览"):
-            return
-
-        # 能效结果总览
+        # 赛马排行总览
         project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(iec_main, path, project_path, False, True))
+        thread = Thread(target=self.async_model, args=(iec_main, path, project_path, False, True), kwargs={"run_key": run_key})
         thread.start()
         self.gauge = GaugePanel(self.frame, "赛马排行总览", thread.ident)
 
-    def on_model_13(self, event, path):
+    @decorate_model("偏航对风分析")
+    def on_model_13(self, event, path, run_key=""):
         """偏航对风分析"""
-        logger.info(f"偏航对风分析 clicked, path: {path}")
-
-        if self.open_history_file(path, "偏航对风分析"):
-            return
 
         project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(yaw_main, path, project_path, "偏航对风分析"))
+        thread = Thread(target=self.async_model, args=(yaw_main, path, project_path, "偏航对风分析"), kwargs={"run_key": run_key})
         thread.start()
         self.gauge = GaugePanel(self.frame, "偏航对风分析", thread.ident)
 
-    def on_model_14(self, event, path):
+    @decorate_model("偏航对风分析总览")
+    def on_model_14(self, event, path, run_key=""):
         """偏航对风分析总览"""
-        logger.info(f"偏航对风分析总览 clicked, path: {path}")
-
-        if self.open_history_file(path, "偏航对风分析总览"):
-            return
 
         project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_model, args=(yaw_main, path, project_path, "偏航对风分析总览"))
+        thread = Thread(target=self.async_model, args=(yaw_main, path, project_path, "偏航对风分析总览"), kwargs={"run_key": run_key})
         thread.start()
         self.gauge = GaugePanel(self.frame, "偏航对风分析总览", thread.ident)
 
-    def on_report_1(self, event, path):
+    @decorate_model("报告")
+    def on_report_1(self, event, path, run_key=""):
         """报告"""
-        logger.info(f"报告 clicked, path: {path}")
         title = "报告"
-        if self.open_history_file(path, title, file_type=".docx"):
-            return
-
         project_path = opening_dict[os.getpid()]["path"]
-        thread = Thread(target=self.async_report, args=(report_main, path, project_path, title))
+        thread = Thread(target=self.async_report, args=(report_main, path, project_path, title), kwargs={"run_key": run_key})
         thread.start()
         self.gauge = GaugePanel(self.frame, title, thread.ident)
 
@@ -738,7 +727,7 @@ class TreeCtrl(metaclass=Singleton):
         logger.info("Selection changing")
 
     @staticmethod
-    def async_model(callable_func, *args):
+    def async_model(callable_func, *args, **kwargs):
         try:
             with ProcessPoolExecutor(max_workers=1) as executor:
                 future = executor.submit(callable_func, *args)
@@ -750,9 +739,11 @@ class TreeCtrl(metaclass=Singleton):
             executor.shutdown(wait=False)
         except:
             logger.error(traceback.format_exc())
+        finally:
+            wx.CallAfter(publisher.sendMessage, "remove_running_model", kwargs=kwargs)
 
     @staticmethod
-    def async_report(callable_func, *args):
+    def async_report(callable_func, *args, **kwargs):
         try:
             with ProcessPoolExecutor(max_workers=1) as executor:
                 future = executor.submit(callable_func, *args)
@@ -764,6 +755,8 @@ class TreeCtrl(metaclass=Singleton):
             executor.shutdown(wait=False)
         except:
             logger.error(traceback.format_exc())
+        finally:
+            wx.CallAfter(publisher.sendMessage, "remove_running_model", kwargs=kwargs)
 
 
 class HTMLCtrl(metaclass=Singleton):

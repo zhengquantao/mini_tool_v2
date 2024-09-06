@@ -63,9 +63,9 @@ class Notebook:
 
     def open_pdf(self):
         file_path = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), "static", "js",
-                                 "小工具文档.pdf")
+                                 "使用手册.pdf")
         self.notebook_object.AddPage(self.html_ctrl.create_ctrl(parent=self.notebook_object, path=file_path),
-                                     "Welcome to MINI-TOOL", True, svg_to_bitmap(html_svg, size=(16, 16)))
+                                     "欢迎使用能效评估助手", True, svg_to_bitmap(html_svg, size=(16, 16)))
 
     def create_ctrl(self) -> aui.AuiNotebook:
         # If MainFrame subclasses wx.Frame, replace the following line

@@ -17,7 +17,7 @@ def build_html(wind_flow_dict, title, file_path, str_code):
         Line(init_opts=opts.InitOpts(width=f"{float_size[0]}px", height=f"{float_size[1]}px", page_title=main_title,
                                      bg_color="white"))
         .set_global_opts(
-            # title_opts=opts.TitleOpts(title=f"{str_code}全场机组{title}图"),
+            title_opts=opts.TitleOpts(title=f"湍流强度"),
             # legend_opts=opts.LegendOpts(is_show=True, pos_right=0),  # 将图例放在右边
             xaxis_opts=opts.AxisOpts(
                 name="风速",
@@ -28,7 +28,7 @@ def build_html(wind_flow_dict, title, file_path, str_code):
                 min_=2.5,
             ),
             yaxis_opts=opts.AxisOpts(
-                name="端流强度",
+                name="湍流强度",
                 type_="value",
                 name_gap=30,
                 name_location="middle",
@@ -86,7 +86,7 @@ def add_line(line_obj, item):
 
 def build_table(wind_flow_dict):
     table = Table()
-    headers = ["机组编号", "平均风速", "平均风功率密度", "全风速湍流强度", "2.5~15风速湍流强度", "最大风速", ]
+    headers = ["机组编号", "平均风速(m/s)", "平均风功率密度(kW/m^2)", "全风速湍流强度", "2.5~15风速湍流强度", "最大风速(m/s)", ]
     rows = [[row["turbine_code"], row["wind_mean"], row["wind_density"], row["terrain_mean_all"], row["terrain_mean"],
              row["wind_max"]]
             for row in wind_flow_dict.values()]

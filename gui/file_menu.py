@@ -6,6 +6,7 @@ import wx
 import wx.aui
 import wx.lib.agw.aui as aui
 from aui2 import svg_to_bitmap
+from pubsub import pub as publisher
 
 from settings import settings as cs
 from common.loggers import logger
@@ -13,7 +14,7 @@ from common.common import read_file, new_app
 
 
 # noinspection PyPep8Naming
-from settings.settings import opening_dict
+from settings.settings import opening_dict, exit_svg, rop_svg
 
 
 class FileManager:
@@ -51,8 +52,9 @@ class FileManager:
         menu_refid: wx.WindowIDRef
         ctrl_key: str
         self.file_history()
-        mb_items["File"].Append(wx.ID_EXIT, "退出\tAlt-F4")
-
+        mb_items["File"].AppendSeparator()
+        exit_menu = mb_items["File"].Append(wx.ID_EXIT, "退出\tAlt-F4")
+        exit_menu.SetBitmap(svg_to_bitmap(exit_svg, size=(15, 15)))
         # File
         self.frame.Bind(wx.EVT_MENU, self.on_new_project, id=mb_items["NewProject"]["id"])
         self.frame.Bind(wx.EVT_MENU, self.on_open_project, id=mb_items["OpenProject"]["id"])
@@ -69,7 +71,8 @@ class FileManager:
         recent = wx.Menu()
         self.filehistory.UseMenu(recent)
         self.filehistory.AddFilesToMenu()
-        self.mb_items["File"].Append(wx.ID_ANY, '&最近打开项目', recent)
+        rop_menu = self.mb_items["File"].Append(wx.ID_ANY, '&最近打开项目', recent)
+        rop_menu.SetBitmap(svg_to_bitmap(rop_svg, size=(15, 15)))
 
     def add_history(self, path: str):
         # 将项目路径添加到 FileHistory 中
@@ -104,17 +107,21 @@ class FileManager:
 
     def load_recent_project(self, path):
         if path:
+            wx.CallAfter(publisher.sendMessage, "send_project_path", path=path)
             self.open_project(path)
             return
         recent_project_path = self.get_recent_project_path()
         if recent_project_path:
             try:
+                wx.CallAfter(publisher.sendMessage, "send_project_path", path=recent_project_path)
                 self.open_project(recent_project_path)
                 return
             except Exception as e:
                 pass
         self.init = True
-        self.open_project(os.getcwd(), init_project=True)
+        project_path = os.getcwd()
+        wx.CallAfter(publisher.sendMessage, "send_project_path", path=project_path)
+        self.open_project(project_path, init_project=True)
 
     def get_recent_project_path(self) -> str:
 

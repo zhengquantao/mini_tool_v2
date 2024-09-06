@@ -4,7 +4,7 @@ All keys/item_ids should be unique within entire structure.
 """
 import wx
 
-from settings.settings import open_svg
+from settings.settings import open_svg, save_svg, op_svg, of_svg
 
 if wx.Platform == "__WXMAC__":
     switcher_accel = "Alt+Tab"
@@ -17,10 +17,10 @@ main_menu_items = {
     "File": {
         "label": "&文件",
         "children": {
-            "NewProject": {"label": "新建项目", "id": wx.ID_NEW},
+            "NewProject": {"label": "新建项目", "id": wx.ID_NEW, "icon": op_svg},
             "OpenProject": {"label": "打开项目", "id": wx.ID_OPEN, "icon": open_svg},
-            "OpenFile": {"label": "打开文件", "id": wx.ID_FILE},
-            "SaveProject": {"label": "保存项目", "id": wx.ID_SAVE},
+            "OpenFile": {"label": "打开文件", "id": wx.ID_FILE, "icon": of_svg},
+            "SaveProject": {"label": "保存项目", "id": wx.ID_SAVE, "icon": save_svg},
         }
     },
     # "Edit": {

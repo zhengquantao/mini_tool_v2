@@ -105,6 +105,13 @@ def aep_main(file_path, farm_name, real_time, wind_col, dirction_col, temperatur
     # proj_dir = create_proj_dir(proj_name, __file__)
     # power_curve_dir = create_dir("curve_img", proj_dir)
 
+    if not os.path.exists(curve_line_path):
+        raise FileNotFoundError("缺少power_theoretical.csv的理论功率虚线文件")
+    theory_curve = pd.read_csv(curve_line_path, encoding=detect_encoding(curve_line_path))
+    ## 处理功率曲线的函数
+    # theory_curve = extra_data(curve_line_path, theory_curve, farm_name)
+    theory_curve.columns = ["wind_speed", "theory_power"]
+
     # *** ---------- 2 按SCADA文件进行分析处理 ----------
     all_statistics = pd.DataFrame()
     for scada_file in scada_files:
@@ -207,17 +214,6 @@ def aep_main(file_path, farm_name, real_time, wind_col, dirction_col, temperatur
             # *** ---------- 5 理论和实际功率曲线对比 ----------
             # 结合理论功率进行计算对比
             # data_dir = "C:/Users/QC/Desktop/产品/D-发电量提升/交付项目/福建尖峰项目/"
-            if not os.path.exists(curve_line_path):
-                raise FileNotFoundError("缺少power_theoretical.csv的理论功率虚线文件")
-            if "csv" in curve_line_path:
-                theory_curve = pd.read_csv(curve_line_path, encoding=detect_encoding(curve_line_path))
-            elif "xls" in curve_line_path or "xlsx" in curve_line_path:
-                theory_curve = pd.read_excel(curve_line_path)
-
-            ## 处理功率曲线的函数
-            theory_curve = extra_data(scada_file, theory_curve, farm_name)
-
-            theory_curve.columns = ["wind_speed", "theory_power"]
 
             # ** 5.1 理论功率曲线数值提取  **
             # ! 考虑当地空气密度的换算
@@ -235,7 +231,6 @@ def aep_main(file_path, farm_name, real_time, wind_col, dirction_col, temperatur
             # *** ---------- 6 AEP计算 ----------
             statistics = aep_calc(norm_data_2, power_curve, turbine_code, clean_percentage)
             all_statistics = pd.concat([all_statistics, statistics]).reset_index(drop=True)
-            type_flie = scada_file.split(".")[1]
 
         except Exception as e:
             import traceback

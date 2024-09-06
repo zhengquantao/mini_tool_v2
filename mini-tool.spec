@@ -45,5 +45,5 @@ coll = COLLECT(
     strip=False,
     upx=False,
     upx_exclude=[],
-    name='mini_tool',
+    name='能效评估助手',
 )

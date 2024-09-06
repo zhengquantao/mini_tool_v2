@@ -44,13 +44,22 @@ def iec_main(file_path, project_path, sort_only=False, table=False):
     all_statistics["Weighted_diff"] = data_result["Weighted_diff"]
     all_statistics.fillna(0, inplace=True)
 
+    result_str = build_result_str(base_turbine, all_statistics)
     if table:
         file_paths, file_name = dswe_chart.build_html(project_path, turbine_code, all_statistics)
-        file_paths, file_name = table_chart.build_html(project_path, turbine_code, all_statistics)
+        file_paths, file_name = table_chart.build_html(project_path, turbine_code, all_statistics, result_str)
     else:
-        file_paths, file_name = table_chart.build_html(project_path, turbine_code, all_statistics)
+        file_paths, file_name = table_chart.build_html(project_path, turbine_code, all_statistics, result_str)
         file_paths, file_name = dswe_chart.build_html(project_path, turbine_code, all_statistics)
     return file_paths, file_name
+
+
+def build_result_str(base_turbine, all_statistics):
+    plot_power_df = all_statistics.sort_values(by="Weighted_diff", ascending=False)
+    last = plot_power_df.iloc[-1]
+    first = plot_power_df.iloc[0]
+    res_str = f"""为了准确评估机组能效，消除环境因素干扰，标定#{base_turbine}号机组为能效对比基准机组，将风场内其它机组与基准机组进行对此，计算量化各机组的能效百分比偏差率(能效偏离度)。通过对所有{len(plot_power_df)}台机组进行能效评估分析，其中#{first["turbine_code"]}号机组的能效最高，能效优于#{base_turbine}基准机组{first["Weighted_diff"]}%；#{last["turbine_code"]}号机组的能效最低，与基准组#{base_turbine}对比能效相差{last["Weighted_diff"]}%。"""
+    return res_str
 
 
 def iec_main_export(file_path, project_path):
@@ -70,4 +79,5 @@ def iec_main_export(file_path, project_path):
     all_statistics = all_statistics.sort_values(by="turbine_code")
     all_statistics["Weighted_diff"] = data_result["Weighted_diff"]
     all_statistics.fillna(0, inplace=True)
-    return all_statistics
+    res_str = build_result_str(base_turbine, all_statistics)
+    return all_statistics, res_str

@@ -15,7 +15,7 @@ from settings.settings import ignore_files, result_dir
 
 def report_main(file_path, project_path, title=None):
     factor_name = project_path.split(os.sep)[-1]
-    iec_table = iec_main_export(file_path, project_path)
+    iec_table, iec_str = iec_main_export(file_path, project_path)
     yaw_table, yaw_dict = yaw_main_export(file_path, project_path, title)
     start_time, end_time, cnt = get_time_and_count(file_path)
     build_report_dict = [{
@@ -30,6 +30,7 @@ def report_main(file_path, project_path, title=None):
             "fanModel": "",
             "startTime": start_time,
             "endTime": end_time,
+            "energy_coeff_str": iec_str,
             "energy_coeff_list": build_energy_coeff_list(iec_table),
             "yaw_list": build_yaw_list(yaw_table),
             "wind_flow_list": wind_flow_main_export(file_path, project_path),

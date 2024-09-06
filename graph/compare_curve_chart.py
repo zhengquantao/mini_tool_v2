@@ -24,7 +24,7 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
             large=True,  # 大数据优化 数据>largeThreshold就优化
             largeThreshold=2000,)
         .set_global_opts(
-            title_opts=opts.TitleOpts(title="理论与实际功率对比分析"),
+            title_opts=opts.TitleOpts(title="理论与实际功率分析"),
             xaxis_opts=opts.AxisOpts(
                 type_="value",
                 name="风速(m/s)",
@@ -102,7 +102,7 @@ def build_html(factor_path, turbine, abnormal_scatter, fitting_line, normal_scat
     )
 
     page = scatter1.overlap(scatter2).overlap(line1).overlap(line2)
-    file_name = random_name(turbine, "理论与实际功率对比分析")
+    file_name = random_name(turbine, "理论与实际功率分析")
     factor_path = create_dir(factor_path)
     html_path = page.render(os.path.join(factor_path, file_name))
 

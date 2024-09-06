@@ -8,20 +8,20 @@ from common.common import detect_encoding
 from settings.settings import power_theoretical, convert_btn_svg
 
 
-def convert_gui(call_func):
+def convert_gui(call_func, save_path=""):
     app = wx.App(False)
     frame = wx.Frame(parent=None, title="")
-    call_func(frame)
+    call_func(frame, save_path)
     # app.MainLoop()
 
 
 class ScadaPanel:
 
-    def __init__(self, parent):
+    def __init__(self, parent, save_path=""):
         self.panel = panel = wx.Dialog(parent, id=wx.ID_ANY, title="SCADA数据转换", pos=wx.DefaultPosition,
                                        style=wx.DEFAULT_DIALOG_STYLE)
         self.filepath = None
-        self.savepath = None
+        self.savepath = save_path
         self.data_df = None
 
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -55,7 +55,8 @@ class ScadaPanel:
         save_files_sizer = wx.StaticBoxSizer(save_files, wx.VERTICAL)
         save_files_box = wx.BoxSizer(wx.HORIZONTAL)
         save_label1 = wx.StaticText(panel, -1, "请选择文件保存路径")
-        self.save_file1 = wx.TextCtrl(panel, -1, size=(200, 30), style=wx.TE_READONLY)
+        self.save_file1 = wx.TextCtrl(panel, -1, size=(200, 30), style=wx.TE_READONLY,
+                                      value=self.savepath.split(os.sep)[-1])
         self.save_file1.SetBackgroundColour("white")
         save_files_box.Add(save_label1, 5, wx.ALL | wx.CENTER, 5)
         save_files_box.Add(self.save_file1, 5, wx.ALL | wx.CENTER, 5)
@@ -256,7 +257,7 @@ class ScadaPanel:
         dialog.Destroy()
 
     def on_save_file(self, event):
-        dialog = wx.DirDialog(self.panel, "请选择转换后文件保存的路径", )
+        dialog = wx.DirDialog(self.panel, "请选择转换后文件保存的路径", defaultPath=self.savepath)
         if dialog.ShowModal() == wx.ID_OK:
             self.savepath = dialog.GetPath()
             self.save_file1.SetValue(self.savepath.split(os.sep)[-1])
@@ -297,11 +298,11 @@ class ScadaPanel:
 
 class PowerTheoreticalPanel:
 
-    def __init__(self, parent):
+    def __init__(self, parent, save_path=""):
         self.panel = panel = wx.Dialog(parent, id=wx.ID_ANY, title="理论功率数据转换", pos=wx.DefaultPosition,
                                        style=wx.DEFAULT_DIALOG_STYLE)
         self.filepath = None
-        self.savepath = None
+        self.savepath = save_path
         self.data_df = None
 
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -335,7 +336,8 @@ class PowerTheoreticalPanel:
         save_files_sizer = wx.StaticBoxSizer(save_files, wx.VERTICAL)
         save_files_box = wx.BoxSizer(wx.HORIZONTAL)
         save_label1 = wx.StaticText(panel, -1, "请选择文件保存路径")
-        self.save_file1 = wx.TextCtrl(panel, -1, size=(200, 30), style=wx.TE_READONLY)
+        self.save_file1 = wx.TextCtrl(panel, -1, size=(200, 30), style=wx.TE_READONLY,
+                                      value=self.savepath.split(os.sep)[-1])
         self.save_file1.SetBackgroundColour("white")
         save_files_box.Add(save_label1, 5, wx.ALL | wx.CENTER, 5)
         save_files_box.Add(self.save_file1, 5, wx.ALL | wx.CENTER, 5)
@@ -438,7 +440,7 @@ class PowerTheoreticalPanel:
         dialog.Destroy()
 
     def on_save_file(self, event):
-        dialog = wx.DirDialog(self.panel, "请选择转换后文件保存的路径", )
+        dialog = wx.DirDialog(self.panel, "请选择转换后文件保存的路径", defaultPath=self.savepath)
         if dialog.ShowModal() == wx.ID_OK:
             self.savepath = dialog.GetPath()
             self.save_file1.SetValue(self.savepath.split(os.sep)[-1])

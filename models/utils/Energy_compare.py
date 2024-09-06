@@ -78,7 +78,8 @@ def base_data_process(file_path, base_turbine, result_path, flag,
 
 
     except Exception as e:
-        logger.error(e)
+        import traceback
+        logger.error(traceback.format_exc())
     return data_result
 
 

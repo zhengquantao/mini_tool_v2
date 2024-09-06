@@ -280,21 +280,17 @@ def read_csv_file(file):
 
     if is_second_data(select_col_df.index):
 
-        if len(select_col_df) > 60 * 60 * 24 * 30 * 3:
-            # 从3个月秒级降为10分钟级
+        if len(select_col_df) >= 60 * 60 * 24 * 30:
+            # 从秒级降为10分钟级
             select_col_df = select_col_df.resample("10min").mean()
 
-        elif len(select_col_df) > 60 * 60 * 24 * 30:
-            # 从30天秒级降为1分钟级
+        else:
+            # 从秒级降为1分钟级
             select_col_df = select_col_df.resample("1min").mean()
 
-        elif len(select_col_df) > 60 * 60 * 24 * 7:
-            # 从7天秒级降为30秒级
-            select_col_df = select_col_df.resample("30S").mean()
-
     else:
-        if len(select_col_df) > 60 * 24 * 365:
-            # 一年分钟级将为10分钟级
+        if len(select_col_df) > 6 * 24 * 365:
+            # 非秒级将为10分钟级
             select_col_df = select_col_df.resample("10min").mean()
     # 加上turbine_code列
     select_col_df.dropna(how='all', inplace=True)

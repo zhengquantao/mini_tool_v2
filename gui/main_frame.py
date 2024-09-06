@@ -43,8 +43,8 @@ class MainFrame:
         # If subclassing wx.Frame, remove .frame, if self.frame is not set to self
         statusbar: wx.StatusBar = self.frame.CreateStatusBar(2, wx.STB_SIZEGRIP)
         statusbar.SetStatusWidths([-2, -3])
-        statusbar.SetStatusText("Ready", 0)
-        statusbar.SetStatusText("Welcome To MINI-TOOL!", 1)
+        statusbar.SetStatusText("开始", 0)
+        statusbar.SetStatusText("欢迎使用能效评估助手!", 1)
 
     def on_size(self, event):
         wx.CallLater(100, self.frame.Update)

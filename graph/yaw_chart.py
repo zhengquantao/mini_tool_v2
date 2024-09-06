@@ -38,18 +38,18 @@ def build_page(data):
                                         bg_color="white"))
         .set_global_opts(
             title_opts=opts.TitleOpts(pos_left="25%",
-                                      title=f"{data['turbine_code']} 偏航对风误差：{data['yaw_err_mean']}  "
+                                      title=f"{data['turbine_code']} 偏航对风误差：{data['yaw_err_mean']}°  "
                                             f"偏航状态：{data['yaw_err_status']}"),
             legend_opts=opts.LegendOpts(is_show=False),  # 将图例放在右边
             xaxis_opts=opts.AxisOpts(
-                name="风向",
+                name="风向(°)",
                 type_="value",
                 name_gap=35,
                 name_location="middle",
                 splitline_opts=opts.SplitLineOpts(is_show=False),
             ),
             yaxis_opts=opts.AxisOpts(
-                name="风速",
+                name="风速(m/s)",
                 type_="value",
                 name_gap=35,
                 name_location="middle",
@@ -92,7 +92,7 @@ def build_table(yaw_list):
     yaw_list.sort(key=lambda item: abs(item[1]))
 
     table = Table()
-    headers = ["排行", "风机号", "偏航对风误差", "偏航状态", "简单描述"]
+    headers = ["排行", "风机号", "偏航对风误差(°)", "偏航状态", "简单描述"]
     rows = [[idx] + row for idx, row in enumerate(yaw_list, start=1)]
     table.add(headers, rows)
     table.set_global_opts(
